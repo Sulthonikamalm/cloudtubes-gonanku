@@ -2,11 +2,11 @@
   <img width="1024" height="437" alt="gonanku_banner" src="https://github.com/user-attachments/assets/b07b0e80-7a3b-42fe-9853-99e570ba3645" />
 </p>
 
-<h1 align="center">☁️ Gonanku — Personal AI Memory Vault</h1>
+<h1 align="center">Gonanku — Personal AI Memory Vault</h1>
 
 <p align="center">
   <a href="https://git.io/typing-svg">
-    <img src="https://readme-typing-svg.demolab.com?font=Plus+Jakarta+Sans&weight=600&size=22&duration=3000&pause=1000&color=1C4D8D&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=70&lines=Simpan+kenangan.+Temukan+kembali.;Ditenagai+kecerdasan+buatan+%F0%9F%A7%A0" alt="Typing SVG"/>
+    <img src="https://readme-typing-svg.demolab.com?font=Plus+Jakarta+Sans&weight=600&size=22&duration=3000&pause=1000&color=1C4D8D&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=70&lines=Simpan+kenangan.+Temukan+kembali.;Ditenagai+oleh+Kecerdasan+Buatan" alt="Typing SVG"/>
   </a>
 </p>
 
@@ -28,69 +28,69 @@
 </p>
 
 <p align="center">
-  <a href="#-tentang-proyek">Tentang</a> •
-  <a href="#-arsitektur-sistem">Arsitektur</a> •
-  <a href="#-alur-kerja">Alur Kerja</a> •
-  <a href="#-fitur-utama">Fitur</a> •
-  <a href="#%EF%B8%8F-tech-stack">Stack</a> •
-  <a href="#-cara-menjalankan">Instalasi</a> •
-  <a href="#-identitas-mahasiswa">Identitas</a>
+  <a href="#tentang-proyek">Tentang</a> •
+  <a href="#arsitektur-sistem">Arsitektur</a> •
+  <a href="#alur-kerja">Alur Kerja</a> •
+  <a href="#fitur-utama">Fitur</a> •
+  <a href="#tech-stack">Stack</a> •
+  <a href="#cara-menjalankan">Instalasi</a> •
+  <a href="#identitas-mahasiswa">Identitas</a>
 </p>
 
 ---
 
-## 📋 Tentang Proyek
+## Tentang Proyek
 
-> **Gonanku** adalah aplikasi web arsip pribadi cerdas yang dibangun sebagai **Tugas Besar Mata Kuliah Komputasi Awan** di Telkom University Surabaya.
+**Gonanku** adalah aplikasi web arsip pribadi cerdas yang dibangun sebagai **Tugas Besar Mata Kuliah Komputasi Awan** di Telkom University Surabaya.
 
-Pernahkah Anda kehilangan file penting di antara ribuan foto di galeri, chat WhatsApp, folder download, atau flashdisk yang tercecer?
+Pernahkah Anda kehilangan file penting di antara ribuan foto di galeri, chat, folder download, atau flashdisk yang tercecer?
 
 **Gonanku** hadir sebagai solusi — sebuah *personal memory vault* yang:
-- 📤 Menyimpan file di **Telegram Private Channel** (gratis & unlimited)
-- 🧠 Mengkatalogkan otomatis dengan **Groq AI** (judul, kategori, tag, ringkasan)
-- 🔍 Memungkinkan pencarian dengan **chatbot AI** berbahasa Indonesia
-- ☁️ Berjalan di **Google Cloud Platform** (Cloud Run + Cloud SQL)
+- Menyimpan file di **Telegram Private Channel** (gratis & unlimited)
+- Mengkatalogkan otomatis dengan **Groq AI** (judul, kategori, tag, ringkasan)
+- Memungkinkan pencarian dengan **chatbot AI** berbahasa Indonesia
+- Berjalan di **Google Cloud Platform** (Cloud Run + Cloud SQL)
 
-### ❓ Mengapa Gonanku Berbeda?
+### Mengapa Gonanku Berbeda?
 
 | Masalah Umum | Solusi Gonanku |
 |:---|:---|
-| 📁 File tercecer di galeri, chat, email, flashdisk | ✅ Satu tempat terpusat untuk semua arsip |
-| 🏷️ Nama file tidak jelas (`IMG_20250601_*.jpg`) | ✅ AI otomatis memberi judul deskriptif |
-| 🔎 Sulit mencari file lama | ✅ Chatbot AI: *"cari resi shopee bulan lalu"* |
-| 💸 Cloud storage mahal | ✅ Telegram = storage **gratis & unlimited** |
-| 📊 Tidak tahu punya berapa file | ✅ Dashboard **16 metrik** real-time |
+| File tercecer di galeri, chat, email, flashdisk | ✓ Satu tempat terpusat untuk semua arsip |
+| Nama file tidak jelas (`IMG_20250601_*.jpg`) | ✓ AI otomatis memberi judul deskriptif |
+| Sulit mencari file lama | ✓ Chatbot AI: *"cari resi shopee bulan lalu"* |
+| Cloud storage terbatas dan mahal | ✓ Telegram menyediakan storage unlimited |
+| Kesulitan mengukur pemakaian penyimpanan | ✓ Dashboard menyediakan 16 metrik real-time |
 
 ---
 
-## 🏗️ Arsitektur Sistem
+## Arsitektur Sistem
 
 ```mermaid
 graph TB
-    subgraph CLIENT["🖥️ Client Layer"]
-        USER["👤 User<br/>Browser / Mobile Web"]
+    subgraph CLIENT["Client Layer"]
+        USER["User<br/>Browser / Mobile Web"]
     end
 
-    subgraph APP["🌐 Gonanku Web Application"]
+    subgraph APP["Gonanku Web Application"]
         direction LR
-        FE["📄 Frontend<br/>HTML + CSS + JS + Jinja2"]
-        DASH["📊 Dashboard"]
-        UPLOAD["📤 Upload"]
-        CHAT["🤖 Chatbot"]
+        FE["Frontend<br/>HTML + CSS + JS + Jinja2"]
+        DASH["Dashboard"]
+        UPLOAD["Upload"]
+        CHAT["Chatbot"]
     end
 
-    subgraph BACKEND["🐍 Flask Backend"]
+    subgraph BACKEND["Flask Backend"]
         direction LR
-        ROUTES["🔀 Routes"]
-        SERVICES["⚙️ Services"]
-        MODELS["📦 Models"]
+        ROUTES["Routes"]
+        SERVICES["Services"]
+        MODELS["Models"]
     end
 
-    subgraph EXTERNAL["☁️ External Services"]
+    subgraph EXTERNAL["External Services"]
         direction LR
-        TG["📱 Telegram Bot API<br/>Private Channel<br/><i>File Storage</i>"]
-        DB["💾 Cloud SQL / SQLite<br/><i>Metadata Only</i>"]
-        AI["🧠 Groq AI<br/>LLaMA 3.3 70B<br/><i>5-Key Failover</i>"]
+        TG["Telegram Bot API<br/>Private Channel<br/><i>File Storage</i>"]
+        DB["Cloud SQL / SQLite<br/><i>Metadata Only</i>"]
+        AI["Groq AI<br/>LLaMA 3.3 70B<br/><i>5-Key Failover</i>"]
     end
 
     USER --> FE
@@ -112,18 +112,18 @@ graph TB
 
 ---
 
-## 🔄 Alur Kerja
+## Alur Kerja
 
-### 📤 Alur Upload File
+### Alur Upload File
 
 ```mermaid
 sequenceDiagram
-    actor U as 👤 User
-    participant W as 🌐 Website
-    participant F as 🐍 Flask
-    participant T as 📱 Telegram
-    participant D as 💾 Database
-    participant A as 🧠 Groq AI
+    actor U as User
+    participant W as Website
+    participant F as Flask
+    participant T as Telegram
+    participant D as Database
+    participant A as Groq AI
 
     U->>W: Pilih file & isi metadata
     W->>F: POST /upload (file + form)
@@ -134,19 +134,19 @@ sequenceDiagram
     F->>A: Analisis isi file
     A-->>F: judul, kategori, tag, ringkasan
     F->>D: Update metadata AI
-    F-->>W: ✅ Upload berhasil!
+    F-->>W: Upload berhasil
     W-->>U: Tampilkan di dashboard
 ```
 
-### 🤖 Alur Chatbot
+### Alur Chatbot
 
 ```mermaid
 sequenceDiagram
-    actor U as 👤 User
-    participant W as 🌐 Chatbot UI
-    participant F as 🐍 Flask
-    participant A as 🧠 Groq AI
-    participant D as 💾 Database
+    actor U as User
+    participant W as Chatbot UI
+    participant F as Flask
+    participant A as Groq AI
+    participant D as Database
 
     U->>W: "Cari resi shopee bulan lalu"
     W->>F: POST /chat/tanya
@@ -160,29 +160,29 @@ sequenceDiagram
     W-->>U: Tampilkan hasil pencarian
 ```
 
-### 🧠 AI Processing Pipeline
+### AI Processing Pipeline
 
 ```mermaid
 graph LR
-    subgraph INPUT["📥 Input"]
+    subgraph INPUT["Input"]
         FILE["File Upload"]
         IMG["Foto / Screenshot"]
         DOC["Dokumen PDF/DOCX"]
     end
 
-    subgraph EXTRACT["🔍 Extraction"]
+    subgraph EXTRACT["Extraction"]
         OCR["Vision AI<br/>OCR + Deskripsi"]
         TXT["Text Extraction<br/>PyPDF2 / python-docx"]
     end
 
-    subgraph AI["🧠 Groq AI Engine"]
+    subgraph AI["Groq AI Engine"]
         META["Metadata Generator<br/>Judul + Kategori + Tag"]
         SUM["Ringkasan AI"]
         PRIV["Privacy Detector<br/>NIK, Rekening, dll"]
     end
 
-    subgraph OUTPUT["📤 Output"]
-        DB["💾 Database"]
+    subgraph OUTPUT["Output"]
+        DB["Database"]
     end
 
     FILE --> IMG & DOC
@@ -200,13 +200,13 @@ graph LR
 
 ---
 
-## ✨ Fitur Utama
+## Fitur Utama
 
 <table>
 <tr>
 <td width="50%">
 
-### 📊 Dashboard Cerdas
+### Dashboard Komprehensif
 - **16 metrik real-time** — total arsip, foto, video, dokumen, audio, screenshot, ukuran total, upload hari/bulan ini, status AI, file sensitif
 - Grafik komposisi tipe file & kategori terbanyak
 - File terbaru & log aktivitas terkini
@@ -214,83 +214,83 @@ graph LR
 </td>
 <td width="50%">
 
-### 📤 Upload Multi-File
+### Upload Multi-File
 - Drag & drop atau pilih file (maks 50 MB/file)
 - Batch upload: 15 foto / 10 dokumen sekaligus
 - Image cropper untuk foto profil
-- File otomatis → Telegram private channel
+- File otomatis tersimpan di Telegram private channel
 
 </td>
 </tr>
 <tr>
 <td width="50%">
 
-### 🧠 AI-Powered Metadata
-- **Auto-Title** — judul deskriptif dari isi file
-- **Auto-Category** — 10+ kategori otomatis
-- **Auto-Tag** — tag relevan untuk pencarian
+### AI-Powered Metadata
+- **Auto-Title** — judul deskriptif otomatis
+- **Auto-Category** — kategorisasi pintar
+- **Auto-Tag** — penandaan otomatis untuk pencarian
 - **Auto-Summary** — ringkasan isi dokumen
-- **Privacy Detection** — deteksi NIK, rekening, dll
-- **Vision/OCR** — baca teks dari foto
-- **5 API key failover** — always-on
+- **Privacy Detection** — mendeteksi informasi sensitif
+- **Vision/OCR** — ekstraksi teks dari gambar
+- **Failover** — keandalan tinggi dengan 5 API key
 
 </td>
 <td width="50%">
 
-### 🤖 Chatbot Pencarian AI
-- Natural language: *"cari resi shopee bulan lalu"*
-- Intent parsing NLP Bahasa Indonesia
-- **4-layer search fallback** → selalu dapat hasil
-- **Relevance scoring** → hasil paling akurat di atas
-- Pencarian di **8+ kolom** termasuk OCR text
+### Chatbot Pencarian AI
+- Pemrosesan bahasa alami (Natural Language Processing)
+- Deteksi intensi dalam Bahasa Indonesia
+- **4-layer search fallback** untuk hasil pencarian optimal
+- **Relevance scoring** memprioritaskan hasil paling akurat
+- Pencarian multi-kolom termasuk teks OCR
 
 </td>
 </tr>
 <tr>
 <td width="50%">
 
-### 🗂️ Manajemen Arsip
-- CRUD file, kategori, dan tag
-- Soft delete & restore
-- Filter tipe, kategori, tanggal, privasi
-- Regenerate AI metadata kapan saja
-- Activity log & audit trail
+### Manajemen Arsip
+- Sistem operasi penuh (Create, Read, Update, Delete)
+- Soft delete dan pemulihan data
+- Filter lanjutan berdasarkan tipe, kategori, dan tanggal
+- Regenerasi metadata AI
+- Audit trail dan pencatatan aktivitas
 
 </td>
 <td width="50%">
 
-### 🎨 UI/UX Profesional
-- Desain clean & personal
-- 🌙 Dark / ☀️ Light mode
-- Responsive mobile & desktop
-- Micro-animations & transitions
-- Font Plus Jakarta Sans
+### UI/UX Profesional
+- Antarmuka yang bersih dan intuitif
+- Mode Gelap (Dark) / Terang (Light)
+- Responsif untuk perangkat seluler dan desktop
+- Transisi dan animasi halus
+- Tipografi menggunakan Plus Jakarta Sans
 
 </td>
 </tr>
 </table>
 
-### 🔁 Smart Search — 4-Layer Fallback
+### Smart Search — 4-Layer Fallback
 
 ```mermaid
 graph TD
-    Q["🔍 User Query"] --> L1
+    Q["User Query"] --> L1
 
     L1{"Layer 1<br/>Full Filter<br/>keyword + tipe + kategori + tanggal"}
-    L1 -->|"✅ Found"| R["📄 Results"]
-    L1 -->|"❌ Empty"| L2
+    L1 -->|"Found"| R["Results"]
+    L1 -->|"Empty"| L2
 
     L2{"Layer 2<br/>Soft Filter<br/>keyword + tanggal only"}
-    L2 -->|"✅ Found"| R
-    L2 -->|"❌ Empty"| L3
+    L2 -->|"Found"| R
+    L2 -->|"Empty"| L3
 
     L3{"Layer 3<br/>Word Split<br/>pecah frasa → kata individual"}
-    L3 -->|"✅ Found"| R
-    L3 -->|"❌ Empty"| L4
+    L3 -->|"Found"| R
+    L3 -->|"Empty"| L4
 
     L4{"Layer 4<br/>Fuzzy Match<br/>substring ≥ 3 karakter"}
-    L4 -->|"✅ Found"| R
-    L4 -->|"❌ Empty"| NOPE["😔 Tidak ditemukan"]
+    L4 -->|"Found"| R
+    L4 -->|"Empty"| NOPE["Tidak ditemukan"]
 
     style Q fill:#BDE8F5,stroke:#1C4D8D
     style R fill:#D4EDDA,stroke:#2F855A
@@ -303,7 +303,7 @@ graph TD
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 <table>
 <tr>
@@ -363,7 +363,7 @@ graph TD
 </table>
 
 <details>
-<summary><strong>📦 Detail Stack Lengkap (klik untuk membuka)</strong></summary>
+<summary><strong>Detail Stack Lengkap (klik untuk membuka)</strong></summary>
 
 | Layer | Teknologi | Fungsi |
 |:------|:----------|:-------|
@@ -372,7 +372,7 @@ graph TD
 | **Database** | Cloud SQL (PostgreSQL) / SQLite | Metadata file & user data |
 | **AI Engine** | Groq API (LLaMA 3.3 70B) | Metadata otomatis, chatbot, OCR |
 | **Vision AI** | Groq Vision (LLaMA 4 Scout) | Membaca teks dari gambar |
-| **File Storage** | Telegram Bot API (Private Channel) | Penyimpanan file gratis & unlimited |
+| **File Storage** | Telegram Bot API (Private Channel) | Penyimpanan file |
 | **Deployment** | Google Cloud Run | Serverless container hosting |
 | **Container** | Docker | Reproducible environment |
 | **Migration** | Flask-Migrate (Alembic) | Database version control |
@@ -382,19 +382,19 @@ graph TD
 
 ---
 
-## 🚀 Cara Menjalankan
+## Cara Menjalankan
 
 <details>
-<summary><strong>📋 Prasyarat</strong></summary>
+<summary><strong>Prasyarat</strong></summary>
 
 - Python 3.11+
 - Git
 - Akun Telegram (untuk bot & private channel)
-- API Key Groq (gratis di [console.groq.com](https://console.groq.com))
+- API Key Groq (dapat diperoleh dari [console.groq.com](https://console.groq.com))
 
 </details>
 
-### 1️⃣ Clone & Setup
+### Clone dan Persiapan Lingkungan
 
 ```bash
 git clone https://github.com/Sulthonikamalm/cloudtubes-gonanku.git
@@ -405,13 +405,13 @@ venv\Scripts\activate          # Windows
 pip install -r requirements.txt
 ```
 
-### 2️⃣ Konfigurasi
+### Konfigurasi
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` — isi minimal:
+Sesuaikan `.env` dengan kredensial berikut:
 
 ```env
 TELEGRAM_BOT_TOKEN=your_bot_token_here
@@ -419,7 +419,7 @@ TELEGRAM_CHAT_ID=your_private_channel_id
 GROQ_API_KEY=your_groq_api_key
 ```
 
-### 3️⃣ Jalankan
+### Eksekusi
 
 ```bash
 flask db upgrade
@@ -427,70 +427,70 @@ flask buat-pengguna email@example.com username password
 flask run
 ```
 
-Buka 👉 **http://localhost:5000** 🎉
+Akses aplikasi melalui **http://localhost:5000**
 
 ---
 
-## 📁 Struktur Proyek
+## Struktur Proyek
 
 <details>
-<summary><strong>🗂️ Lihat pohon direktori lengkap</strong></summary>
+<summary><strong>Lihat pohon direktori</strong></summary>
 
 ```
 cloudtubes-gonanku/
-├── 📄 run.py                       # Entry point
-├── 📄 Dockerfile                   # Container config
-├── 📄 requirements.txt             # Dependencies
-├── 📄 .env.example                 # Env template
+├── run.py                          # Entry point
+├── Dockerfile                      # Container config
+├── requirements.txt                # Dependencies
+├── .env.example                    # Env template
 │
-├── 📂 app/
+├── app/
 │   ├── __init__.py                 # App factory
 │   ├── config.py                   # Environment config
-│   ├── extensions.py               # SQLAlchemy, LoginManager
+│   ├── extensions.py               # Framework extensions
 │   │
-│   ├── 📂 models/                  # Database ORM
-│   │   ├── pengguna.py             #   👤 User
-│   │   ├── berkas.py               #   📄 File metadata
-│   │   ├── kategori.py             #   📂 Category
-│   │   ├── tag.py                  #   🏷️ Tag
-│   │   ├── riwayat_chat.py         #   💬 Chat history
-│   │   └── log_aktivitas.py        #   📋 Activity log
+│   ├── models/                     # Database ORM
+│   │   ├── pengguna.py             # User model
+│   │   ├── berkas.py               # File metadata
+│   │   ├── kategori.py             # Category model
+│   │   ├── tag.py                  # Tag model
+│   │   ├── riwayat_chat.py         # Chat history
+│   │   └── log_aktivitas.py        # Activity log
 │   │
-│   ├── 📂 routes/                  # HTTP handlers
-│   │   ├── auth_routes.py          #   🔐 Login, logout, profil
-│   │   ├── dashboard_routes.py     #   📊 Dashboard & metrik
-│   │   ├── berkas_routes.py        #   📄 CRUD file/arsip
-│   │   └── chat_routes.py          #   🤖 Chatbot API
+│   ├── routes/                     # HTTP handlers
+│   │   ├── auth_routes.py          # Authentication
+│   │   ├── dashboard_routes.py     # Dashboard & metrics
+│   │   ├── berkas_routes.py        # File operations
+│   │   └── chat_routes.py          # Chatbot logic
 │   │
-│   ├── 📂 services/                # Business logic
-│   │   ├── layanan_groq.py         #   🧠 Groq AI (5-key failover)
-│   │   ├── layanan_telegram.py     #   📱 Telegram Bot API
-│   │   ├── layanan_chatbot.py      #   🤖 Chatbot engine
-│   │   ├── layanan_pencarian.py    #   🔍 Smart search (4-layer)
-│   │   ├── layanan_upload.py       #   📤 Upload pipeline
-│   │   └── layanan_log.py          #   📋 Activity logging
+│   ├── services/                   # Business logic
+│   │   ├── layanan_groq.py         # AI Processing
+│   │   ├── layanan_telegram.py     # File storage API
+│   │   ├── layanan_chatbot.py      # Chatbot engine
+│   │   ├── layanan_pencarian.py    # Search algorithm
+│   │   ├── layanan_upload.py       # Upload handlers
+│   │   └── layanan_log.py          # Activity logging
 │   │
-│   ├── 📂 templates/               # Jinja2 HTML
-│   ├── 📂 static/                  # CSS, JS, images
-│   └── 📂 utils/                   # Helpers
+│   ├── templates/                  # Jinja2 HTML files
+│   ├── static/                     # CSS, JS, images
+│   └── utils/                      # Helper functions
 │
-├── 📂 migrations/                  # Alembic migrations
-└── 📂 docs/                        # Documentation
+├── migrations/                     # Alembic migrations
+└── docs/                           # Documentation
 ```
 
 </details>
 
 ---
 
-## 🔐 Keamanan
+## Keamanan
 
 ```mermaid
 graph LR
-    A["🔑 API Keys"] -->|".env file"| B["🚫 Not in Git"]
-    C["🔒 Passwords"] -->|"Werkzeug"| D["#️⃣ Bcrypt Hash"]
-    E["📄 Files"] -->|"Private Channel"| F["🔐 Telegram Encrypted"]
-    G["👤 Queries"] -->|"pengguna_id"| H["🛡️ User-scoped"]
-    I["📊 Sensitive Data"] -->|"AI Detection"| J["⚠️ Auto-flagged"]
+    A["API Keys"] -->|".env file"| B["Not in Git"]
+    C["Passwords"] -->|"Werkzeug"| D["Bcrypt Hash"]
+    E["Files"] -->|"Private Channel"| F["Telegram Encrypted"]
+    G["Queries"] -->|"pengguna_id"| H["User-scoped"]
+    I["Sensitive Data"] -->|"AI Detection"| J["Auto-flagged"]
 
     style B fill:#D4EDDA,stroke:#2F855A
     style D fill:#D4EDDA,stroke:#2F855A
@@ -501,16 +501,16 @@ graph LR
 
 ---
 
-## ☁️ Deployment (Google Cloud)
+## Deployment (Google Cloud)
 
 ```mermaid
 graph LR
-    A["💻 Local Dev"] -->|"git push"| B["📦 GitHub"]
-    B -->|"gcloud run deploy"| C["🐳 Cloud Build"]
-    C -->|"Docker image"| D["☁️ Cloud Run"]
-    D <-->|"SQL connection"| E["💾 Cloud SQL<br/>PostgreSQL"]
-    D <-->|"HTTPS API"| F["📱 Telegram"]
-    D <-->|"HTTPS API"| G["🧠 Groq AI"]
+    A["Local Dev"] -->|"git push"| B["GitHub"]
+    B -->|"gcloud run deploy"| C["Cloud Build"]
+    C -->|"Docker image"| D["Cloud Run"]
+    D <-->|"SQL connection"| E["Cloud SQL<br/>PostgreSQL"]
+    D <-->|"HTTPS API"| F["Telegram"]
+    D <-->|"HTTPS API"| G["Groq AI"]
 
     style A fill:#E8F4FD,stroke:#1C4D8D
     style B fill:#24292E,stroke:#fff,color:#fff
@@ -534,7 +534,7 @@ gcloud run deploy gonanku \
 
 ---
 
-## 👨‍🎓 Identitas Mahasiswa
+## Identitas Pembuat
 
 <table>
   <tr>
@@ -542,43 +542,43 @@ gcloud run deploy gonanku \
       <img src="https://img.shields.io/badge/TelU-Surabaya-C53030?style=for-the-badge" alt="TelU"/><br/><br/>
       <img src="https://img.shields.io/badge/Semester-6-1C4D8D?style=for-the-badge" alt="Semester"/>
     </td>
-    <td><strong>👤 Nama</strong></td>
+    <td><strong>Nama</strong></td>
     <td>Sulthonika Mahfudz Al Mujahidin</td>
   </tr>
   <tr>
-    <td><strong>🆔 NIM</strong></td>
+    <td><strong>NIM</strong></td>
     <td><code>1202230023</code></td>
   </tr>
   <tr>
-    <td><strong>🎓 Program Studi</strong></td>
+    <td><strong>Program Studi</strong></td>
     <td>S1 Teknologi Informasi</td>
   </tr>
   <tr>
-    <td><strong>🏫 Universitas</strong></td>
+    <td><strong>Universitas</strong></td>
     <td>Telkom University Surabaya</td>
   </tr>
   <tr>
-    <td><strong>📚 Mata Kuliah</strong></td>
+    <td><strong>Mata Kuliah</strong></td>
     <td>Komputasi Awan (Cloud Computing)</td>
   </tr>
   <tr>
-    <td><strong>📅 Semester</strong></td>
+    <td><strong>Semester</strong></td>
     <td>6 — Genap 2025/2026</td>
   </tr>
 </table>
 
 ---
 
-## 📄 Lisensi
+## Lisensi
 
-Proyek ini dibuat untuk keperluan akademik sebagai **Tugas Besar** mata kuliah **Komputasi Awan** di **Telkom University Surabaya**.
+Proyek ini disusun dan dikembangkan untuk keperluan akademik sebagai Tugas Besar mata kuliah Komputasi Awan di Telkom University Surabaya.
 
 ---
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0F2854&height=100&section=footer&text=Gonanku%20—%20Karena%20setiap%20file%20punya%20cerita&fontSize=16&fontColor=BDE8F5&animation=fadeIn" width="100%"/>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0F2854&height=100&section=footer&text=Gonanku%20—%20Sistem%20Manajemen%20Arsip%20Cerdas&fontSize=16&fontColor=BDE8F5&animation=fadeIn" width="100%"/>
 </p>
 
 <p align="center">
-  Dibuat dengan ❤️ dan ☕ di Surabaya
+  Dikembangkan di Surabaya
 </p>
