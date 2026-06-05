@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/gonanku_banner.png" alt="Gonanku Banner" width="720"/>
+  <img width="1024" height="437" alt="gonanku_banner" src="https://github.com/user-attachments/assets/b07b0e80-7a3b-42fe-9853-99e570ba3645" />
 </p>
 
 <h1 align="center">☁️ Gonanku — Personal AI Memory Vault</h1>
