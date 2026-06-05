@@ -273,32 +273,30 @@ graph LR
 ### Smart Search — 4-Layer Fallback
 
 ```mermaid
-graph TD
-    Q["User Query"] --> L1
+flowchart LR
+    Q([User Query]) --> L1
+    
+    L1[Layer 1: Full Filter] -->|Found| R([Results])
+    L1 -->|Empty| L2[Layer 2: Soft Filter]
+    
+    L2 -->|Found| R
+    L2 -->|Empty| L3[Layer 3: Word Split]
+    
+    L3 -->|Found| R
+    L3 -->|Empty| L4[Layer 4: Fuzzy Match]
+    
+    L4 -->|Found| R
+    L4 -->|Empty| NOPE([Tidak ditemukan])
+    
+    classDef query fill:#BDE8F5,stroke:#1C4D8D,stroke-width:2px;
+    classDef result fill:#D4EDDA,stroke:#2F855A,stroke-width:2px;
+    classDef fail fill:#FED7D7,stroke:#C53030,stroke-width:2px;
+    classDef layer fill:#E8F4FD,stroke:#4988C4,stroke-width:1px;
 
-    L1{"Layer 1<br/>Full Filter<br/>keyword + tipe + kategori + tanggal"}
-    L1 -->|"Found"| R["Results"]
-    L1 -->|"Empty"| L2
-
-    L2{"Layer 2<br/>Soft Filter<br/>keyword + tanggal only"}
-    L2 -->|"Found"| R
-    L2 -->|"Empty"| L3
-
-    L3{"Layer 3<br/>Word Split<br/>pecah frasa → kata individual"}
-    L3 -->|"Found"| R
-    L3 -->|"Empty"| L4
-
-    L4{"Layer 4<br/>Fuzzy Match<br/>substring ≥ 3 karakter"}
-    L4 -->|"Found"| R
-    L4 -->|"Empty"| NOPE["Tidak ditemukan"]
-
-    style Q fill:#BDE8F5,stroke:#1C4D8D
-    style R fill:#D4EDDA,stroke:#2F855A
-    style NOPE fill:#FED7D7,stroke:#C53030
-    style L1 fill:#E8F4FD,stroke:#1C4D8D
-    style L2 fill:#E8F4FD,stroke:#4988C4
-    style L3 fill:#F0F7FF,stroke:#4988C4
-    style L4 fill:#FFF5E6,stroke:#B7791F
+    class Q query;
+    class R result;
+    class NOPE fail;
+    class L1,L2,L3,L4 layer;
 ```
 
 ---
