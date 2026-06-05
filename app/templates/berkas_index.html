@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+
+{% block judul %}Arsip - Gonanku{% endblock %}
+{% block topbar_judul %}Arsip{% endblock %}
+{% block css_tambahan %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/berkas.css') }}" />
+{% endblock %}
+
+{% macro badge_ai(status) %}
+  {% if status == 'selesai' %}<span class="badge badge-sukses">AI selesai</span>
+  {% elif status == 'gagal' %}<span class="badge badge-bahaya">AI gagal</span>
+  {% elif status == 'diproses' %}<span class="badge badge-info">AI diproses</span>
+  {% else %}<span class="badge badge-netral">AI menunggu</span>{% endif %}
+{% endmacro %}
+
+{% macro badge_privasi(status) %}
+  {% if status == 'rahasia' %}<span class="badge badge-bahaya">Rahasia</span>
+  {% elif status == 'sensitif' %}<span class="badge badge-peringatan">Sensitif</span>
+  {% elif status == 'penting' %}<span class="badge badge-info">Penting</span>
+  {% else %}<span class="badge badge-netral">Normal</span>{% endif %}
+{% endmacro %}
+
+{% block konten %}
+  <div class="header-halaman">
+    <div>
+      <h1>Arsip</h1>
+      <p class="subjudul">Kelola dan temukan kembali seluruh berkasmu.</p>
+    </div>
+    <div class="aksi-baris">
+      <a class="tombol tombol-sekunder" href="{{ url_for('berkas.sampah') }}">Sampah</a>
+      <a class="tombol tombol-utama" href="{{ url_for('berkas.upload') }}">+ Upload Arsip</a>
+    </div>
+  </div>
+
+  <form class="toolbar-filter" method="get">
+    <div class="kolom-filter tumbuh">
+      <label class="label-form">Cari</label>
+      <input class="input-form" type="text" name="q" value="{{ filter_data.q }}"
+             placeholder="Cari judul, deskripsi, kode arsip..." />
+    </div>
+    <div class="kolom-filter">
+      <label class="label-form">Kategori</label>
+      <select class="input-form" name="kategori_id">
+        <option value="">Semua</option>
+        {% for k in kategori %}
+          <option value="{{ k.id }}" {% if filter_data.kategori_id == k.id %}selected{% endif %}>{{ k.nama }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="kolom-filter">
+      <label class="label-form">Tipe</label>
+      <select class="input-form" name="tipe_file">
+        <option value="">Semua</option>
+        {% for t in tipe_berkas %}
+          <option value="{{ t }}" {% if filter_data.tipe_file == t %}selected{% endif %}>{{ t | capitalize }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="kolom-filter">
+      <label class="label-form">Privasi</label>
+      <select class="input-form" name="status_privasi">
+        <option value="">Semua</option>
+        {% for s in status_privasi %}
+          <option value="{{ s }}" {% if filter_data.status_privasi == s %}selected{% endif %}>{{ s | capitalize }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button class="tombol tombol-utama" type="submit">Filter</button>
+  </form>
+
+  <div class="kartu">
+    {% if daftar.items %}
+      <table class="tabel">
+        <thead>
+          <tr>
+            <th>Judul</th>
+            <th>Tipe</th>
+            <th>Kategori</th>
+            <th>Ukuran</th>
+            <th>Momen</th>
+            <th>Status AI</th>
+            <th>Privasi</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in daftar.items %}
+            <tr>
+              <td>
+                <div class="sel-judul">
+                  <a class="nama" href="{{ url_for('berkas.detail', berkas_id=b.id) }}">{{ b.judul }}</a>
+                  <span class="kode-arsip">{{ b.kode_arsip }}</span>
+                </div>
+              </td>
+              <td style="text-transform: capitalize;">{{ b.tipe_file }}</td>
+              <td>{{ b.kategori.nama if b.kategori else '—' }}</td>
+              <td>{{ b.ukuran_file | ukuran }}</td>
+              <td>{{ b.tanggal_momen | tanggal }}</td>
+              <td>{{ badge_ai(b.status_ai) }}</td>
+              <td>{{ badge_privasi(b.status_privasi) }}</td>
+              <td>
+                <div class="aksi-baris">
+                  <a class="tautan-aksi" href="{{ url_for('berkas.detail', berkas_id=b.id) }}">Detail</a>
+                  <a class="tautan-aksi" href="{{ url_for('berkas.edit', berkas_id=b.id) }}">Edit</a>
+                  <form method="post" action="{{ url_for('berkas.hapus', berkas_id=b.id) }}"
+                        onsubmit="return confirm('Pindahkan berkas ini ke sampah?');">
+                    <button class="tautan-aksi bahaya" type="submit">Hapus</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="kondisi-kosong">
+        <div class="ikon">∅</div>
+        <h3>Tidak ada arsip ditemukan</h3>
+        <p>Ubah kata kunci/filter, atau unggah arsip baru.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if daftar.pages > 1 %}
+    <div class="pagination">
+      {% if daftar.has_prev %}
+        <a href="{{ url_for('berkas.index', halaman=daftar.prev_num, q=filter_data.q, kategori_id=filter_data.kategori_id, tipe_file=filter_data.tipe_file, status_privasi=filter_data.status_privasi) }}">Sebelumnya</a>
+      {% else %}
+        <span class="nonaktif">Sebelumnya</span>
+      {% endif %}
+      <span class="aktif">{{ daftar.page }} / {{ daftar.pages }}</span>
+      {% if daftar.has_next %}
+        <a href="{{ url_for('berkas.index', halaman=daftar.next_num, q=filter_data.q, kategori_id=filter_data.kategori_id, tipe_file=filter_data.tipe_file, status_privasi=filter_data.status_privasi) }}">Berikutnya</a>
+      {% else %}
+        <span class="nonaktif">Berikutnya</span>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

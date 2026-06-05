@@ -1,0 +1,512 @@
+/* ============================================================
+   Gonanku - komponen.css
+   Komponen UI dapat dipakai ulang: button, alert, form input,
+   page header, kartu, badge, tabel, empty/loading state, chip, pagination.
+   Dipisah dari base.css agar file tetap ≤400 baris dan modular.
+   ============================================================ */
+
+/* ── Buttons ── */
+.tombol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
+}
+
+.tombol-utama {
+  background: linear-gradient(135deg, #3B82F6, #2563EB);
+  color: var(--putih);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.25);
+}
+.tombol-utama:hover {
+  background: linear-gradient(135deg, #60A5FA, #3B82F6);
+  color: var(--putih);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.tombol-sekunder {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--teks-utama);
+  backdrop-filter: var(--glass-blur);
+}
+.tombol-sekunder:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  color: var(--teks-utama);
+}
+
+.tombol-bahaya {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  color: var(--bahaya);
+}
+.tombol-bahaya:hover {
+  background: rgba(248, 113, 113, 0.2);
+  color: #FCA5A5;
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.tombol-blok { width: 100%; }
+
+/* ── Icon button ── */
+.tombol-ikon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--teks-sekunder);
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.2s ease;
+  backdrop-filter: var(--glass-blur);
+}
+.tombol-ikon:hover {
+  color: var(--teks-utama);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+}
+
+/* ── Alerts ── */
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-bottom: 14px;
+  border: 1px solid transparent;
+  backdrop-filter: var(--glass-blur);
+}
+.alert-sukses {
+  background: var(--sukses-lembut);
+  border-color: rgba(52, 211, 153, 0.3);
+  color: var(--sukses);
+}
+.alert-peringatan {
+  background: var(--peringatan-lembut);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: var(--peringatan);
+}
+.alert-bahaya {
+  background: var(--bahaya-lembut);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: var(--bahaya);
+}
+
+/* ── Forms (base widgets) ── */
+.kolom-form { margin-bottom: 16px; }
+.label-form {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--teks-sekunder);
+  margin-bottom: 6px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.input-form {
+  width: 100%;
+  padding: 11px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--teks-utama);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  backdrop-filter: var(--glass-blur);
+  transition: all 0.2s ease;
+}
+.input-form::placeholder { color: var(--teks-lembut); }
+.input-form:focus {
+  outline: none;
+  border-color: var(--aksen);
+  box-shadow: 0 0 0 3px var(--aksen-glow);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+textarea.input-form {
+  resize: vertical;
+  min-height: 80px;
+}
+
+select.input-form {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%2394A3B8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: right 14px center;
+  background-size: 10px 6px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+}
+select.input-form option {
+  background: #0F172A;
+  color: var(--teks-utama);
+}
+
+/* ── Page header ── */
+.header-halaman {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.header-halaman h1 {
+  font-size: 26px;
+  margin-bottom: 4px;
+  background: var(--header-gradien, linear-gradient(135deg, #E8EDF4, #BAE6FD));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header-halaman .subjudul {
+  color: var(--teks-sekunder);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ── Cards (Glass) ── */
+.kartu {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--bayang-kartu);
+  transition: all 0.25s ease;
+}
+.kartu:hover {
+  border-color: var(--glass-border-hover);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.kartu-isi { padding: 22px; }
+
+.kartu-judul {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--teks-utama);
+}
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+}
+.badge-netral { background: var(--glass-bg); color: var(--teks-sekunder); border: 1px solid var(--glass-border); }
+.badge-info { background: rgba(56, 189, 248, 0.15); color: var(--aksen); border: 1px solid rgba(56, 189, 248, 0.2); }
+.badge-sukses { background: var(--sukses-lembut); color: var(--sukses); }
+.badge-peringatan { background: var(--peringatan-lembut); color: var(--peringatan); }
+.badge-bahaya { background: var(--bahaya-lembut); color: var(--bahaya); }
+
+.kode-arsip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--teks-lembut);
+}
+
+/* ── Tables ── */
+.tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.tabel th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--teks-lembut);
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--glass-border);
+}
+.tabel td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--teks-utama);
+  vertical-align: middle;
+}
+.tabel tbody tr {
+  transition: background 0.15s ease;
+}
+.tabel tbody tr:hover {
+  background: var(--glass-bg-hover);
+}
+.tabel tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.aksi-baris {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.tautan-aksi {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--aksen);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+.tautan-aksi:hover { color: var(--aksen-hover); }
+.tautan-aksi.bahaya { color: var(--bahaya); }
+.tautan-aksi.bahaya:hover { color: #FCA5A5; }
+
+/* ── Empty / Loading states ── */
+.kondisi-kosong {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--teks-sekunder);
+}
+.kondisi-kosong .ikon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 14px;
+  border-radius: var(--radius-md);
+  background: rgba(56, 189, 248, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--aksen);
+  font-size: 24px;
+  font-weight: 700;
+}
+.kondisi-kosong h3 {
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.pemuat {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--glass-border);
+  border-top-color: var(--aksen);
+  border-radius: 50%;
+  animation: putar 0.7s linear infinite;
+  vertical-align: middle;
+}
+@keyframes putar {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Chips ── */
+.daftar-chip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--teks-sekunder);
+  transition: all 0.15s ease;
+}
+.chip:hover {
+  background: var(--glass-bg-hover);
+  color: var(--teks-utama);
+}
+
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 18px;
+  justify-content: flex-end;
+}
+.pagination a,
+.pagination span {
+  padding: 6px 12px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--teks-utama);
+  background: var(--glass-bg);
+  transition: all 0.15s ease;
+}
+.pagination a:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+}
+.pagination .aktif {
+  background: linear-gradient(135deg, #3B82F6, #2563EB);
+  color: var(--putih);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+.pagination .nonaktif {
+  color: var(--teks-lembut);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ── Crop Modal ── */
+.crop-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.crop-modal-overlay.aktif {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.crop-modal {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--bayang-kartu);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  overflow: hidden;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+.crop-modal-overlay.aktif .crop-modal {
+  transform: scale(1);
+}
+
+.crop-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.crop-modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--teks-utama);
+}
+
+.crop-modal-tutup {
+  background: none;
+  border: none;
+  color: var(--teks-sekunder);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.crop-modal-tutup:hover {
+  color: var(--teks-utama);
+}
+
+.crop-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  min-height: 280px;
+}
+
+.crop-wadah-gambar {
+  width: 100%;
+  max-height: 350px;
+  background: #0f172a;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.crop-wadah-gambar img {
+  display: block;
+  max-width: 100%;
+  max-height: 350px;
+}
+
+.crop-modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.crop-kontrol-grup {
+  display: flex;
+  gap: 8px;
+}
+
+.crop-tombol-aksi {
+  display: flex;
+  gap: 10px;
+}
+
+/* Styling for Cropper circle preview helper */
+.cropper-view-box,
+.cropper-face {
+  border-radius: 50%;
+}
+.cropper-line,
+.cropper-point {
+  opacity: 0.8;
+}

@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+
+{% block judul %}Edit {{ berkas.judul }} - Gonanku{% endblock %}
+{% block topbar_judul %}Edit Arsip{% endblock %}
+{% block css_tambahan %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" />
+{% endblock %}
+
+{% block konten %}
+  <div class="header-halaman">
+    <div>
+      <h1>Edit Metadata</h1>
+      <p class="subjudul"><span class="kode-arsip">{{ berkas.kode_arsip }}</span> · {{ berkas.nama_file_asli }}</p>
+    </div>
+  </div>
+
+  <div class="kartu form-kartu">
+    <div class="kartu-isi">
+      <form method="post" action="{{ url_for('berkas.update', berkas_id=berkas.id) }}">
+        <div class="kolom-form">
+          <label class="label-form" for="judul">Judul</label>
+          <input class="input-form" type="text" id="judul" name="judul" value="{{ berkas.judul }}" required />
+        </div>
+
+        <div class="baris-form">
+          <div class="kolom-form">
+            <label class="label-form" for="kategori_id">Kategori</label>
+            <select class="input-form" id="kategori_id" name="kategori_id">
+              <option value="">— Tanpa kategori —</option>
+              {% for k in kategori %}
+                <option value="{{ k.id }}" {% if berkas.kategori_id == k.id %}selected{% endif %}>{{ k.nama }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="kolom-form">
+            <label class="label-form" for="status_privasi">Status Privasi</label>
+            <select class="input-form" id="status_privasi" name="status_privasi">
+              {% for s in status_privasi %}
+                <option value="{{ s }}" {% if berkas.status_privasi == s %}selected{% endif %}>{{ s | capitalize }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="baris-form">
+          <div class="kolom-form">
+            <label class="label-form" for="tanggal_momen">Tanggal Momen</label>
+            <input class="input-form" type="date" id="tanggal_momen" name="tanggal_momen"
+                   value="{{ berkas.tanggal_momen.isoformat() if berkas.tanggal_momen else '' }}" />
+          </div>
+          <div class="kolom-form">
+            <label class="label-form" for="tag">Tag (pisahkan dengan koma)</label>
+            <input class="input-form" type="text" id="tag" name="tag" value="{{ tag_teks }}" />
+          </div>
+        </div>
+
+        <div class="kolom-form">
+          <label class="label-form" for="deskripsi">Deskripsi</label>
+          <textarea class="input-form" id="deskripsi" name="deskripsi">{{ berkas.deskripsi or '' }}</textarea>
+        </div>
+
+        <div class="aksi-form">
+          <button class="tombol tombol-utama" type="submit">Simpan Perubahan</button>
+          <a class="tombol tombol-sekunder" href="{{ url_for('berkas.detail', berkas_id=berkas.id) }}">Batal</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block judul %}Sampah - Gonanku{% endblock %}
+{% block topbar_judul %}Sampah Arsip{% endblock %}
+{% block css_tambahan %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/berkas.css') }}" />
+{% endblock %}
+
+{% block konten %}
+  <div class="header-halaman">
+    <div>
+      <h1>Sampah</h1>
+      <p class="subjudul">Berkas yang dihapus dapat dipulihkan kembali.</p>
+    </div>
+    <a class="tombol tombol-sekunder" href="{{ url_for('berkas.index') }}">Kembali ke Arsip</a>
+  </div>
+
+  <div class="kartu">
+    {% if daftar %}
+      <table class="tabel">
+        <thead>
+          <tr>
+            <th>Judul</th>
+            <th>Tipe</th>
+            <th>Ukuran</th>
+            <th>Dihapus Pada</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in daftar %}
+            <tr>
+              <td>
+                <div class="sel-judul">
+                  <span class="nama">{{ b.judul }}</span>
+                  <span class="kode-arsip">{{ b.kode_arsip }}</span>
+                </div>
+              </td>
+              <td style="text-transform: capitalize;">{{ b.tipe_file }}</td>
+              <td>{{ b.ukuran_file | ukuran }}</td>
+              <td>{{ b.dihapus_pada | tanggal_jam }}</td>
+              <td>
+                <form method="post" action="{{ url_for('berkas.pulihkan', berkas_id=b.id) }}">
+                  <button class="tautan-aksi" type="submit">Pulihkan</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="kondisi-kosong">
+        <div class="ikon">✓</div>
+        <h3>Sampah kosong</h3>
+        <p>Tidak ada berkas yang dihapus.</p>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

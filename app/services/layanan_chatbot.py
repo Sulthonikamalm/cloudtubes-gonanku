@@ -1,0 +1,232 @@
+"""Chatbot pencarian arsip. Hanya menjawab berdasarkan hasil database.
+
+Alur: baca intent (Groq) -> cari di database -> susun jawaban (Groq).
+Jika Groq tidak tersedia, dipakai fallback pencarian kata kunci sederhana
+agar fitur tetap berjalan saat demo tanpa API key.
+"""
+
+from app.extensions import db
+from app.models import RiwayatChat
+from app.services import layanan_groq, layanan_pencarian, layanan_log
+from app.utils.format_tanggal import format_tanggal
+
+_BATAS_HASIL = 10
+_STOPWORD = {
+    "yang", "dan", "atau", "saya", "aku", "apa", "saja", "ada", "di", "ke",
+    "dari", "untuk", "tentang", "cari", "carikan", "tampilkan", "semua",
+    "ini", "itu", "pada", "dengan", "adakah", "tolong", "mohon",
+    "mana", "gimana", "bagaimana", "apakah", "berapa", "kapan", "bisa",
+    "file", "arsip", "berkas", "dong", "deh", "kan", "nih", "tuh",
+    "lihat", "lihatkan", "kasih", "minta", "gak", "tidak", "belum",
+    "sudah", "lagi", "juga", "masih", "punya", "pernah", "kamu",
+}
+
+# Kata-kata yang menandai sapaan/ucapan terima kasih (fallback lokal saat Groq mati).
+_KATA_SAPAAN = {
+    "halo", "hallo", "hai", "hi", "hello", "hey", "hei",
+    "pagi", "siang", "sore", "malam", "assalamualaikum", "assalamu'alaikum",
+    "thanks", "thank", "makasih", "trims",
+}
+_FRASE_TERIMA_KASIH = ("terima kasih", "terimakasih", "thank you")
+_FRASE_BANTUAN = (
+    "apa yang bisa", "bisa apa", "fitur apa", "cara pakai", "cara menggunakan",
+    "bagaimana cara", "kamu siapa", "siapa kamu", "kamu bisa apa",
+    "help", "bantuan",
+)
+
+
+def proses_pertanyaan_chatbot(pengguna_id, pertanyaan):
+    """Proses satu pertanyaan dan kembalikan dict {jawaban, berkas}."""
+    pertanyaan = (pertanyaan or "").strip()
+    if not pertanyaan:
+        return {"jawaban": "Silakan tulis pertanyaan terlebih dahulu.", "berkas": []}
+
+    intent = _ekstrak_intent(pertanyaan)
+    jenis = (intent.get("jenis_intent") or "").lower()
+
+    # Tangani sapaan/bantuan/tidak_jelas SEBELUM hit database.
+    # Tidak perlu cari di DB dan tidak boleh kembalikan "tidak ditemukan".
+    if jenis == "sapaan":
+        jawaban = _jawaban_sapaan()
+        _simpan_riwayat(pengguna_id, pertanyaan, jawaban, [])
+        return {"jawaban": jawaban, "berkas": []}
+
+    if jenis == "bantuan":
+        jawaban = _jawaban_bantuan()
+        _simpan_riwayat(pengguna_id, pertanyaan, jawaban, [])
+        return {"jawaban": jawaban, "berkas": []}
+
+    if jenis == "tidak_jelas" and not intent.get("kata_kunci"):
+        jawaban = _jawaban_tidak_jelas()
+        _simpan_riwayat(pengguna_id, pertanyaan, jawaban, [])
+        return {"jawaban": jawaban, "berkas": []}
+
+    # Alur pencarian normal
+    hasil = layanan_pencarian.cari_arsip_berdasarkan_intent(
+        pengguna_id, intent, _BATAS_HASIL
+    )
+
+    if not hasil:
+        kata = intent.get("kata_kunci") or []
+        saran = ""
+        if kata:
+            saran = (
+                f" Kata kunci yang dicari: {', '.join(kata)}. "
+                "Coba:\n• Gunakan kata kunci yang lebih umum atau singkat\n"
+                "• Periksa ejaan kata kunci\n"
+                "• Hapus filter tanggal jika menggunakan rentang waktu\n"
+                "• Pastikan file sudah pernah diunggah ke Gonanku"
+            )
+        jawaban = (
+            "Maaf, arsip yang kamu cari tidak ditemukan di Gonanku."
+            + saran
+        )
+    else:
+        jawaban = _susun_jawaban(pertanyaan, hasil)
+
+    _simpan_riwayat(pengguna_id, pertanyaan, jawaban, hasil)
+    return {"jawaban": jawaban, "berkas": hasil}
+
+
+def _jawaban_sapaan():
+    return (
+        "Halo! 👋 Aku Gonanku, asisten pencari arsip pribadimu. "
+        "Coba tanyakan sesuatu seperti \"tampilkan bukti pembayaran\" "
+        "atau \"cari foto wisuda\"."
+    )
+
+
+def _jawaban_bantuan():
+    return (
+        "Aku membantumu menemukan file di vault Gonanku. 🗂️ "
+        "Beberapa hal yang bisa kamu coba:\n"
+        "• 🔍 Cari berdasarkan kata kunci — \"cari dokumen kuliah\"\n"
+        "• 📸 Filter berdasarkan tipe — \"tampilkan semua foto\"\n"
+        "• 📂 Filter berdasarkan kategori — \"bukti pembayaran bulan ini\"\n"
+        "• 📅 Cari berdasarkan rentang tanggal — \"arsip di bulan juni\"\n"
+        "• 🏷️ Cari berdasarkan tag — \"file tentang skripsi\"\n\n"
+        "Kamu juga bisa menggabungkan filter, misalnya: "
+        "\"foto wisuda bulan lalu\" atau \"dokumen keuangan 2025\"."
+    )
+
+
+def _jawaban_tidak_jelas():
+    return (
+        "Maaf, aku belum paham maksudmu. Coba tulis pertanyaan pencarian, misalnya "
+        "\"cari foto wisuda\" atau \"tampilkan dokumen kuliah\"."
+    )
+
+
+def _deteksi_intent_lokal(pertanyaan):
+    """Klasifikasi cepat tanpa Groq (untuk fallback)."""
+    teks = pertanyaan.lower().strip(" !?.,")
+    if teks in _KATA_SAPAAN or any(f in teks for f in _FRASE_TERIMA_KASIH):
+        return "sapaan"
+    # Sapaan multi-kata pendek mis. "selamat pagi", "hai gonanku"
+    kata_awal = teks.split()
+    if kata_awal and kata_awal[0] in _KATA_SAPAAN and len(kata_awal) <= 3:
+        return "sapaan"
+    if any(f in teks for f in _FRASE_BANTUAN):
+        return "bantuan"
+    return "pencarian"
+
+
+def _ekstrak_intent(pertanyaan):
+    """Coba Groq untuk intent; fallback ke deteksi lokal bila Groq gagal."""
+    try:
+        return layanan_groq.baca_intent_pertanyaan(pertanyaan)
+    except layanan_groq.GagalGroq:
+        jenis_lokal = _deteksi_intent_lokal(pertanyaan)
+        return {
+            "jenis_intent": jenis_lokal,
+            "kata_kunci": _kata_kunci_sederhana(pertanyaan) if jenis_lokal == "pencarian" else [],
+            "tanggal_mulai": None,
+            "tanggal_selesai": None,
+            "kategori": None,
+            "tipe_file": None,
+        }
+
+
+def _kata_kunci_sederhana(pertanyaan):
+    kata = [k.strip(".,?!").lower() for k in pertanyaan.split()]
+    return [k for k in kata if len(k) > 3 and k not in _STOPWORD] or [pertanyaan]
+
+
+def _susun_jawaban(pertanyaan, hasil):
+    ringkasan = _ringkas_hasil(hasil)
+    try:
+        return layanan_groq.susun_jawaban_chatbot(pertanyaan, ringkasan)
+    except layanan_groq.GagalGroq:
+        return f"Ditemukan {len(hasil)} arsip yang relevan dengan pencarianmu."
+
+
+def _ringkas_hasil(hasil):
+    """Buat ringkasan teks daftar file untuk konteks jawaban AI.
+
+    Semakin kaya informasi yang diberikan ke AI, semakin akurat dan
+    lengkap jawaban yang dihasilkan. Sertakan semua metadata yang
+    tersedia agar AI bisa memberikan jawaban informatif.
+    """
+    baris = []
+    for i, b in enumerate(hasil, 1):
+        kategori = b.kategori.nama if b.kategori else "Tanpa kategori"
+        # Kumpulkan tag yang terkait.
+        try:
+            tag_list = [t.nama for t in b.tag.all()] if b.tag else []
+        except Exception:
+            tag_list = []
+        tag_str = ", ".join(tag_list) if tag_list else "-"
+
+        # Ambil cuplikan teks_ekstraksi jika ada (maks 200 karakter).
+        cuplikan_teks = ""
+        if b.teks_ekstraksi:
+            cuplikan_teks = b.teks_ekstraksi[:200].replace("\n", " ").strip()
+
+        bagian = (
+            f"{i}. Judul: {b.judul}\n"
+            f"   File asli: {b.nama_file_asli}\n"
+            f"   Tipe: {b.tipe_file} | Kategori: {kategori}\n"
+            f"   Tanggal momen: {format_tanggal(b.tanggal_momen)}\n"
+            f"   Upload: {format_tanggal(b.tanggal_upload)}\n"
+            f"   Tag: {tag_str}\n"
+            f"   Ringkasan AI: {b.ringkasan_ai or '-'}"
+        )
+        if cuplikan_teks:
+            bagian += f"\n   Cuplikan isi: {cuplikan_teks}"
+        if b.judul_ai and b.judul_ai != b.judul:
+            bagian += f"\n   Judul AI: {b.judul_ai}"
+
+        baris.append(bagian)
+    return "\n\n".join(baris)
+
+
+def _simpan_riwayat(pengguna_id, pertanyaan, jawaban, hasil):
+    riwayat = RiwayatChat(
+        pengguna_id=pengguna_id,
+        pertanyaan=pertanyaan,
+        jawaban=jawaban,
+        berkas_hasil=",".join(str(b.id) for b in hasil) or None,
+    )
+    db.session.add(riwayat)
+    layanan_log.catat_aktivitas(pengguna_id, "chat", f"Bertanya: {pertanyaan[:80]}")
+    db.session.commit()
+
+
+def ambil_riwayat_chat(pengguna_id, batas=30):
+    return (
+        RiwayatChat.query.filter_by(pengguna_id=pengguna_id)
+        .order_by(RiwayatChat.dibuat_pada.desc())
+        .limit(batas)
+        .all()
+    )
+
+
+def hapus_riwayat_chat(pengguna_id, riwayat_id):
+    riwayat = RiwayatChat.query.filter_by(
+        id=riwayat_id, pengguna_id=pengguna_id
+    ).first()
+    if riwayat is None:
+        return False
+    db.session.delete(riwayat)
+    db.session.commit()
+    return True

@@ -1,0 +1,29 @@
+# Secret lokal
+.env
+
+# File sementara upload (tidak boleh masuk repo)
+uploads_temp/*
+!uploads_temp/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Database lokal (dev)
+instance/
+*.sqlite3
+*.db
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# AI / Agent folders
+.claude/
+.gemini/

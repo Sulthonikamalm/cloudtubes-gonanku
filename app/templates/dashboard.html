@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+
+{% block judul %}Dashboard - Gonanku{% endblock %}
+{% block topbar_judul %}Dashboard{% endblock %}
+{% block css_tambahan %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+{% endblock %}
+
+{% block konten %}
+  <div class="header-halaman">
+    <div>
+      <h1>Dashboard Gonanku</h1>
+      <p class="subjudul">Ringkasan arsip digital pribadimu.</p>
+    </div>
+    <a class="tombol tombol-utama" href="{{ url_for('berkas.upload') }}">+ Upload Arsip</a>
+  </div>
+
+  <!-- Primary metrics -->
+  <div class="label-bagian">Ringkasan Utama</div>
+  <div class="grid-metrik">
+    <div class="metrik sorot">
+      <div class="label">Total Arsip</div>
+      <div class="angka">{{ r.total_arsip }}</div>
+    </div>
+    <div class="metrik">
+      <div class="label">Foto</div>
+      <div class="angka">{{ r.total_foto }}</div>
+    </div>
+    <div class="metrik">
+      <div class="label">Video</div>
+      <div class="angka">{{ r.total_video }}</div>
+    </div>
+    <div class="metrik">
+      <div class="label">Dokumen</div>
+      <div class="angka">{{ r.total_dokumen }}</div>
+    </div>
+  </div>
+
+  <!-- Secondary metrics -->
+  <div class="label-bagian">Detail Arsip</div>
+  <div class="grid-metrik">
+    <div class="metrik">
+      <div class="label">Audio</div>
+      <div class="angka">{{ r.total_audio }}</div>
+    </div>
+    <div class="metrik">
+      <div class="label">Screenshot</div>
+      <div class="angka">{{ r.total_screenshot }}</div>
+    </div>
+    <div class="metrik">
+      <div class="label">Total Ukuran</div>
+      <div class="angka" style="font-size: 24px;">{{ r.total_ukuran | ukuran }}</div>
+    </div>
+    <div class="metrik">
+      <div class="label">Upload Bulan Ini</div>
+      <div class="angka">{{ r.upload_bulan_ini }}<span class="satuan">/ hari ini {{ r.upload_hari_ini }}</span></div>
+    </div>
+  </div>
+
+  <!-- Monitoring metrics -->
+  <div class="label-bagian">Pemantauan</div>
+  <div class="grid-metrik">
+    <div class="metrik peringatan">
+      <div class="label">File Sensitif</div>
+      <div class="angka">{{ r.berkas_sensitif }}</div>
+    </div>
+    <div class="metrik">
+      <div class="label">Belum Dikategorikan</div>
+      <div class="angka">{{ r.belum_dikategorikan }}</div>
+    </div>
+    <div class="metrik sukses">
+      <div class="label">Diproses AI</div>
+      <div class="angka">{{ r.diproses_ai }}</div>
+    </div>
+    <div class="metrik bahaya">
+      <div class="label">AI Gagal</div>
+      <div class="angka">{{ r.gagal_ai }}</div>
+    </div>
+  </div>
+
+  <!-- Content area -->
+  <div class="grid-konten" style="margin-top: 22px;">
+    <div class="kartu">
+      <div class="kartu-isi">
+        <div class="kartu-judul">Kategori Terbanyak</div>
+        {% if r.kategori_terbanyak %}
+          {% for k in r.kategori_terbanyak %}
+            <div class="baris-kategori">
+              <span>{{ k.nama }}</span>
+              <span class="badge badge-info">{{ k.jumlah }} berkas</span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="subjudul">Belum ada kategori dengan berkas.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="kartu">
+      <div class="kartu-isi">
+        <div class="kartu-judul">Komposisi Tipe File</div>
+        {% set total = r.total_arsip if r.total_arsip > 0 else 1 %}
+        {% for tipe in ['foto', 'video', 'dokumen', 'audio', 'screenshot', 'lainnya'] %}
+          {% set jumlah = r.komposisi_tipe.get(tipe, 0) %}
+          <div class="baris-komposisi">
+            <span class="nama-tipe">{{ tipe }}</span>
+            <span class="bar-luar"><span class="bar-dalam" style="width: {{ (jumlah / total * 100) | round(0, 'floor') }}%;"></span></span>
+            <span class="nilai">{{ jumlah }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="kartu">
+      <div class="kartu-isi">
+        <div class="kartu-judul">
+          File Terbaru
+          <a class="tautan-aksi" href="{{ url_for('berkas.index') }}">Lihat semua</a>
+        </div>
+        {% if r.berkas_terbaru %}
+          {% for b in r.berkas_terbaru %}
+            <div class="baris-ringkas">
+              <div>
+                <a class="judul" href="{{ url_for('berkas.detail', berkas_id=b.id) }}">{{ b.judul }}</a>
+                <div class="meta">{{ b.tipe_file }} · {{ b.ukuran_file | ukuran }} · {{ b.tanggal_upload | tanggal }}</div>
+              </div>
+              <span class="kode-arsip">{{ b.kode_arsip }}</span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="kondisi-kosong">
+            <div class="ikon">+</div>
+            <h3>Belum ada arsip</h3>
+            <p>Mulai dengan mengunggah file pertamamu.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="kartu">
+      <div class="kartu-isi">
+        <div class="kartu-judul">
+          Aktivitas Terbaru
+          <a class="tautan-aksi" href="{{ url_for('aktivitas.index') }}">Lihat semua</a>
+        </div>
+        {% if r.aktivitas_terbaru %}
+          {% for a in r.aktivitas_terbaru %}
+            <div class="baris-ringkas">
+              <div style="display:flex; gap:10px;">
+                <span class="titik-aktivitas"></span>
+                <div>
+                  <div class="judul" style="text-transform: capitalize;">{{ a.aksi | replace('_', ' ') }}</div>
+                  <div class="meta">{{ a.keterangan }}</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="meta">{{ a.dibuat_pada | tanggal_jam }}</span>
+                <form method="post" action="{{ url_for('aktivitas.hapus', log_id=a.id) }}"
+                      onsubmit="return confirm('Hapus entri aktivitas ini?');" style="display:inline;">
+                  <button type="submit" class="tautan-aksi bahaya" title="Hapus entri ini"
+                          style="display:inline-flex; align-items:center;">
+                    <i class="ri-close-line" style="font-size:14px;"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="subjudul">Belum ada aktivitas tercatat.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js_tambahan %}
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

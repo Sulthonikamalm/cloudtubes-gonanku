@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+
+{% block judul %}Upload Arsip - Gonanku{% endblock %}
+{% block topbar_judul %}Upload Arsip{% endblock %}
+{% block css_tambahan %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" />
+{% endblock %}
+
+{% block konten %}
+  <div class="header-halaman">
+    <div>
+      <h1>Upload Arsip</h1>
+      <p class="subjudul">Simpan file pribadimu dengan aman ke Gonanku.</p>
+    </div>
+  </div>
+
+  <div class="kartu form-kartu">
+    <div class="kartu-isi">
+      <div class="catatan-privasi">
+        File akan dikirim ke Telegram private channel, sementara Gonanku menyimpan
+        metadata agar arsip mudah dicari kembali. Maks {{ config.MAX_UPLOAD_MB }} MB per file ·
+        maks <strong>{{ config.BATAS_UPLOAD_FOTO }} foto/screenshot</strong> atau
+        <strong>{{ config.BATAS_UPLOAD_DOKUMEN }} dokumen</strong> per upload.
+      </div>
+
+      <form method="post" enctype="multipart/form-data" id="form-upload">
+        <div class="area-dropzone" id="dropzone">
+          <div class="ikon-unggah">↑</div>
+          <div class="teks-utama">Tarik banyak file ke sini atau klik untuk memilih</div>
+          <div class="teks-bantu">
+            Boleh memilih banyak sekaligus · Foto, video, dokumen, audio · maks {{ config.MAX_UPLOAD_MB }} MB per file
+          </div>
+          <input type="file" name="files" id="input-file" multiple hidden required />
+        </div>
+
+        <!-- Daftar preview file (multi) -->
+        <div class="daftar-preview" id="daftar-preview" hidden>
+          <div class="daftar-preview-header">
+            <span class="judul-preview">File terpilih (<span id="jumlah-preview">0</span>)</span>
+            <button type="button" class="tautan-aksi bahaya" id="bersihkan-preview">Bersihkan</button>
+          </div>
+          <ul class="list-preview" id="list-preview"></ul>
+          <div class="ringkasan-preview" id="ringkasan-preview"></div>
+        </div>
+
+        <div class="bantuan-form" style="margin-top: 14px;">
+          Metadata di bawah berlaku untuk <strong>semua file</strong> dalam batch ini.
+          Kosongkan judul/tag/deskripsi agar AI mengisi otomatis per file.
+        </div>
+
+        <div class="baris-form" style="margin-top: 18px;">
+          <div class="kolom-form">
+            <label class="label-form" for="judul">Judul (opsional)</label>
+            <input class="input-form" type="text" id="judul" name="judul"
+                   value="{{ form.judul or '' }}" placeholder="Kosongkan = AI/nama file (disarankan untuk batch)" />
+          </div>
+          <div class="kolom-form">
+            <label class="label-form" for="kategori_id">Kategori</label>
+            <select class="input-form" id="kategori_id" name="kategori_id">
+              <option value="">— Tanpa kategori —</option>
+              {% for k in kategori %}
+                <option value="{{ k.id }}" {% if form.kategori_id == k.id|string %}selected{% endif %}>{{ k.nama }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="baris-form">
+          <div class="kolom-form">
+            <label class="label-form" for="tanggal_momen">Tanggal Momen</label>
+            <input class="input-form" type="date" id="tanggal_momen" name="tanggal_momen"
+                   value="{{ form.tanggal_momen or '' }}" />
+          </div>
+          <div class="kolom-form">
+            <label class="label-form" for="status_privasi">Status Privasi</label>
+            <select class="input-form" id="status_privasi" name="status_privasi">
+              {% for s in status_privasi %}
+                <option value="{{ s }}" {% if form.status_privasi == s %}selected{% endif %}>{{ s | capitalize }}</option>
+              {% endfor %}
+            </select>
+            <div class="bantuan-form">File "rahasia" tidak diproses AI otomatis.</div>
+          </div>
+        </div>
+
+        <div class="kolom-form">
+          <label class="label-form" for="tag">Tag (pisahkan dengan koma)</label>
+          <input class="input-form" type="text" id="tag" name="tag"
+                 value="{{ form.tag or '' }}" placeholder="kuliah, penting, juni-2026" />
+        </div>
+
+        <div class="kolom-form">
+          <label class="label-form" for="deskripsi">Deskripsi (opsional)</label>
+          <textarea class="input-form" id="deskripsi" name="deskripsi"
+                    placeholder="Catatan singkat tentang file ini">{{ form.deskripsi or '' }}</textarea>
+        </div>
+
+        <div class="aksi-form">
+          <button class="tombol tombol-utama" type="submit" id="tombol-upload">Upload Arsip</button>
+          <a class="tombol tombol-sekunder" href="{{ url_for('berkas.index') }}">Batal</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js_tambahan %}
+  <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

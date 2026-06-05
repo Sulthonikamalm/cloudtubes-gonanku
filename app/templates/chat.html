@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block judul %}Chatbot - Gonanku{% endblock %}
+{% block topbar_judul %}Chatbot Pencarian{% endblock %}
+{% block css_tambahan %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}" />
+{% endblock %}
+
+{% block konten %}
+  <div class="header-halaman">
+    <div>
+      <h1>Chatbot Pencarian Arsip</h1>
+      <p class="subjudul">Tanyakan dengan bahasa natural, jawaban hanya dari arsip Gonanku.</p>
+    </div>
+  </div>
+
+  <div class="tata-chat">
+    <div class="kartu panel-chat">
+      <div class="area-pesan" id="area-pesan">
+        <div class="pesan bot" id="pesan-sapaan">
+          Halo! Aku bisa membantu mencari arsipmu. Coba tanyakan sesuatu, misalnya
+          "tampilkan bukti pembayaran" atau "cari dokumen kuliah".
+        </div>
+      </div>
+      <form class="bar-input-chat" id="form-chat">
+        <input class="input-form" type="text" id="input-pertanyaan" name="pertanyaan"
+               placeholder="Tulis pertanyaanmu..." autocomplete="off" required />
+        <button class="tombol tombol-utama" type="submit" id="tombol-kirim">Kirim</button>
+      </form>
+    </div>
+
+    <div style="display: grid; gap: 16px;">
+      <div class="kartu panel-saran">
+        <div class="kartu-isi">
+          <div class="judul-saran">Contoh Pertanyaan</div>
+          <button class="saran" type="button">Tampilkan semua bukti pembayaran</button>
+          <button class="saran" type="button">Cari dokumen kuliah</button>
+          <button class="saran" type="button">Foto bulan ini</button>
+          <button class="saran" type="button">Arsip terkait tugas komputasi awan</button>
+        </div>
+      </div>
+
+      <div class="kartu">
+        <div class="kartu-isi">
+          <div class="kartu-judul">Riwayat</div>
+          {% if riwayat %}
+            {% for q in riwayat %}
+              <div class="riwayat-item">{{ q.pertanyaan }}</div>
+            {% endfor %}
+          {% else %}
+            <p class="subjudul">Belum ada riwayat pertanyaan.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js_tambahan %}
+  <script>
+    window.URL_CHAT_TANYA = "{{ url_for('chat.tanya') }}";
+  </script>
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

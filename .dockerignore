@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+*.sqlite3
+*.db
+__pycache__/
+*.pyc
+.venv/
+venv/
+uploads_temp/*
+!uploads_temp/.gitkeep
+PRD*.pdf
+PRD*.md
+.vscode/
+.idea/

@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+
+{% block judul %}{{ berkas.judul }} - Gonanku{% endblock %}
+{% block topbar_judul %}Detail Arsip{% endblock %}
+{% block css_tambahan %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/berkas.css') }}" />
+{% endblock %}
+
+{% block konten %}
+  <div class="header-halaman">
+    <div>
+      <h1>{{ berkas.judul }}</h1>
+      <p class="subjudul"><span class="kode-arsip">{{ berkas.kode_arsip }}</span> · {{ berkas.nama_file_asli }}</p>
+    </div>
+    <div class="aksi-baris">
+      <a class="tombol tombol-sekunder" href="{{ url_for('berkas.index') }}">Kembali</a>
+      <a class="tombol tombol-utama" href="{{ url_for('berkas.edit', berkas_id=berkas.id) }}">Edit</a>
+    </div>
+  </div>
+
+  <div class="grid-detail">
+    <div style="display: grid; gap: 16px;">
+      <div class="kartu">
+        <div class="kartu-isi">
+          <div class="kartu-judul">Ringkasan AI</div>
+          {% if berkas.ringkasan_ai %}
+            <div class="kotak-ringkasan">{{ berkas.ringkasan_ai }}</div>
+          {% elif berkas.status_privasi == 'rahasia' %}
+            <p class="subjudul">File rahasia tidak diproses AI otomatis. Gunakan "Regenerasi AI" jika ingin tetap memproses.</p>
+          {% elif berkas.status_ai == 'gagal' %}
+            <p class="subjudul">Pemrosesan AI gagal. Kamu bisa mencoba regenerasi metadata.</p>
+          {% else %}
+            <p class="subjudul">Belum ada ringkasan AI.</p>
+          {% endif %}
+          {% if berkas.peringatan_privasi %}
+            <div class="badge badge-peringatan" style="margin-top: 12px;">⚠ {{ berkas.peringatan_privasi }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="kartu">
+        <div class="kartu-isi">
+          <div class="kartu-judul">Informasi Berkas</div>
+          <dl class="daftar-properti">
+            <dt>Kategori</dt><dd>{{ berkas.kategori.nama if berkas.kategori else '—' }}</dd>
+            <dt>Tipe File</dt><dd style="text-transform: capitalize;">{{ berkas.tipe_file }}</dd>
+            <dt>Ukuran</dt><dd>{{ berkas.ukuran_file | ukuran }}</dd>
+            <dt>Tanggal Upload</dt><dd>{{ berkas.tanggal_upload | tanggal_jam }}</dd>
+            <dt>Tanggal Momen</dt><dd>{{ berkas.tanggal_momen | tanggal }}</dd>
+            <dt>Status AI</dt>
+            <dd>
+              {% if berkas.status_ai == 'selesai' %}<span class="badge badge-sukses">Selesai</span>
+              {% elif berkas.status_ai == 'gagal' %}<span class="badge badge-bahaya">Gagal</span>
+              {% elif berkas.status_ai == 'diproses' %}<span class="badge badge-info">Diproses</span>
+              {% else %}<span class="badge badge-netral">Menunggu</span>{% endif %}
+              {% if berkas.tingkat_kepercayaan_ai %}
+                <span class="meta" style="color: var(--teks-lembut); font-size:12px;">({{ (berkas.tingkat_kepercayaan_ai * 100) | round(0, 'floor') }}%)</span>
+              {% endif %}
+            </dd>
+            <dt>Privasi</dt>
+            <dd>
+              {% if berkas.status_privasi == 'rahasia' %}<span class="badge badge-bahaya">Rahasia</span>
+              {% elif berkas.status_privasi == 'sensitif' %}<span class="badge badge-peringatan">Sensitif</span>
+              {% elif berkas.status_privasi == 'penting' %}<span class="badge badge-info">Penting</span>
+              {% else %}<span class="badge badge-netral">Normal</span>{% endif %}
+            </dd>
+          </dl>
+
+          {% if berkas.deskripsi %}
+            <div style="margin-top: 16px;">
+              <div class="label-form">Deskripsi</div>
+              <p style="margin: 0; color: var(--teks-utama);">{{ berkas.deskripsi }}</p>
+            </div>
+          {% endif %}
+
+          <div style="margin-top: 16px;">
+            <div class="label-form">Tag</div>
+            {% set tag_list = berkas.tag.all() %}
+            {% if tag_list %}
+              <div class="daftar-chip">
+                {% for t in tag_list %}<span class="chip">{{ t.nama }}</span>{% endfor %}
+              </div>
+            {% else %}
+              <span class="subjudul">Belum ada tag.</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; gap: 16px;">
+      <div class="kartu">
+        <div class="kartu-isi">
+          <div class="kartu-judul">Aksi</div>
+          {% if tautan_telegram %}
+            <a class="tombol tombol-utama tombol-blok" style="margin-bottom: 10px;"
+               href="{{ tautan_telegram }}" target="_blank" rel="noopener">Buka di Telegram</a>
+          {% else %}
+            <button class="tombol tombol-sekunder tombol-blok" style="margin-bottom: 10px;" disabled
+                    title="Tautan tidak tersedia">Buka di Telegram</button>
+          {% endif %}
+          <form method="post" action="{{ url_for('berkas.regenerasi_ai', berkas_id=berkas.id) }}" style="margin-bottom: 10px;">
+            <button class="tombol tombol-sekunder tombol-blok" type="submit">Regenerasi Metadata AI</button>
+          </form>
+          <form method="post" action="{{ url_for('berkas.hapus', berkas_id=berkas.id) }}"
+                onsubmit="return confirm('Pindahkan berkas ini ke sampah?');">
+            <button class="tombol tombol-bahaya tombol-blok" type="submit">Hapus</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="kartu">
+        <div class="kartu-isi">
+          <div class="kartu-judul">Riwayat Berkas</div>
+          {% if log %}
+            <ul class="linimasa">
+              {% for a in log %}
+                <li>
+                  <div class="aksi">{{ a.aksi | replace('_', ' ') }}</div>
+                  <div class="waktu">{{ a.dibuat_pada | tanggal_jam }}</div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="subjudul">Belum ada aktivitas.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

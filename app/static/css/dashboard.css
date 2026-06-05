@@ -1,0 +1,166 @@
+/* Gonanku - dashboard.css : Glass-themed dashboard grid & content cards. */
+
+.label-bagian {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--teks-lembut);
+  margin: 20px 0 10px;
+}
+.label-bagian:first-of-type {
+  margin-top: 0;
+}
+
+.grid-metrik {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.metrik {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.metrik.sorot {
+  border-left: 3px solid var(--aksen);
+}
+
+.metrik .label {
+  font-size: 12px;
+  color: var(--teks-sekunder);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.metrik .angka {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--teks-utama);
+  line-height: 1.1;
+}
+
+.metrik .satuan {
+  font-size: 12px;
+  color: var(--teks-lembut);
+  margin-left: 4px;
+  font-weight: 600;
+}
+
+.metrik.peringatan .angka { color: var(--peringatan); }
+.metrik.bahaya .angka { color: var(--bahaya); }
+.metrik.sukses .angka { color: var(--sukses); }
+
+/* Content grid */
+.grid-konten {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+/* Composition bar */
+.baris-komposisi {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.baris-komposisi .nama-tipe {
+  width: 90px;
+  font-size: 13px;
+  color: var(--teks-sekunder);
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.bar-luar {
+  flex: 1;
+  height: 6px;
+  background: var(--glass-bg);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.bar-dalam {
+  height: 100%;
+  background: linear-gradient(90deg, var(--aksen), #8B5CF6);
+  border-radius: var(--radius-full);
+  transition: width 0.6s ease;
+}
+
+.baris-komposisi .nilai {
+  width: 32px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teks-utama);
+}
+
+/* Category list */
+.baris-kategori {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+.baris-kategori:last-child { border-bottom: none; }
+
+/* Recent files / activity list */
+.baris-ringkas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+.baris-ringkas:last-child { border-bottom: none; }
+
+.baris-ringkas .judul {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--teks-utama);
+}
+
+.baris-ringkas .meta {
+  font-size: 12px;
+  color: var(--teks-lembut);
+}
+
+.titik-aktivitas {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--aksen);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+@media (max-width: 1024px) {
+  .grid-metrik { grid-template-columns: repeat(2, 1fr); }
+  .grid-konten { grid-template-columns: 1fr; }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .grid-metrik { gap: 10px; }
+  .metrik { padding: 14px 16px; }
+  .metrik .angka { font-size: 24px; }
+  .label-bagian { margin: 16px 0 8px; font-size: 11px; }
+}
+
+/* Phone kecil */
+@media (max-width: 420px) {
+  .grid-metrik { grid-template-columns: 1fr; }
+  .baris-komposisi { flex-wrap: wrap; gap: 8px; }
+  .baris-komposisi .nama-tipe { width: auto; flex: 0 0 auto; }
+  .baris-ringkas { flex-wrap: wrap; gap: 6px; }
+}

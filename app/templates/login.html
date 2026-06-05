@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Masuk - Gonanku</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png', v='3') }}" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/komponen.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tema.css') }}" />
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('gonanku-tema') || 'dark';
+      if (savedTheme === 'light') {
+        document.documentElement.classList.add('tema-terang');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <div class="halaman-login">
+    <div class="toggle-login">
+      <button type="button" id="toggle-tema" class="tombol-ikon" title="Ganti Tema" aria-label="Ganti Tema">
+        <i class="ri-sun-line" id="ikon-tema"></i>
+      </button>
+    </div>
+    <div class="kartu-login">
+      <div class="login-merek">
+        <div class="wadah-logo-besar">
+          <img src="{{ url_for('static', filename='images/logo.png', v='3') }}" alt="Gonanku" class="login-logo" />
+        </div>
+        <span class="merek-judul">Gonanku</span>
+      </div>
+      <p class="login-subjudul">
+        Vault arsip digital pribadimu. Masuk untuk mengelola dan mencari kembali file pentingmu.
+      </p>
+
+      {% with pesan = get_flashed_messages(with_categories=true) %}
+        {% for kategori, teks in pesan %}
+          <div class="alert alert-{{ kategori }}">{{ teks }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="post" action="{{ url_for('auth.login') }}">
+        <div class="kolom-form">
+          <label class="label-form" for="email">Email</label>
+          <input class="input-form" type="email" id="email" name="email"
+                 placeholder="nama@email.com"
+                 value="{{ email or '' }}" required autofocus />
+        </div>
+        <div class="kolom-form">
+          <label class="label-form" for="kata_sandi">Kata Sandi</label>
+          <input class="input-form" type="password" id="kata_sandi" name="kata_sandi"
+                 placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="tombol tombol-utama tombol-blok" style="margin-top: 8px;">
+          <i class="ri-login-box-line"></i>
+          Masuk
+        </button>
+      </form>
+  </div>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

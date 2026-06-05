@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block judul %}Tag - Gonanku{% endblock %}
+{% block topbar_judul %}Tag{% endblock %}
+{% block css_tambahan %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" />
+{% endblock %}
+
+{% block konten %}
+  <div class="header-halaman">
+    <div>
+      <h1>Tag</h1>
+      <p class="subjudul">Label fleksibel untuk mempermudah pencarian arsip.</p>
+    </div>
+  </div>
+
+  <div class="kartu" style="margin-bottom: 16px;">
+    <div class="kartu-isi">
+      <form method="post" action="{{ url_for('tag.tambah') }}" class="toolbar-filter" style="margin: 0;">
+        <div class="kolom-filter tumbuh">
+          <label class="label-form">Nama Tag Baru</label>
+          <input class="input-form" type="text" name="nama" placeholder="mis. komputasi-awan" required />
+        </div>
+        <button class="tombol tombol-utama" type="submit">Tambah</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="kartu">
+    {% if daftar %}
+      <table class="tabel">
+        <thead>
+          <tr><th>Nama Tag</th><th>Dipakai</th><th style="width: 320px;">Aksi</th></tr>
+        </thead>
+        <tbody>
+          {% for t in daftar %}
+            <tr>
+              <td>
+                <form method="post" action="{{ url_for('tag.update', tag_id=t.id) }}"
+                      style="display:flex; gap:8px; align-items:center;">
+                  <input class="input-form" type="text" name="nama" value="{{ t.nama }}" style="max-width: 260px;" />
+                  <button class="tautan-aksi" type="submit">Simpan</button>
+                </form>
+              </td>
+              <td><span class="badge badge-netral">{{ jumlah_map.get(t.id, 0) }} berkas</span></td>
+              <td>
+                <form method="post" action="{{ url_for('tag.hapus', tag_id=t.id) }}"
+                      onsubmit="return confirm('Hapus tag ini?');">
+                  <button class="tautan-aksi bahaya" type="submit">Hapus</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="kondisi-kosong">
+        <div class="ikon">#</div>
+        <h3>Belum ada tag</h3>
+        <p>Tambahkan tag pertamamu di atas.</p>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

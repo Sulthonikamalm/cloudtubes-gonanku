@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block judul %}Aktivitas - Gonanku{% endblock %}
+{% block topbar_judul %}Log Aktivitas{% endblock %}
+
+{% block konten %}
+  <div class="header-halaman">
+    <div>
+      <h1>Log Aktivitas</h1>
+      <p class="subjudul">Catatan aktivitas terakhir pada akun Gonanku-mu.</p>
+    </div>
+    {% if daftar %}
+      <form method="post" action="{{ url_for('aktivitas.bersihkan') }}"
+            onsubmit="return confirm('Yakin ingin menghapus SEMUA riwayat aktivitas? Tindakan ini tidak dapat dibatalkan.');">
+        <button type="submit" class="tombol tombol-bahaya">
+          <i class="ri-delete-bin-line"></i> Bersihkan Semua
+        </button>
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="kartu">
+    {% if daftar %}
+      <table class="tabel">
+        <thead>
+          <tr>
+            <th>Aksi</th>
+            <th>Keterangan</th>
+            <th>Waktu</th>
+            <th style="width: 80px;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in daftar %}
+            <tr>
+              <td style="text-transform: capitalize;">
+                <span class="badge badge-info">{{ a.aksi | replace('_', ' ') }}</span>
+              </td>
+              <td>{{ a.keterangan or '—' }}</td>
+              <td class="meta" style="color: var(--teks-lembut);">{{ a.dibuat_pada | tanggal_jam }}</td>
+              <td>
+                <form method="post" action="{{ url_for('aktivitas.hapus', log_id=a.id) }}"
+                      onsubmit="return confirm('Hapus entri aktivitas ini?');">
+                  <button type="submit" class="tautan-aksi bahaya" title="Hapus entri ini">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="kondisi-kosong">
+        <div class="ikon">≡</div>
+        <h3>Belum ada aktivitas</h3>
+        <p>Aktivitasmu akan muncul di sini.</p>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
