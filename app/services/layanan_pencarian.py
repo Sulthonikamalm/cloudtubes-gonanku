@@ -143,43 +143,49 @@ def _jalankan_query(pengguna_id, intent, batas):
 
     # ---- Skor relevansi sederhana untuk pengurutan yang lebih cerdas ----
     # File yang cocok di judul/judul_ai lebih relevan daripada cocok di teks_ekstraksi.
+    #
+    # CATATAN PostgreSQL: SELECT DISTINCT + ORDER BY computed expression bikin
+    # error "ORDER BY expressions must appear in select list". SQLite tidak
+    # strict, tapi Supabase Postgres tolak. Solusi: HAPUS .distinct(),
+    # over-fetch hasil, lalu dedupe by id di Python (preserve order).
     if kata_kunci:
         skor_parts = []
         for kata in kata_kunci:
             pola = f"%{kata}%"
-            skor_parts.append(
-                case((Berkas.judul.ilike(pola), 4), else_=0)
-            )
-            skor_parts.append(
-                case((Berkas.judul_ai.ilike(pola), 4), else_=0)
-            )
-            skor_parts.append(
-                case((Berkas.ringkasan_ai.ilike(pola), 2), else_=0)
-            )
-            skor_parts.append(
-                case((Berkas.deskripsi.ilike(pola), 2), else_=0)
-            )
-            skor_parts.append(
-                case((Berkas.teks_ekstraksi.ilike(pola), 1), else_=0)
-            )
-            skor_parts.append(
-                case((Berkas.nama_file_asli.ilike(pola), 1), else_=0)
-            )
+            skor_parts.append(case((Berkas.judul.ilike(pola), 4), else_=0))
+            skor_parts.append(case((Berkas.judul_ai.ilike(pola), 4), else_=0))
+            skor_parts.append(case((Berkas.ringkasan_ai.ilike(pola), 2), else_=0))
+            skor_parts.append(case((Berkas.deskripsi.ilike(pola), 2), else_=0))
+            skor_parts.append(case((Berkas.teks_ekstraksi.ilike(pola), 1), else_=0))
+            skor_parts.append(case((Berkas.nama_file_asli.ilike(pola), 1), else_=0))
 
         skor_total = sum(skor_parts)
-        return (
-            query.distinct()
-            .order_by(skor_total.desc(), Berkas.tanggal_upload.desc())
-            .limit(batas)
+        rows = (
+            query.order_by(skor_total.desc(), Berkas.tanggal_upload.desc())
+            .limit(batas * 5)  # over-fetch untuk dedupe by id
             .all()
         )
+        return _dedupe_preserve_order(rows, batas)
 
-    return (
-        query.distinct()
-        .order_by(Berkas.tanggal_upload.desc())
-        .limit(batas)
+    rows = (
+        query.order_by(Berkas.tanggal_upload.desc())
+        .limit(batas * 5)
         .all()
     )
+    return _dedupe_preserve_order(rows, batas)
+
+
+def _dedupe_preserve_order(rows, batas):
+    """Hapus duplikat berdasarkan id (dari outerjoin tag) sambil pertahankan urutan."""
+    seen = set()
+    unique = []
+    for b in rows:
+        if b.id not in seen:
+            seen.add(b.id)
+            unique.append(b)
+            if len(unique) >= batas:
+                break
+    return unique
 
 
 def _baca_tanggal(teks):
