@@ -23,6 +23,7 @@ from app.services.layanan_telegram import kirim_berkas_ke_telegram, GagalKirimTe
 from app.utils.validasi_berkas import validasi_berkas, tentukan_tipe_berkas, ambil_ekstensi
 from app.utils.pembuat_kode_arsip import buat_kode_arsip
 from app.utils.hapus_file_sementara import hapus_file_sementara
+from app.utils.ekstrak_tanggal import ekstrak_tanggal_momen
 
 
 # ============================================================
@@ -157,6 +158,14 @@ def unggah_berkas(pengguna_id, file_storage, form):
         except GagalKirimTelegram as e:
             return None, str(e)
 
+        # Tanggal momen: prioritas user input -> auto-detect dari metadata file
+        # (EXIF untuk foto, PDF metadata, pola tanggal di nama file).
+        # Hasil: pertanyaan "momen tahun 2019" bisa filter berdasarkan tanggal
+        # foto diambil yang sebenarnya, bukan tanggal upload.
+        tanggal_momen_final = _baca_tanggal(form.get("tanggal_momen"))
+        if not tanggal_momen_final:
+            tanggal_momen_final = ekstrak_tanggal_momen(path_sementara, nama_asli, tipe)
+
         berkas = Berkas(
             pengguna_id=pengguna_id,
             kode_arsip=kode_arsip,
@@ -166,7 +175,7 @@ def unggah_berkas(pengguna_id, file_storage, form):
             mime_type=file_storage.mimetype,
             ukuran_file=ukuran,
             deskripsi=(form.get("deskripsi") or "").strip() or None,
-            tanggal_momen=_baca_tanggal(form.get("tanggal_momen")),
+            tanggal_momen=tanggal_momen_final,
             kategori_id=_resolusi_kategori_id(pengguna_id, form.get("kategori_id")),
             status_privasi=_validasi_privasi(form.get("status_privasi")),
             status_berkas="aktif",

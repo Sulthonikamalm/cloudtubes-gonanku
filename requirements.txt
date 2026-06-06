@@ -9,3 +9,4 @@ psycopg2-binary==2.9.9
 Werkzeug==3.0.3
 PyPDF2==3.0.1
 python-docx==1.1.2
+Pillow==11.1.0
