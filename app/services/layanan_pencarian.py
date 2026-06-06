@@ -18,6 +18,41 @@ from app.extensions import db
 from app.models import Berkas, Kategori, Tag
 from app.models.konstanta import TIPE_BERKAS
 
+# Kata generic yang akan SELALU di-skip dari kata_kunci:
+# - Tipe file: sudah jadi filter tipe_file, tidak perlu ke keyword
+# - Kata umum Indonesia: tidak punya nilai discriminasi
+# Mencegah pencarian "foto bermasker" → match semua file foto.
+_STOPWORDS = frozenset({
+    # Tipe file (sudah jadi tipe_file filter)
+    "foto", "video", "dokumen", "audio", "screenshot", "berkas", "file",
+    # Kata umum tanya
+    "saya", "aku", "ada", "tidak", "ya", "yang", "apakah", "adakah",
+    "kah", "lah", "pun", "sih", "deh",
+    # Preposisi & konjungsi
+    "yang", "dan", "atau", "di", "ke", "dari", "untuk", "tentang",
+    "pada", "dengan", "oleh", "agar", "supaya", "karena", "kalau",
+    # Verba pencarian (sudah implisit dari intent)
+    "cari", "carikan", "tampilkan", "tunjukkan", "lihat", "buka",
+    "tolong", "mohon", "minta", "ingin", "mau",
+    # Demonstrative & quantifier
+    "ini", "itu", "semua", "satu", "beberapa", "banyak", "sedikit",
+    # Common verbs
+    "menggunakan", "memakai", "pakai", "punya", "memiliki",
+})
+
+
+def _bersihkan_kata_kunci(kata_kunci):
+    """Hapus stopwords dan kata pendek dari list kata_kunci."""
+    bersih = []
+    for k in kata_kunci or []:
+        k = str(k).strip().lower()
+        # Filter kata kosong, terlalu pendek (< 3 char), atau stopword
+        if not k or len(k) < 3 or k in _STOPWORDS:
+            continue
+        if k not in bersih:
+            bersih.append(k)
+    return bersih
+
 
 def cari_arsip_berdasarkan_intent(pengguna_id, intent, batas=10):
     """Bangun query dari intent lalu kembalikan daftar berkas relevan.
@@ -92,7 +127,9 @@ def _jalankan_query(pengguna_id, intent, batas):
         Berkas.pengguna_id == pengguna_id, Berkas.dihapus_pada.is_(None)
     )
 
-    kata_kunci = intent.get("kata_kunci") or []
+    # Filter stopwords agar kata generik tidak meluas hasil ke semua file.
+    # Mis. "foto bermasker" -> ["masker"] (kata "foto" sudah jadi tipe_file).
+    kata_kunci = _bersihkan_kata_kunci(intent.get("kata_kunci") or [])
     if kata_kunci:
         kondisi = []
         for kata in kata_kunci:

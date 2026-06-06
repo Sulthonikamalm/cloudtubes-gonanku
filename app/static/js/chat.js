@@ -1,4 +1,5 @@
-// Chatbot: kirim pertanyaan ke backend dan tampilkan jawaban + kartu file.
+// Chatbot: render riwayat dari server, kirim pertanyaan baru, dan
+// tampilkan jawaban + kartu file. Riwayat tetap utuh saat refresh/pindah tab.
 (function () {
   const form = document.getElementById("form-chat");
   const input = document.getElementById("input-pertanyaan");
@@ -20,7 +21,6 @@
 
   function tambahPesanPengguna(teks) {
     area.appendChild(buatElemen("pesan pengguna", teks));
-    gulirBawah();
   }
 
   function tambahKartuFile(induk, daftar) {
@@ -63,8 +63,28 @@
     induk.appendChild(wadah);
   }
 
+  function tambahJawabanBot(jawaban, berkas) {
+    const bubble = buatElemen("pesan bot");
+    bubble.textContent = jawaban;
+    if (berkas && berkas.length) tambahKartuFile(bubble, berkas);
+    area.appendChild(bubble);
+  }
+
+  // ── Render riwayat dari server saat halaman dibuka ──
+  // window.RIWAYAT_CHAT sudah di-inject template dengan urutan lama -> baru.
+  function renderRiwayat() {
+    const riwayat = window.RIWAYAT_CHAT || [];
+    riwayat.forEach((r) => {
+      tambahPesanPengguna(r.pertanyaan);
+      tambahJawabanBot(r.jawaban || "", r.berkas);
+    });
+    gulirBawah();
+  }
+  renderRiwayat();
+
   async function kirimPertanyaan(pertanyaan) {
     tambahPesanPengguna(pertanyaan);
+    gulirBawah();
 
     const bubble = buatElemen("pesan bot");
     bubble.innerHTML = '<span class="pemuat"></span> Mencari arsip...';
