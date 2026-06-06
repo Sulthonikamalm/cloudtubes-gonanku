@@ -40,8 +40,10 @@ deploy.sh
 migrate.ps1
 migrate.sh
 
-# Skrip test ad-hoc
+# Skrip test ad-hoc (single-underscore prefix). Pola `!__*.py`
+# di bawah memastikan dunder file (__init__.py, __main__.py) TIDAK terpental.
 _*.py
+!__*.py
 
 # Migrations versions tetap di-include (perlu untuk schema reproducibility)
 # tapi __pycache__ alembic dibuang
