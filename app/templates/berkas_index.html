@@ -71,7 +71,8 @@
 
   <div class="kartu">
     {% if daftar.items %}
-      <table class="tabel">
+      <div class="tabel-wadah">
+        <table class="tabel">
         <thead>
           <tr>
             <th>Judul</th>
@@ -112,7 +113,8 @@
             </tr>
           {% endfor %}
         </tbody>
-      </table>
+        </table>
+      </div>
     {% else %}
       <div class="kondisi-kosong">
         <div class="ikon">∅</div>

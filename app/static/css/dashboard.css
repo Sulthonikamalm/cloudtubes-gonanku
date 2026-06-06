@@ -1,166 +1,296 @@
-/* Gonanku - dashboard.css : Glass-themed dashboard grid & content cards. */
+/* ============================================================
+   Gonanku - dashboard.css
+   ============================================================ */
 
+/* Hero Header */
+.header-halaman {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 28px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle background wave/glass for hero */
+.header-halaman::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 50%;
+  height: 200%;
+  background: radial-gradient(circle, var(--bg-soft) 0%, transparent 70%);
+  transform: rotate(-15deg);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.header-halaman > * {
+  position: relative;
+  z-index: 1;
+}
+
+.header-halaman h1 {
+  font-size: 28px;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.header-halaman .subjudul {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Sections */
 .label-bagian {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--teks-lembut);
-  margin: 20px 0 10px;
-}
-.label-bagian:first-of-type {
-  margin-top: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-top: 32px;
+  margin-bottom: 16px;
 }
 
+/* Metrics Grid */
 .grid-metrik {
   display: grid;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.grid-kpi {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-status {
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+}
+
+@media (max-width: 992px) {
+  .grid-kpi, .grid-status {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid-kpi, .grid-status {
+    grid-template-columns: 1fr;
+  }
 }
 
 .metrik {
   background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  padding: 18px 20px;
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--glass-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.metrik.sorot {
-  border-left: 3px solid var(--aksen);
+.metrik:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(15, 40, 84, 0.08);
+}
+
+.metrik .ikon-metrik {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 4px;
+  background: var(--bg-soft);
+  color: var(--royal-blue);
 }
 
 .metrik .label {
-  font-size: 12px;
-  color: var(--teks-sekunder);
-  margin-bottom: 6px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .metrik .angka {
   font-size: 28px;
-  font-weight: 800;
-  color: var(--teks-utama);
-  line-height: 1.1;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
 }
 
-.metrik .satuan {
+.metrik .trend {
   font-size: 12px;
-  color: var(--teks-lembut);
-  margin-left: 4px;
-  font-weight: 600;
-}
-
-.metrik.peringatan .angka { color: var(--peringatan); }
-.metrik.bahaya .angka { color: var(--bahaya); }
-.metrik.sukses .angka { color: var(--sukses); }
-
-/* Content grid */
-.grid-konten {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-top: 8px;
-}
-
-/* Composition bar */
-.baris-komposisi {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.baris-komposisi .nama-tipe {
-  width: 90px;
-  font-size: 13px;
-  color: var(--teks-sekunder);
-  text-transform: capitalize;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.bar-luar {
-  flex: 1;
-  height: 6px;
-  background: var(--glass-bg);
-  border-radius: var(--radius-full);
-  overflow: hidden;
+.metrik .trend.naik { color: var(--success); }
+.metrik .trend.turun { color: var(--danger); }
+.metrik .trend.netral { color: var(--text-muted); }
+
+/* Custom status colors */
+.metrik.status-peringatan .ikon-metrik { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+.metrik.status-bahaya .ikon-metrik { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.metrik.status-sukses .ikon-metrik { background: rgba(22, 163, 74, 0.1); color: var(--success); }
+
+/* Charts Grid */
+.grid-chart {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
 }
 
-.bar-dalam {
+@media (max-width: 992px) {
+  .grid-chart { grid-template-columns: 1fr; }
+}
+
+.chart-wadah {
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-top: 20px;
+  position: relative;
+}
+
+/* Simple CSS Line Chart / Area Chart mockup styles */
+.mock-area-chart {
+  width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, var(--aksen), #8B5CF6);
-  border-radius: var(--radius-full);
-  transition: width 0.6s ease;
-}
-
-.baris-komposisi .nilai {
-  width: 32px;
-  text-align: right;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--teks-utama);
-}
-
-/* Category list */
-.baris-kategori {
+  background: linear-gradient(to top, var(--bg-soft), transparent);
+  border-bottom: 2px solid var(--royal-blue);
+  position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--glass-border);
 }
-.baris-kategori:last-child { border-bottom: none; }
 
-/* Recent files / activity list */
-.baris-ringkas {
+.mock-bar {
+  width: 30px;
+  background: var(--soft-blue);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.mock-bar:hover {
+  background: var(--royal-blue);
+}
+
+.mock-horizontal-bar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--glass-border);
-}
-.baris-ringkas:last-child { border-bottom: none; }
-
-.baris-ringkas .judul {
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--teks-utama);
+  width: 100%;
 }
 
-.baris-ringkas .meta {
-  font-size: 12px;
-  color: var(--teks-lembut);
+.h-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+.h-bar-label { width: 100px; font-size: 13px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.h-bar-track { flex: 1; height: 8px; background: var(--bg-soft); border-radius: 4px; overflow: hidden; }
+.h-bar-fill { height: 100%; background: var(--royal-blue); border-radius: 4px; }
+.h-bar-value { width: 60px; font-size: 13px; font-weight: 600; text-align: right; color: var(--text-primary); }
 
-.titik-aktivitas {
-  width: 8px;
-  height: 8px;
+.mock-donut {
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
-  background: var(--aksen);
+  background: conic-gradient(
+    var(--royal-blue) 0% 50%,
+    var(--soft-blue) 50% 80%,
+    var(--ice-blue) 80% 95%,
+    var(--bg-soft) 95% 100%
+  );
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mock-donut::after {
+  content: "";
+  width: 90px;
+  height: 90px;
+  background: var(--bg-panel-solid);
+  border-radius: 50%;
+}
+
+/* Lists (Activities, Insights) */
+.list-aktivitas {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.item-aktivitas {
+  display: flex;
+  gap: 16px;
+}
+
+.ikon-aktivitas {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-soft);
+  color: var(--royal-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
   flex-shrink: 0;
-  margin-top: 6px;
 }
 
-@media (max-width: 1024px) {
-  .grid-metrik { grid-template-columns: repeat(2, 1fr); }
-  .grid-konten { grid-template-columns: 1fr; }
+.info-aktivitas {
+  flex: 1;
 }
 
-/* Mobile */
-@media (max-width: 600px) {
-  .grid-metrik { gap: 10px; }
-  .metrik { padding: 14px 16px; }
-  .metrik .angka { font-size: 24px; }
-  .label-bagian { margin: 16px 0 8px; font-size: 11px; }
+.info-aktivitas .judul {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-/* Phone kecil */
-@media (max-width: 420px) {
-  .grid-metrik { grid-template-columns: 1fr; }
-  .baris-komposisi { flex-wrap: wrap; gap: 8px; }
-  .baris-komposisi .nama-tipe { width: auto; flex: 0 0 auto; }
-  .baris-ringkas { flex-wrap: wrap; gap: 6px; }
+.info-aktivitas .desc {
+  font-size: 13px;
+  color: var(--text-secondary);
 }
+
+.waktu-aktivitas {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Panels Area */
+.grid-panel {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 860px) {
+  .grid-panel { grid-template-columns: 1fr; }
+}
+
+

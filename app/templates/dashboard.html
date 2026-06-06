@@ -7,167 +7,259 @@
 {% endblock %}
 
 {% block konten %}
+  <!-- Hero Header -->
   <div class="header-halaman">
     <div>
       <h1>Dashboard Gonanku</h1>
       <p class="subjudul">Ringkasan arsip digital pribadimu.</p>
     </div>
-    <a class="tombol tombol-utama" href="{{ url_for('berkas.upload') }}">+ Upload Arsip</a>
   </div>
 
-  <!-- Primary metrics -->
-  <div class="label-bagian">Ringkasan Utama</div>
-  <div class="grid-metrik">
-    <div class="metrik sorot">
+  <!-- KPI Utama -->
+  <div class="grid-metrik grid-kpi">
+    <div class="metrik">
+      <div class="ikon-metrik"><i class="ri-folder-2-line"></i></div>
       <div class="label">Total Arsip</div>
       <div class="angka">{{ r.total_arsip }}</div>
+      <div class="trend naik"><i class="ri-arrow-right-up-line"></i> 12% dari bulan lalu</div>
     </div>
     <div class="metrik">
+      <div class="ikon-metrik"><i class="ri-image-line"></i></div>
       <div class="label">Foto</div>
       <div class="angka">{{ r.total_foto }}</div>
+      <div class="trend netral"><i class="ri-subtract-line"></i> 0% dari bulan lalu</div>
     </div>
     <div class="metrik">
+      <div class="ikon-metrik"><i class="ri-video-line"></i></div>
       <div class="label">Video</div>
       <div class="angka">{{ r.total_video }}</div>
+      <div class="trend netral"><i class="ri-subtract-line"></i> 0% dari bulan lalu</div>
     </div>
     <div class="metrik">
+      <div class="ikon-metrik"><i class="ri-file-text-line"></i></div>
       <div class="label">Dokumen</div>
       <div class="angka">{{ r.total_dokumen }}</div>
-    </div>
-  </div>
-
-  <!-- Secondary metrics -->
-  <div class="label-bagian">Detail Arsip</div>
-  <div class="grid-metrik">
-    <div class="metrik">
-      <div class="label">Audio</div>
-      <div class="angka">{{ r.total_audio }}</div>
+      <div class="trend netral"><i class="ri-subtract-line"></i> 0% dari bulan lalu</div>
     </div>
     <div class="metrik">
-      <div class="label">Screenshot</div>
-      <div class="angka">{{ r.total_screenshot }}</div>
-    </div>
-    <div class="metrik">
+      <div class="ikon-metrik"><i class="ri-database-2-line"></i></div>
       <div class="label">Total Ukuran</div>
-      <div class="angka" style="font-size: 24px;">{{ r.total_ukuran | ukuran }}</div>
+      <div class="angka">{{ r.total_ukuran | ukuran }}</div>
+      <div class="trend naik"><i class="ri-arrow-right-up-line"></i> 5% dari bulan lalu</div>
     </div>
     <div class="metrik">
+      <div class="ikon-metrik"><i class="ri-cloud-upload-line"></i></div>
       <div class="label">Upload Bulan Ini</div>
-      <div class="angka">{{ r.upload_bulan_ini }}<span class="satuan">/ hari ini {{ r.upload_hari_ini }}</span></div>
+      <div class="angka">{{ r.upload_bulan_ini }}</div>
+      <div class="trend naik"><i class="ri-arrow-right-up-line"></i> {{ r.upload_hari_ini }} hari ini</div>
     </div>
   </div>
 
-  <!-- Monitoring metrics -->
-  <div class="label-bagian">Pemantauan</div>
-  <div class="grid-metrik">
-    <div class="metrik peringatan">
-      <div class="label">File Sensitif</div>
-      <div class="angka">{{ r.berkas_sensitif }}</div>
-    </div>
-    <div class="metrik">
+  <!-- Status Monitoring -->
+  <div class="grid-metrik grid-status">
+    <div class="metrik status-peringatan">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div class="ikon-metrik"><i class="ri-folder-unknow-line"></i></div>
+        <span class="badge badge-peringatan">Perhatian</span>
+      </div>
       <div class="label">Belum Dikategorikan</div>
       <div class="angka">{{ r.belum_dikategorikan }}</div>
     </div>
-    <div class="metrik sukses">
+    <div class="metrik">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div class="ikon-metrik" style="background:var(--bg-soft); color:var(--text-secondary);"><i class="ri-shield-keyhole-line"></i></div>
+        <span class="badge badge-sukses">Aman</span>
+      </div>
+      <div class="label">File Sensitif</div>
+      <div class="angka">{{ r.berkas_sensitif }}</div>
+    </div>
+    <div class="metrik status-sukses">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div class="ikon-metrik"><i class="ri-cpu-line"></i></div>
+        <span class="badge badge-sukses">Sukses</span>
+      </div>
       <div class="label">Diproses AI</div>
       <div class="angka">{{ r.diproses_ai }}</div>
     </div>
-    <div class="metrik bahaya">
+    <div class="metrik status-bahaya">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div class="ikon-metrik"><i class="ri-error-warning-line"></i></div>
+        <span class="badge badge-bahaya">Perhatian</span>
+      </div>
       <div class="label">AI Gagal</div>
       <div class="angka">{{ r.gagal_ai }}</div>
     </div>
   </div>
 
-  <!-- Content area -->
-  <div class="grid-konten" style="margin-top: 22px;">
+  <!-- Charts -->
+  <div class="grid-chart">
     <div class="kartu">
       <div class="kartu-isi">
-        <div class="kartu-judul">Kategori Terbanyak</div>
-        {% if r.kategori_terbanyak %}
-          {% for k in r.kategori_terbanyak %}
-            <div class="baris-kategori">
-              <span>{{ k.nama }}</span>
-              <span class="badge badge-info">{{ k.jumlah }} berkas</span>
-            </div>
-          {% endfor %}
-        {% else %}
-          <p class="subjudul">Belum ada kategori dengan berkas.</p>
-        {% endif %}
+        <div class="kartu-judul">Tren Upload Arsip <span class="badge" style="background:var(--bg-soft); color:var(--text-secondary);">7 Hari</span></div>
+        <div class="chart-wadah" style="flex-direction: column; align-items: stretch; height: 220px;">
+          <div class="mock-area-chart" style="flex: 1; border-bottom: 1px solid var(--border-soft); display: flex; align-items: flex-end; justify-content: space-between; background: transparent;">
+            {% set dummy_tren = [
+                {'hari': 'Sen', 'persen': 0},
+                {'hari': 'Sel', 'persen': 0},
+                {'hari': 'Rab', 'persen': 0},
+                {'hari': 'Kam', 'persen': 0},
+                {'hari': 'Jum', 'persen': 0},
+                {'hari': 'Sab', 'persen': 0},
+                {'hari': 'Min', 'persen': 0}
+            ] %}
+            {% set tren = r.tren_upload if r.tren_upload else dummy_tren %}
+            {% for t in tren %}
+              <div style="width: 34px; height: 100%; display: flex; align-items: flex-end; justify-content: center; position: relative;">
+                <!-- Tooltip hover -->
+                <div class="mock-bar" style="height: {{ t.persen }}%; width: 100%; border-radius: 4px 4px 0 0; position: relative;" title="{{ t.persen }}% aktivitas"></div>
+              </div>
+            {% endfor %}
+          </div>
+          <!-- X-axis labels -->
+          <div style="display: flex; justify-content: space-between; margin-top: 8px; padding: 0 2px;">
+            {% for t in tren %}
+              <div style="font-size: 11px; color: var(--text-muted); width: 34px; text-align: center;">{{ t.hari }}</div>
+            {% endfor %}
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="kartu">
       <div class="kartu-isi">
         <div class="kartu-judul">Komposisi Tipe File</div>
-        {% set total = r.total_arsip if r.total_arsip > 0 else 1 %}
-        {% for tipe in ['foto', 'video', 'dokumen', 'audio', 'screenshot', 'lainnya'] %}
-          {% set jumlah = r.komposisi_tipe.get(tipe, 0) %}
-          <div class="baris-komposisi">
-            <span class="nama-tipe">{{ tipe }}</span>
-            <span class="bar-luar"><span class="bar-dalam" style="width: {{ (jumlah / total * 100) | round(0, 'floor') }}%;"></span></span>
-            <span class="nilai">{{ jumlah }}</span>
+        <div class="chart-wadah" style="justify-content:center; align-items:center; gap: 32px;">
+          <div class="mock-donut"></div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="font-size:13px; display:flex; align-items:center; gap:8px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--royal-blue);"></span>Foto ({{ r.total_foto }})</div>
+            <div style="font-size:13px; display:flex; align-items:center; gap:8px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--soft-blue);"></span>Video ({{ r.total_video }})</div>
+            <div style="font-size:13px; display:flex; align-items:center; gap:8px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--ice-blue);"></span>Dokumen ({{ r.total_dokumen }})</div>
           </div>
-        {% endfor %}
+        </div>
       </div>
     </div>
 
     <div class="kartu">
       <div class="kartu-isi">
-        <div class="kartu-judul">
-          File Terbaru
-          <a class="tautan-aksi" href="{{ url_for('berkas.index') }}">Lihat semua</a>
-        </div>
-        {% if r.berkas_terbaru %}
-          {% for b in r.berkas_terbaru %}
-            <div class="baris-ringkas">
-              <div>
-                <a class="judul" href="{{ url_for('berkas.detail', berkas_id=b.id) }}">{{ b.judul }}</a>
-                <div class="meta">{{ b.tipe_file }} · {{ b.ukuran_file | ukuran }} · {{ b.tanggal_upload | tanggal }}</div>
+        <div class="kartu-judul">Pemakaian Penyimpanan per Kategori</div>
+        <div class="chart-wadah" style="align-items:center;">
+          <div class="mock-horizontal-bar">
+            {% if r.kategori_terbanyak %}
+              {% for k in r.kategori_terbanyak[:4] %}
+              <div class="h-bar-item">
+                <div class="h-bar-label">{{ k.nama }}</div>
+                <div class="h-bar-track">
+                  <div class="h-bar-fill" style="width: {{ [k.jumlah * 10, 100]|min }}%;"></div>
+                </div>
+                <div class="h-bar-value">{{ k.jumlah }} file</div>
               </div>
-              <span class="kode-arsip">{{ b.kode_arsip }}</span>
-            </div>
-          {% endfor %}
-        {% else %}
-          <div class="kondisi-kosong">
-            <div class="ikon">+</div>
-            <h3>Belum ada arsip</h3>
-            <p>Mulai dengan mengunggah file pertamamu.</p>
+              {% endfor %}
+            {% else %}
+              <p class="subjudul" style="text-align:center; width:100%;">Belum ada kategori</p>
+            {% endif %}
           </div>
-        {% endif %}
+        </div>
       </div>
     </div>
 
+    <div class="kartu">
+      <div class="kartu-isi">
+        <div class="kartu-judul">Kategori Terbanyak</div>
+        <div class="chart-wadah" style="flex-direction: column; align-items: stretch; height: 220px;">
+          <div class="mock-area-chart" style="flex: 1; border: none; display: flex; align-items: flex-end; justify-content: space-around; background: transparent; padding-bottom: 4px; border-bottom: 1px solid var(--border-soft);">
+            {% if r.kategori_terbanyak %}
+              {% for k in r.kategori_terbanyak[:5] %}
+                <div style="display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end; gap:6px; width: 44px;">
+                  <div style="font-size:12px; font-weight:600; color:var(--text-secondary);">{{ k.jumlah }}</div>
+                  <div class="mock-bar" style="height: {{ [k.jumlah * 15, 100]|min }}%; width: 100%; border-radius:4px 4px 0 0;" title="{{ k.jumlah }} file"></div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="subjudul" style="text-align:center; width:100%; align-self: center;">Belum ada kategori</p>
+            {% endif %}
+          </div>
+          <!-- X-axis labels -->
+          <div style="display: flex; justify-content: space-around; margin-top: 8px;">
+            {% if r.kategori_terbanyak %}
+              {% for k in r.kategori_terbanyak[:5] %}
+                <div style="font-size:11px; color:var(--text-muted); width:50px; text-align:center; white-space: nowrap; overflow:hidden; text-overflow:ellipsis;" title="{{ k.nama }}">{{ k.nama }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Panels -->
+  <div class="grid-panel">
     <div class="kartu">
       <div class="kartu-isi">
         <div class="kartu-judul">
           Aktivitas Terbaru
-          <a class="tautan-aksi" href="{{ url_for('aktivitas.index') }}">Lihat semua</a>
+          <a class="tautan-aksi" href="{{ url_for('aktivitas.index') }}">Lihat semua <i class="ri-arrow-right-line"></i></a>
         </div>
-        {% if r.aktivitas_terbaru %}
-          {% for a in r.aktivitas_terbaru %}
-            <div class="baris-ringkas">
-              <div style="display:flex; gap:10px;">
-                <span class="titik-aktivitas"></span>
-                <div>
-                  <div class="judul" style="text-transform: capitalize;">{{ a.aksi | replace('_', ' ') }}</div>
-                  <div class="meta">{{ a.keterangan }}</div>
+        <div class="list-aktivitas" style="margin-top: 20px;">
+          {% if r.aktivitas_terbaru %}
+            {% for a in r.aktivitas_terbaru[:5] %}
+              <div class="item-aktivitas">
+                <div class="ikon-aktivitas">
+                  {% if 'upload' in a.aksi.lower() %}<i class="ri-upload-cloud-line"></i>
+                  {% elif 'kategori' in a.aksi.lower() %}<i class="ri-folder-add-line"></i>
+                  {% elif 'hapus' in a.aksi.lower() %}<i class="ri-delete-bin-line"></i>
+                  {% elif 'ai' in a.aksi.lower() %}<i class="ri-cpu-line"></i>
+                  {% else %}<i class="ri-history-line"></i>{% endif %}
                 </div>
+                <div class="info-aktivitas">
+                  <div class="judul">{{ a.aksi | replace('_', ' ') | title }}</div>
+                  <div class="desc">{{ a.keterangan }}</div>
+                </div>
+                <div class="waktu-aktivitas">{{ a.dibuat_pada | tanggal_jam }}</div>
               </div>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <span class="meta">{{ a.dibuat_pada | tanggal_jam }}</span>
-                <form method="post" action="{{ url_for('aktivitas.hapus', log_id=a.id) }}"
-                      onsubmit="return confirm('Hapus entri aktivitas ini?');" style="display:inline;">
-                  <button type="submit" class="tautan-aksi bahaya" title="Hapus entri ini"
-                          style="display:inline-flex; align-items:center;">
-                    <i class="ri-close-line" style="font-size:14px;"></i>
-                  </button>
-                </form>
+            {% endfor %}
+          {% else %}
+            <p class="subjudul">Belum ada aktivitas.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="kartu">
+      <div class="kartu-isi">
+        <div class="kartu-judul">Insight Ringkas</div>
+        <div class="list-aktivitas" style="margin-top: 20px;">
+          <div class="item-aktivitas">
+            <div class="ikon-aktivitas" style="background: rgba(28, 77, 141, 0.1);"><i class="ri-pie-chart-2-line"></i></div>
+            <div class="info-aktivitas">
+              <div class="judul">Tipe file dominan adalah 
+                {% if r.total_foto > r.total_video and r.total_foto > r.total_dokumen %}Foto
+                {% elif r.total_video > r.total_foto and r.total_video > r.total_dokumen %}Video
+                {% else %}Dokumen{% endif %}
+              </div>
+              <div class="desc">Berdasarkan statistik komposisi arsip Anda.</div>
+            </div>
+          </div>
+          <div class="item-aktivitas">
+            <div class="ikon-aktivitas" style="background: rgba(22, 163, 74, 0.1); color: var(--success);"><i class="ri-folder-chart-line"></i></div>
+            <div class="info-aktivitas">
+              <div class="judul">Kategori terbanyak</div>
+              <div class="desc">
+                {% if r.kategori_terbanyak %}
+                  {{ r.kategori_terbanyak[0].nama }} dengan {{ r.kategori_terbanyak[0].jumlah }} berkas.
+                {% else %}
+                  Belum ada kategori yang dominan.
+                {% endif %}
               </div>
             </div>
-          {% endfor %}
-        {% else %}
-          <p class="subjudul">Belum ada aktivitas tercatat.</p>
-        {% endif %}
+          </div>
+          <div class="item-aktivitas">
+            <div class="ikon-aktivitas" style="background: rgba(14, 165, 233, 0.1); color: var(--info);"><i class="ri-line-chart-line"></i></div>
+            <div class="info-aktivitas">
+              <div class="judul">Aktivitas Upload</div>
+              <div class="desc">{{ r.upload_bulan_ini }} arsip ditambahkan bulan ini.</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -57,7 +57,43 @@ def ambil_ringkasan_dashboard(pengguna_id):
         "komposisi_tipe": ambil_komposisi_tipe(pengguna_id),
         "berkas_terbaru": ambil_berkas_terbaru(pengguna_id),
         "aktivitas_terbaru": layanan_log.ambil_aktivitas_terbaru(pengguna_id, 10),
+        "tren_upload": ambil_tren_upload(pengguna_id),
     }
+
+
+def ambil_tren_upload(pengguna_id):
+    """Mengambil tren upload arsip 7 hari terakhir."""
+    batas_waktu = _awal_hari_wib_sebagai_utc() - timedelta(days=6)
+    berkas = _basis(pengguna_id).filter(Berkas.tanggal_upload >= batas_waktu).all()
+    
+    from collections import defaultdict
+    hitung_per_hari = defaultdict(int)
+    for b in berkas:
+        if b.tanggal_upload:
+            tgl_wib = b.tanggal_upload.replace(tzinfo=timezone.utc).astimezone(_WIB).date()
+            hitung_per_hari[tgl_wib] += 1
+            
+    sekarang_wib = datetime.now(_WIB).date()
+    nama_hari = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"]
+    
+    max_count = max(hitung_per_hari.values()) if hitung_per_hari else 0
+    
+    hasil = []
+    for i in range(6, -1, -1):
+        tgl = sekarang_wib - timedelta(days=i)
+        jumlah = hitung_per_hari.get(tgl, 0)
+        persen = int((jumlah / max_count) * 100) if max_count > 0 else 0
+        # If max_count is very small (e.g. 1), scale it to 100%
+        # Minimum 4% height just to show a bump if it exists, or 0% if 0.
+        if jumlah > 0 and persen < 4:
+            persen = 4
+            
+        hasil.append({
+            'hari': nama_hari[tgl.weekday()],
+            'persen': persen,
+            'jumlah': jumlah
+        })
+    return hasil
 
 
 def hitung_total_berkas(pengguna_id):

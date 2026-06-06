@@ -1,283 +1,124 @@
 /* ============================================================
    Gonanku - layout.css
-   App frame, main area, topbar, content area, login page, responsive.
-   Bagian sidebar dipisah ke sidebar.css agar tetap modular.
    ============================================================ */
 
-/* ── App frame ── */
 .kerangka-app {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar default desktop */
+.sidebar {
+  width: 260px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-right: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: width 0.3s ease, background 0.3s ease;
+  z-index: 100;
   position: relative;
 }
 
-/* ══════════════════════════════════════════════
-   MAIN AREA
-   ══════════════════════════════════════════════ */
+.sidebar.collapsed {
+  width: 72px;
+}
+
+/* Main Area */
 .area-utama {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0;
-  margin-left: var(--lebar-sidebar);
-  transition: margin-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.sidebar.expanded ~ .area-utama {
-  margin-left: var(--lebar-sidebar-expanded);
+  overflow: hidden;
+  background-color: var(--bg-main);
+  background-image: var(--bg-mesh);
+  background-attachment: fixed;
 }
 
-/* ══════════════════════════════════════════════
-   TOPBAR — kiri (burger + judul) & kanan (aksi)
-   ══════════════════════════════════════════════ */
+/* Topbar */
 .topbar {
-  height: var(--tinggi-topbar);
-  background: var(--topbar-bg, rgba(10, 18, 36, 0.5));
-  border-bottom: 1px solid var(--glass-border);
+  height: 76px;
+  background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  padding: 0 24px;
   flex-shrink: 0;
+  z-index: 50;
 }
 
 .topbar-kiri {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 0;
+  gap: 16px;
 }
 
 .topbar-judul {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
-  color: var(--teks-utama);
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--text-primary);
 }
 
 .topbar-kanan {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
 }
 
-/* Tombol hamburger: default tersembunyi (desktop), tampil di mobile */
-.tombol-burger {
-  display: none;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  color: var(--teks-utama);
-  cursor: pointer;
-  font-size: 18px;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  transition: background 0.2s ease, border-color 0.2s ease;
+/* Main Content Area */
+.konten {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 32px;
 }
-.tombol-burger:hover {
-  background: var(--glass-bg-hover);
-  border-color: var(--glass-border-hover);
-}
-.tombol-burger i { line-height: 1; }
 
-/* Backdrop drawer mobile */
+.pembungkus-konten {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Mobile backdrop */
 .backdrop-sidebar {
+  display: none;
   position: fixed;
   inset: 0;
-  background: rgba(8, 15, 30, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 19;
+  background: rgba(15, 23, 42, 0.4);
+  z-index: 99;
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-.backdrop-sidebar.tampil {
-  opacity: 1;
-  pointer-events: auto;
+  transition: opacity 0.3s ease;
 }
 
-/* ── Content ── */
-.konten {
-  padding: 24px 28px;
-  flex: 1;
-}
-.pembungkus-konten {
-  max-width: 1180px;
-  margin: 0 auto;
-}
-
-/* ══════════════════════════════════════════════
-   LOGIN PAGE
-   ══════════════════════════════════════════════ */
-.halaman-login {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-
-.kartu-login {
-  width: 100%;
-  max-width: 420px;
-  background: var(--login-card-bg, rgba(15, 23, 42, 0.6));
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  backdrop-filter: var(--glass-blur-heavy);
-  -webkit-backdrop-filter: var(--glass-blur-heavy);
-  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5),
-              0 0 0 1px rgba(255, 255, 255, 0.05);
-  padding: 40px 36px;
-}
-
-.login-merek {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.wadah-logo-besar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 72px;
-  height: 72px;
-  background: #ffffff;
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
-  border-radius: 16px;
-  flex-shrink: 0;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-}
-
-.login-logo {
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
-  flex-shrink: 0;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-.login-merek .merek-judul {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--teks-utama);
-  letter-spacing: -0.02em;
-  max-width: none;
-  opacity: 1;
-}
-
-.login-subjudul {
-  font-size: 14px;
-  color: var(--teks-sekunder);
-  margin-bottom: 28px;
-  line-height: 1.6;
-}
-
-/* ══════════════════════════════════════════════
-   RESPONSIVE
-   ══════════════════════════════════════════════ */
-
-/* Tablet besar (≤ 1080px): kurangi padding konten */
-@media (max-width: 1080px) {
-  .konten { padding: 22px; }
-  .topbar { padding: 0 22px; }
-  .pembungkus-konten { max-width: 100%; }
-}
-
-/* Tablet (861-900px): sidebar dipaksa collapse, tooltip aktif */
-@media (max-width: 900px) and (min-width: 861px) {
-  .sidebar { width: var(--lebar-sidebar) !important; }
-  .sidebar .merek-judul,
-  .sidebar .nav-text,
-  .sidebar .logout-text,
-  .sidebar .sidebar-pengguna {
-    max-width: 0 !important;
-    opacity: 0 !important;
-  }
-  .area-utama { margin-left: var(--lebar-sidebar) !important; }
-}
-
-/* Mobile (≤ 860px): sidebar = drawer slide-in */
+/* Responsive */
 @media (max-width: 860px) {
   .sidebar {
-    width: 280px !important;
-    padding: 14px 12px 10px !important;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: none;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -260px;
   }
+  
   .sidebar.terbuka {
-    transform: translateX(0);
-    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.55);
+    left: 0;
   }
 
-  /* Saat drawer terbuka, semua label & teks tampak penuh */
-  .sidebar .merek-judul,
-  .sidebar .nav-text,
-  .sidebar .logout-text,
-  .sidebar .sidebar-pengguna {
-    max-width: 200px !important;
-    opacity: 1 !important;
-  }
-  .sidebar .nav-label {
-    max-height: 40px !important;
-    opacity: 1 !important;
-    padding: 14px 10px 4px !important;
-  }
-  .sidebar .nav-label:not(:first-child) {
-    border-top: none;
-    margin-top: 0;
-    padding-top: 14px;
+  .backdrop-sidebar.tampil {
+    display: block;
+    opacity: 1;
   }
 
-  /* Matikan tombol expand desktop & tooltip di mobile */
-  #toggle-sidebar { display: none !important; }
-  .nav-item[data-tooltip]::after { display: none !important; }
-
-  /* Konten penuh — tanpa margin sidebar */
-  .area-utama,
-  .sidebar.expanded ~ .area-utama {
-    margin-left: 0 !important;
+  .topbar {
+    padding: 0 20px;
   }
 
-  /* Tampilkan hamburger */
-  .tombol-burger { display: inline-flex; }
-
-  /* Padding ringkas */
-  .konten { padding: 18px 16px; }
-  .topbar { padding: 0 14px; height: 58px; }
-  .topbar-judul { font-size: 15px; }
-}
-
-/* Phone (≤ 480px) */
-@media (max-width: 480px) {
-  .konten { padding: 14px 12px; }
-  .topbar { padding: 0 10px; }
-  .topbar-kanan { gap: 6px; }
-  .tombol-burger { width: 36px; height: 36px; font-size: 17px; }
-
-  .sidebar { width: 86vw !important; max-width: 320px; }
-
-  .halaman-login { padding: 14px; }
-  .kartu-login { padding: 28px 22px; border-radius: 14px; }
-}
-
-/* Phone sangat kecil (≤ 360px) — iPhone SE */
-@media (max-width: 360px) {
-  .konten { padding: 12px 10px; }
-  .topbar-judul { font-size: 14px; }
-  .kartu-login { padding: 24px 18px; }
+  .konten {
+    padding: 20px;
+  }
 }

@@ -8,47 +8,41 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Remix Icon -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/komponen.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/tema.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/komponen.css') }}" />
   {% block css_tambahan %}{% endblock %}
+
   <script>
     (function() {
-      const savedTheme = localStorage.getItem('gonanku-tema') || 'dark';
-      if (savedTheme === 'light') {
-        document.documentElement.classList.add('tema-terang');
-      }
+      const savedTheme = localStorage.getItem('gonanku-tema') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
     })();
   </script>
 </head>
 <body>
   <div class="kerangka-app">
 
-    <!-- Backdrop sidebar (hanya tampil saat drawer terbuka di mobile) -->
+    <!-- Backdrop sidebar (mobile) -->
     <div id="backdrop-sidebar" class="backdrop-sidebar" aria-hidden="true"></div>
 
     <!-- ══════════ SIDEBAR ══════════ -->
     <aside class="sidebar" id="sidebar-utama">
+      
+      <!-- Toggle expand/collapse -->
+      <button type="button" id="toggle-sidebar" class="sidebar-toggle-btn" title="Buka/Tutup Sidebar">
+        <i class="ri-arrow-left-s-line" id="toggle-sidebar-icon"></i>
+      </button>
 
       <!-- Brand -->
       <div class="sidebar-merek">
-        <div class="wadah-logo">
-          <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="Gonanku" class="merek-logo" />
-        </div>
+        <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="Gonanku" class="merek-logo" />
         <span class="merek-judul">Gonanku</span>
       </div>
 
@@ -56,53 +50,39 @@
       <nav class="sidebar-nav">
         <span class="nav-label">Menu</span>
 
-        <a class="nav-item {% if request.blueprint == 'dashboard' %}aktif{% endif %}"
-           href="{{ url_for('dashboard.dashboard') }}"
-           data-tooltip="Dashboard">
+        <a class="nav-item {% if request.blueprint == 'dashboard' %}aktif{% endif %}" href="{{ url_for('dashboard.dashboard') }}">
           <i class="ri-dashboard-3-line"></i>
           <span class="nav-text">Dashboard</span>
         </a>
 
-        <a class="nav-item {% if request.blueprint == 'berkas' and request.endpoint != 'berkas.upload' %}aktif{% endif %}"
-           href="{{ url_for('berkas.index') }}"
-           data-tooltip="Arsip">
+        <a class="nav-item {% if request.blueprint == 'berkas' and request.endpoint != 'berkas.upload' %}aktif{% endif %}" href="{{ url_for('berkas.index') }}">
           <i class="ri-archive-2-line"></i>
           <span class="nav-text">Arsip</span>
         </a>
 
-        <a class="nav-item {% if request.endpoint == 'berkas.upload' %}aktif{% endif %}"
-           href="{{ url_for('berkas.upload') }}"
-           data-tooltip="Upload">
+        <a class="nav-item {% if request.endpoint == 'berkas.upload' %}aktif{% endif %}" href="{{ url_for('berkas.upload') }}">
           <i class="ri-upload-cloud-2-line"></i>
           <span class="nav-text">Upload</span>
         </a>
 
-        <a class="nav-item {% if request.blueprint == 'chat' %}aktif{% endif %}"
-           href="{{ url_for('chat.index') }}"
-           data-tooltip="Chatbot">
+        <a class="nav-item {% if request.blueprint == 'chat' %}aktif{% endif %}" href="{{ url_for('chat.index') }}">
           <i class="ri-chat-3-line"></i>
           <span class="nav-text">Chatbot</span>
         </a>
 
         <span class="nav-label">Kelola</span>
 
-        <a class="nav-item {% if request.blueprint == 'kategori' %}aktif{% endif %}"
-           href="{{ url_for('kategori.index') }}"
-           data-tooltip="Kategori">
+        <a class="nav-item {% if request.blueprint == 'kategori' %}aktif{% endif %}" href="{{ url_for('kategori.index') }}">
           <i class="ri-folder-3-line"></i>
           <span class="nav-text">Kategori</span>
         </a>
 
-        <a class="nav-item {% if request.blueprint == 'tag' %}aktif{% endif %}"
-           href="{{ url_for('tag.index') }}"
-           data-tooltip="Tag">
+        <a class="nav-item {% if request.blueprint == 'tag' %}aktif{% endif %}" href="{{ url_for('tag.index') }}">
           <i class="ri-price-tag-3-line"></i>
           <span class="nav-text">Tag</span>
         </a>
 
-        <a class="nav-item {% if request.blueprint == 'aktivitas' %}aktif{% endif %}"
-           href="{{ url_for('aktivitas.index') }}"
-           data-tooltip="Aktivitas">
+        <a class="nav-item {% if request.blueprint == 'aktivitas' %}aktif{% endif %}" href="{{ url_for('aktivitas.index') }}">
           <i class="ri-history-line"></i>
           <span class="nav-text">Aktivitas</span>
         </a>
@@ -110,40 +90,27 @@
 
       <!-- Bottom: Profile + Logout -->
       <div class="sidebar-bawah">
-        <!-- Profile Photo Upload -->
-        <form id="form-upload-profil" action="{{ url_for('auth.upload_profil') }}" method="POST" enctype="multipart/form-data" style="display: none;">
-          <input type="file" id="input-foto-profil" name="foto" accept="image/*">
-        </form>
-
         <div class="profil-wrapper">
-          <div class="profil-gambar" onclick="document.getElementById('input-foto-profil').click();" title="Ganti Foto Profil">
+          <div class="profil-gambar" title="Ganti Foto Profil">
             {% if current_user.foto_profil %}
               <img src="{{ url_for('static', filename=current_user.foto_profil) }}" alt="Foto Profil">
             {% else %}
-              <span class="profil-inisial">{{ current_user.nama[0] | upper }}</span>
+              <span>{{ current_user.nama[0] | upper }}</span>
             {% endif %}
-            <div class="profil-overlay">
-              <i class="ri-camera-line"></i>
-            </div>
           </div>
           <div class="sidebar-pengguna">
-            <div class="pengguna-info" style="min-width: 0; flex: 1;">
+            <div class="pengguna-info">
               <span class="nama">{{ current_user.nama }}</span>
               <span class="email-teks">{{ current_user.email }}</span>
             </div>
             <!-- Logout -->
-            <form action="{{ url_for('auth.logout') }}" method="post" style="flex-shrink: 0; margin-left: 8px;">
+            <form action="{{ url_for('auth.logout') }}" method="post" style="flex-shrink: 0;">
               <button type="submit" class="tombol-logout-icon" title="Keluar">
                 <i class="ri-logout-box-r-line"></i>
               </button>
             </form>
           </div>
         </div>
-
-        <!-- Toggle expand/collapse -->
-        <button type="button" id="toggle-sidebar" class="sidebar-toggle-btn" title="Buka/Tutup Sidebar">
-          <i class="ri-arrow-right-s-line" id="toggle-sidebar-icon"></i>
-        </button>
       </div>
     </aside>
 
@@ -151,17 +118,29 @@
     <div class="area-utama">
       <header class="topbar">
         <div class="topbar-kiri">
-          <!-- Tombol hamburger: hanya tampil di mobile (≤860px) -->
-          <button type="button" id="toggle-mobile-sidebar" class="tombol-burger" aria-label="Buka menu navigasi">
+          <button type="button" id="toggle-mobile-sidebar" class="tombol-ikon" aria-label="Buka menu navigasi" style="display: none;">
             <i class="ri-menu-line"></i>
           </button>
           <span class="topbar-judul">{% block topbar_judul %}Dashboard{% endblock %}</span>
         </div>
+        
+        <!-- Search bar -->
+        <form class="search-bar" action="{{ url_for('berkas.index') }}" method="GET">
+          <i class="ri-search-line"></i>
+          <input type="text" name="q" placeholder="Cari arsip, kategori, tag..." value="{{ request.args.get('q', '') }}" />
+        </form>
+
         <div class="topbar-kanan">
-          <button type="button" id="toggle-tema" class="tombol-ikon" title="Ganti Tema" aria-label="Ganti Tema">
-            <i class="ri-sun-line" id="ikon-tema"></i>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); margin-right: 16px;">
+            <i class="ri-calendar-line"></i>
+            <span id="topbar-tanggal"></span>
+          </div>
+
+          <button type="button" id="toggle-tema" class="tombol-ikon" title="Ganti Tema">
+            <i class="ri-moon-line" id="ikon-tema"></i>
           </button>
-          {% block topbar_aksi %}{% endblock %}
+          
+          <a href="{{ url_for('berkas.upload') }}" class="tombol tombol-utama">+ Upload Arsip</a>
         </div>
       </header>
 
@@ -181,48 +160,25 @@
     </div>
   </div>
 
-  <!-- Modal Crop Foto Profil -->
-  <div id="crop-modal-overlay" class="crop-modal-overlay">
-    <div class="crop-modal">
-      <div class="crop-modal-header">
-        <h3>Sesuaikan Foto Profil</h3>
-        <button type="button" id="btn-tutup-crop" class="crop-modal-tutup">
-          <i class="ri-close-line"></i>
-        </button>
-      </div>
-      <div class="crop-modal-body">
-        <div class="crop-wadah-gambar">
-          <img id="img-crop-target" src="" alt="Pratinjau Foto">
-        </div>
-      </div>
-      <div class="crop-modal-footer">
-        <div class="crop-kontrol-grup">
-          <button type="button" class="tombol-ikon" id="btn-crop-zoom-in" title="Perbesar">
-            <i class="ri-zoom-in-line"></i>
-          </button>
-          <button type="button" class="tombol-ikon" id="btn-crop-zoom-out" title="Perkecil">
-            <i class="ri-zoom-out-line"></i>
-          </button>
-          <button type="button" class="tombol-ikon" id="btn-crop-putar-kiri" title="Putar Kiri">
-            <i class="ri-anticlockwise-line"></i>
-          </button>
-          <button type="button" class="tombol-ikon" id="btn-crop-putar-kanan" title="Putar Kanan">
-            <i class="ri-clockwise-line"></i>
-          </button>
-        </div>
-        <div class="crop-tombol-aksi">
-          <button type="button" class="tombol tombol-sekunder" id="btn-batal-crop">Batal</button>
-          <button type="button" class="tombol tombol-utama" id="btn-simpan-crop">
-            <span class="teks-tombol">Simpan</span>
-            <span class="pemuat" style="display: none; width: 14px; height: 14px;"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+    // Set format date
+    const dateOpts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('topbar-tanggal').innerText = new Date().toLocaleDateString('id-ID', dateOpts);
+    
+    // Mobile toggle logic fix for UI
+    if (window.innerWidth <= 860) {
+      document.getElementById('toggle-mobile-sidebar').style.display = 'inline-flex';
+      document.querySelector('.search-bar').style.display = 'none'; // hide on very small screens or make responsive
+    }
+    window.addEventListener('resize', () => {
+      if (window.innerWidth <= 860) {
+        document.getElementById('toggle-mobile-sidebar').style.display = 'inline-flex';
+      } else {
+        document.getElementById('toggle-mobile-sidebar').style.display = 'none';
+      }
+    });
+  </script>
   {% block js_tambahan %}{% endblock %}
 </body>
 </html>

@@ -1,200 +1,137 @@
 /* ============================================================
    Gonanku - base.css
-   Design tokens (CSS variable), reset, body, scrollbar, selection.
-   Komponen UI (button/card/tabel/dll) dipindah ke komponen.css.
    ============================================================ */
 
 :root {
-  /* ── Core palette ── */
-  --bg-image: url('../images/bg-modern.png');
-  --bg-overlay: linear-gradient(
-    135deg,
-    rgba(8, 15, 30, 0.78) 0%,
-    rgba(12, 22, 45, 0.65) 40%,
-    rgba(6, 18, 38, 0.72) 100%
-  );
+  /* Design Token Light Mode */
+  --navy-deep: #0F2854;
+  --royal-blue: #1C4D8D;
+  --soft-blue: #3E7CB1;
+  --ice-blue: #DCEAF5;
 
-  /* Glass surface tokens */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-bg-hover: rgba(255, 255, 255, 0.09);
-  --glass-bg-active: rgba(255, 255, 255, 0.13);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-hover: rgba(255, 255, 255, 0.16);
-  --glass-blur: blur(24px);
-  --glass-blur-heavy: blur(40px);
+  /* Premium Aesthetic Background */
+  --bg-main: #f0f4f8;
+  --bg-mesh: url('../images/bg-aesthetic-light.png');
 
-  /* Text */
-  --putih: #FFFFFF;
-  --teks-utama: #E8EDF4;
-  --teks-sekunder: #94A3B8;
-  --teks-lembut: #64748B;
-  --teks-aksen: #7DD3FC;
+  --bg-panel-solid: #FFFFFF;
+  --bg-sidebar: #FFFFFF;
+  --bg-soft: #F1F5F9;
+  
+  /* Glassmorphism Tokens */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --glass-shadow: 0 8px 32px rgba(15, 40, 84, 0.05);
+  --glass-blur: blur(16px);
 
-  /* Accent / Brand */
-  --aksen: #38BDF8;
-  --aksen-hover: #7DD3FC;
-  --aksen-glow: rgba(56, 189, 248, 0.25);
-  --royal-blue: #3B82F6;
-  --navy-deep: #0F172A;
-  --soft-blue: #60A5FA;
-  --ice-blue: #BAE6FD;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
 
-  /* Status */
-  --sukses: #34D399;
-  --sukses-lembut: rgba(52, 211, 153, 0.15);
-  --peringatan: #FBBF24;
-  --peringatan-lembut: rgba(251, 191, 36, 0.15);
-  --bahaya: #F87171;
-  --bahaya-lembut: rgba(248, 113, 113, 0.15);
+  --border-soft: #E2E8F0;
+  
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --info: #0EA5E9;
 
-  /* Neutral surfaces */
-  --latar: transparent;
-  --panel: rgba(255, 255, 255, 0.05);
-  --garis: rgba(255, 255, 255, 0.08);
-
-  /* Radii */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-full: 9999px;
-
-  /* Shadows */
-  --bayang-lembut: 0 2px 8px rgba(0, 0, 0, 0.2);
-  --bayang-kartu: 0 4px 24px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(0, 0, 0, 0.2);
-  --bayang-glow: 0 0 20px var(--aksen-glow);
+  --radius-xl: 24px;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.03);
 
   /* Typography */
-  --font-utama: "Inter", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
-
-  /* Layout */
-  --lebar-sidebar: 72px;
-  --lebar-sidebar-expanded: 260px;
-  --tinggi-topbar: 64px;
+  --font-utama: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-/* ── Reset ── */
-*,
-*::before,
-*::after {
+[data-theme="dark"] {
+  --navy-deep: #DCEAF5;
+  --royal-blue: #60A5FA;
+  --soft-blue: #3B82F6;
+  --ice-blue: #1E3A8A;
+
+  /* Premium Aesthetic Background Dark */
+  --bg-main: #0B0F19;
+  --bg-mesh: url('../images/bg-aesthetic-dark.png');
+
+  --bg-page: #0B0F19;
+  --bg-panel-solid: #111827;
+  --bg-sidebar: #111827;
+  --bg-soft: #1F2937;
+
+  /* Glassmorphism Tokens Dark */
+  --glass-bg: rgba(17, 24, 39, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --glass-blur: blur(16px);
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  
+  --border-soft: rgba(255, 255, 255, 0.1);
+  --border-medium: rgba(255, 255, 255, 0.2);
+
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-panel: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --info: #0EA5E9;
+}
+
+/* Reset */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
 html, body {
   margin: 0;
   padding: 0;
-}
-
-body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
   font-family: var(--font-utama);
   font-size: 14px;
   line-height: 1.6;
-  color: var(--teks-utama);
-  background-color: #080F1E;
-  background-image: var(--bg-image);
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Overlay gradien di atas background image */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--bg-overlay);
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* Pastikan konten di atas overlay */
-.kerangka-app,
-.halaman-login {
-  position: relative;
-  z-index: 1;
-}
-
-h1, h2, h3, h4 {
+h1, h2, h3, h4, h5, h6 {
   margin: 0;
-  color: var(--teks-utama);
+  color: var(--text-primary);
   font-weight: 700;
   line-height: 1.3;
-  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0 0 12px;
 }
 
 a {
-  color: var(--aksen);
+  color: var(--royal-blue);
   text-decoration: none;
   transition: color 0.2s ease;
 }
+
 a:hover {
-  color: var(--aksen-hover);
+  color: var(--navy-deep);
 }
 
-p { margin: 0 0 12px; }
-
-/* ── Glass utility ── */
-.glass {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  background: var(--border-medium);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* ── Selection ── */
-::selection {
-  background: rgba(56, 189, 248, 0.3);
-  color: #fff;
-}
-
-/* ══════════════════════════════════════════════
-   RESPONSIVE — utilitas global
-   ══════════════════════════════════════════════ */
-@media (max-width: 860px) {
-  .header-halaman h1 { font-size: 22px; }
-  .header-halaman .subjudul { font-size: 13px; }
-  .tombol { padding: 9px 14px; font-size: 12.5px; }
-
-  /* Tabel di dalam kartu: scroll horizontal saat sempit */
-  .kartu:has(> .tabel),
-  .kartu:has(> table.tabel) {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .tabel { min-width: 640px; font-size: 12.5px; }
-  .tabel th, .tabel td { padding: 10px 12px; }
-
-  .pagination { flex-wrap: wrap; justify-content: center; }
-  .daftar-chip { gap: 5px; }
-}
-
-@media (max-width: 480px) {
-  .header-halaman {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-  .header-halaman h1 { font-size: 20px; }
-  .header-halaman .aksi-baris { width: 100%; }
-  .header-halaman .aksi-baris .tombol { flex: 1; }
-
-  .tombol { padding: 9px 12px; }
-  .kondisi-kosong { padding: 28px 14px; }
+  background: var(--text-muted);
 }
