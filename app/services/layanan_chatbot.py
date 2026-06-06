@@ -81,11 +81,63 @@ def proses_pertanyaan_chatbot(pengguna_id, pertanyaan):
             "Maaf, arsip yang kamu cari tidak ditemukan di Gonanku."
             + saran
         )
-    else:
-        jawaban = _susun_jawaban(pertanyaan, hasil)
+        _simpan_riwayat(pengguna_id, pertanyaan, jawaban, [])
+        return {"jawaban": jawaban, "berkas": []}
 
-    _simpan_riwayat(pengguna_id, pertanyaan, jawaban, hasil)
-    return {"jawaban": jawaban, "berkas": hasil}
+    # SEMANTIC RE-RANK: AI nilai kandidat keyword search lalu pilih yang
+    # benar-benar relevan dengan maksud pengguna (anti "semua foto buku
+    # muncul saat user cari foto bermasker").
+    hasil_final, jawaban = _rerank_dan_jawab(pertanyaan, hasil)
+    _simpan_riwayat(pengguna_id, pertanyaan, jawaban, hasil_final)
+    return {"jawaban": jawaban, "berkas": hasil_final}
+
+
+def _rerank_dan_jawab(pertanyaan, kandidat):
+    """Pakai AI untuk re-rank kandidat keyword search + susun jawaban.
+
+    Hanya dipakai bila ada kandidat. Bila AI gagal/timeout, fallback ke
+    perilaku lama (tampilkan semua kandidat + jawaban legacy).
+    Return (hasil_terfilter, jawaban).
+    """
+    if not kandidat:
+        return [], ""
+
+    # Bangun ringkasan kandidat untuk AI
+    payload = []
+    for b in kandidat:
+        payload.append({
+            "id": b.id,
+            "judul": b.judul,
+            "tipe_file": b.tipe_file,
+            "kategori": b.kategori.nama if b.kategori else None,
+            "ringkasan": (b.ringkasan_ai or "")[:300],
+            "tanggal": format_tanggal(b.tanggal_momen) if b.tanggal_momen else None,
+        })
+
+    try:
+        out = layanan_groq.pilih_dan_susun_jawaban(pertanyaan, payload)
+        ids_pilih = out["ids_relevan"]
+        jawaban = out["jawaban"]
+    except layanan_groq.GagalGroq:
+        # Fallback: tampilkan semua + jawaban legacy
+        return kandidat, _susun_jawaban(pertanyaan, kandidat)
+
+    if not ids_pilih:
+        # AI menilai TIDAK ADA yang relevan walaupun keyword match.
+        if not jawaban:
+            jawaban = (
+                "Maaf, ada beberapa file yang cocok kata kunci tapi tidak ada "
+                "yang benar-benar sesuai dengan maksud pertanyaanmu. Coba "
+                "gunakan kata kunci lain atau lebih spesifik."
+            )
+        return [], jawaban
+
+    # Filter kandidat sesuai pilihan AI, pertahankan urutan asli (paling relevan dulu)
+    by_id = {b.id: b for b in kandidat}
+    hasil_terfilter = [by_id[i] for i in ids_pilih if i in by_id]
+    if not jawaban:
+        jawaban = _susun_jawaban(pertanyaan, hasil_terfilter)
+    return hasil_terfilter, jawaban
 
 
 def _jawaban_sapaan():

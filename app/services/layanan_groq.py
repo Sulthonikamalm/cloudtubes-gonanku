@@ -394,6 +394,90 @@ def susun_jawaban_chatbot(pertanyaan, ringkasan_hasil):
 
 
 # ===================================================================
+# CHATBOT — Semantic re-rank: AI pilih file paling relevan
+# ===================================================================
+
+_SISTEM_RERANK = (
+    "Anda adalah re-ranker semantik untuk arsip pribadi Gonanku. "
+    "Sistem sudah menemukan kandidat file via keyword search di database. "
+    "Tugas Anda: PILIH file yang MENJAWAB pertanyaan pengguna berdasarkan "
+    "kemiripan KONSEP/SUBJEK di judul atau ringkasan.\n\n"
+
+    "PRINSIP UTAMA:\n"
+    "- INCLUSIVE: jika judul ATAU ringkasan menyebut SUBJEK yang user tanyakan, "
+    "  PILIH file itu. Tidak harus sempurna word-for-word.\n"
+    "- Kata orang-pertama seperti 'saya', 'aku', 'gue' di pertanyaan TIDAK perlu "
+    "  match literal — semua file Gonanku adalah milik user, jadi 'foto saya X' "
+    "  = 'foto X'.\n"
+    "- File yang judul/ringkasan menyebut TOPIK SPESIFIK yang user sebut "
+    "  (nama buku, nama orang, nama tempat, judul karya) adalah HIT YANG KUAT.\n"
+    "- Sertakan SEMUA file yang topik utamanya sesuai. Boleh > 1 file kalau "
+    "  memang ada beberapa file tentang topik yang sama.\n\n"
+
+    "KAPAN MENGECUALIKAN:\n"
+    "- File hanya cocok kata generik (mis. 'buku') tanpa konteks yang user sebut.\n"
+    "  Contoh: user cari 'foto bermasker', file 'foto pegang buku' → exclude.\n"
+    "- File yang ringkasan-nya tidak menyebut hal yang user tanyakan.\n\n"
+
+    "CONTOH:\n"
+    "Q: 'foto saya pegang buku bersikap bodo amat'\n"
+    "Kandidat: id=1 'Pemuda Membaca Buku Sebuah Seni Bersikap Bodo Mat', id=2 'Foto Toko Buku'\n"
+    "Jawab: ids_relevan=[1] (judul match topik), id=2 exclude (cuma 'buku' generik).\n\n"
+
+    "FORMAT OUTPUT (JSON valid saja):\n"
+    "- ids_relevan: list id yang dipilih (boleh kosong [] kalau tidak ada).\n"
+    "- jawaban: 2-4 kalimat Bahasa Indonesia natural. Kalau ada hit, sebut judul "
+    "  dan ringkasan singkat. Kalau kosong, beri saran kata kunci alternatif.\n"
+    "{\"ids_relevan\": [1, 5], \"jawaban\": \"...\"}"
+)
+
+
+def pilih_dan_susun_jawaban(pertanyaan, kandidat):
+    """Re-rank semantik + susun jawaban dalam satu panggilan Groq.
+
+    kandidat: list of dict {id, judul, tipe_file, kategori, ringkasan, tanggal}
+    Return: {ids_relevan: [int], jawaban: str}
+
+    Filter hasil keyword search yang asal cocok tapi konteks tidak nyambung
+    (mis. semua foto buku muncul saat user cari foto 'bersikap bodo amat').
+    AI menilai berdasarkan judul + ringkasan, bukan sekadar string match.
+    """
+    if not kandidat:
+        return {"ids_relevan": [], "jawaban": ""}
+
+    baris = []
+    for k in kandidat:
+        baris.append(
+            f"id={k['id']} | judul: {k['judul']} | tipe: {k['tipe_file']} | "
+            f"kategori: {k.get('kategori') or '-'} | momen: {k.get('tanggal') or '-'}\n"
+            f"  ringkasan: {k.get('ringkasan') or '(tidak ada ringkasan)'}"
+        )
+    konteks = (
+        f"Pertanyaan pengguna: {pertanyaan}\n\n"
+        f"Kandidat file dari pencarian database:\n" + "\n".join(baris)
+    )
+
+    jawaban = _panggil_groq(
+        [
+            {"role": "system", "content": _SISTEM_RERANK},
+            {"role": "user", "content": konteks},
+        ],
+        mode_json=True,
+        suhu=0.2,
+        tugas="chatbot",
+    )
+    data = _muat_json(jawaban)
+    ids = data.get("ids_relevan") or []
+    # Validasi: ids HARUS subset dari kandidat (anti-halu)
+    valid_ids = {k["id"] for k in kandidat}
+    ids_bersih = [int(i) for i in ids if isinstance(i, (int, str)) and str(i).isdigit() and int(i) in valid_ids]
+    return {
+        "ids_relevan": ids_bersih,
+        "jawaban": (data.get("jawaban") or "").strip(),
+    }
+
+
+# ===================================================================
 # VISION: Image-to-Text yang mendalam
 # ===================================================================
 
