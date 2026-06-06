@@ -21,11 +21,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tema.css') }}" />
   <script>
+    // Konsisten dengan layout.html: set data-theme attribute (BUKAN class).
+    // CSS selector pakai [data-theme="dark"], harus match dengan ini.
     (function() {
-      const savedTheme = localStorage.getItem('gonanku-tema') || 'dark';
-      if (savedTheme === 'light') {
-        document.documentElement.classList.add('tema-terang');
-      }
+      const savedTheme = localStorage.getItem('gonanku-tema') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
     })();
   </script>
 </head>

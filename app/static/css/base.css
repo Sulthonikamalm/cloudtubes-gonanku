@@ -11,12 +11,13 @@
 
   /* Premium Aesthetic Background */
   --bg-main: #f0f4f8;
+  --bg-page: #f0f4f8;     /* sama dengan bg-main agar body & input form punya warna */
   --bg-mesh: url('../images/bg-aesthetic-light.png');
 
   --bg-panel-solid: #FFFFFF;
   --bg-sidebar: #FFFFFF;
   --bg-soft: #F1F5F9;
-  
+
   /* Glassmorphism Tokens */
   --glass-bg: rgba(255, 255, 255, 0.65);
   --glass-border: rgba(255, 255, 255, 0.8);
@@ -28,6 +29,7 @@
   --text-muted: #94A3B8;
 
   --border-soft: #E2E8F0;
+  --border-medium: #CBD5E1;
   
   --success: #10B981;
   --danger: #EF4444;
