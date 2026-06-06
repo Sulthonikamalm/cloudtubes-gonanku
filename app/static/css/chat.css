@@ -39,7 +39,7 @@
 .pesan.pengguna {
   align-self: flex-end;
   background: linear-gradient(135deg, #3B82F6, #2563EB);
-  color: var(--putih);
+  color: #ffffff;
   border-bottom-right-radius: 4px;
   box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
 }
@@ -47,7 +47,7 @@
 .pesan.bot {
   align-self: flex-start;
   background: var(--glass-bg);
-  color: var(--teks-utama);
+  color: var(--text-primary);
   border: 1px solid var(--glass-border);
   border-bottom-left-radius: 4px;
   backdrop-filter: var(--glass-blur);
@@ -75,8 +75,8 @@
   border-color: var(--glass-border-hover);
 }
 
-.kartu-file .judul { font-weight: 600; font-size: 13px; color: var(--teks-utama); }
-.kartu-file .meta { font-size: 12px; color: var(--teks-lembut); }
+.kartu-file .judul { font-weight: 600; font-size: 13px; color: var(--text-primary); }
+.kartu-file .meta { font-size: 12px; color: var(--text-muted); }
 
 .bar-input-chat {
   border-top: 1px solid var(--glass-border);
@@ -91,7 +91,7 @@
   font-size: 13px;
   font-weight: 700;
   margin-bottom: 10px;
-  color: var(--teks-utama);
+  color: var(--text-primary);
 }
 
 .saran {
@@ -103,7 +103,7 @@
   border-radius: var(--radius-sm);
   padding: 10px 12px;
   font-size: 13px;
-  color: var(--teks-utama);
+  color: var(--text-primary);
   cursor: pointer;
   margin-bottom: 8px;
   font-family: inherit;
@@ -159,14 +159,14 @@
   cursor: pointer;
   font-family: inherit;
   font-size: 13px;
-  color: var(--text-secondary, var(--teks-sekunder));
+  color: var(--text-secondary);
   border-radius: 8px;
   min-width: 0;
 }
 
 .riwayat-btn i {
   font-size: 14px;
-  color: var(--text-muted, var(--teks-lembut));
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
@@ -183,7 +183,7 @@
   border-radius: 6px;
   border: none;
   background: none;
-  color: var(--text-muted, var(--teks-lembut));
+  color: var(--text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;

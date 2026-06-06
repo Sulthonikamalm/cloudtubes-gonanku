@@ -52,7 +52,7 @@ body,
 /* ── Chat components ── */
 .pesan.bot {
   background: var(--glass-bg);
-  color: var(--teks-utama);
+  color: var(--text-primary);
   border: 1px solid var(--glass-border);
 }
 
