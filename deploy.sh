@@ -50,22 +50,26 @@ fi
 echo "==> [1/3] Build image via Cloud Build (~3-5 menit)..."
 gcloud builds submit --tag "${IMAGE}" --region="${REGION}"
 
-# ---------- BANGUN ENV VARS FILE (format YAML untuk --env-vars-file) ----------
+# ---------- BANGUN ENV VARS FILE (format JSON-valid YAML) ----------
 echo ""
 echo "==> [2/3] Bangun env vars dari .env.production..."
 
 ENV_FILE=$(mktemp)
-# Parse .env.production -> YAML aman terhadap koma/karakter spesial
-while IFS='=' read -r key value; do
-    # Skip baris kosong dan komentar
-    [[ -z "$key" || "$key" =~ ^# ]] && continue
-    # Trim whitespace
-    key=$(echo "$key" | xargs)
-    value=$(echo "$value" | xargs)
-    # Escape double-quote di value
-    value="${value//\"/\\\"}"
-    echo "${key}: \"${value}\"" >> "${ENV_FILE}"
-done < .env.production
+# Pakai Python supaya escaping (karakter spesial : @ / di DATABASE_URL/token)
+# konsisten dengan spek YAML/JSON yang dipakai gcloud --env-vars-file.
+python3 - <<'PYEOF' > "${ENV_FILE}"
+import json
+env = {}
+with open('.env.production') as f:
+    for line in f:
+        line = line.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+        k, v = line.split('=', 1)
+        env[k.strip()] = v.strip()
+# JSON valid YAML 1.2 — gcloud terima ini sebagai env-vars-file.
+print(json.dumps(env))
+PYEOF
 
 # ---------- DEPLOY ----------
 echo "==> [3/3] Deploy ke Cloud Run..."

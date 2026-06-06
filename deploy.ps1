@@ -54,23 +54,27 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# ---------- ENV VARS dari .env.production ----------
+# ---------- ENV VARS dari .env.production (JSON valid YAML) ----------
 Write-Host ""
 Write-Host "==> [2/3] Bangun env vars dari .env.production..." -ForegroundColor Cyan
 
-$envContent = Get-Content .env.production | Where-Object { $_ -and -not $_.StartsWith("#") -and $_.Contains("=") }
 $envFile = New-TemporaryFile
 
-# Tulis ulang ke format YAML untuk --env-vars-file (aman terhadap koma di dalam value).
-"" | Out-File -FilePath $envFile -Encoding utf8
-foreach ($line in $envContent) {
-    $idx = $line.IndexOf("=")
-    $k = $line.Substring(0, $idx).Trim()
-    $v = $line.Substring($idx + 1).Trim()
-    # Escape kutip ganda untuk YAML
-    $v = $v -replace '"', '\"'
-    "$k`: `"$v`"" | Out-File -FilePath $envFile -Encoding utf8 -Append
-}
+# Pakai Python (terinstall di laptop kamu) supaya escaping karakter spesial
+# konsisten dengan spek YAML/JSON yang dipakai gcloud --env-vars-file.
+$pythonScript = @"
+import json
+env = {}
+with open('.env.production') as f:
+    for line in f:
+        line = line.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+        k, v = line.split('=', 1)
+        env[k.strip()] = v.strip()
+print(json.dumps(env))
+"@
+$pythonScript | python | Out-File -FilePath $envFile -Encoding utf8
 
 # ---------- DEPLOY ----------
 Write-Host "==> [3/3] Deploy ke Cloud Run..." -ForegroundColor Cyan
