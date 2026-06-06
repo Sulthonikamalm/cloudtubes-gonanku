@@ -10,28 +10,31 @@
   <div class="header-halaman">
     <div>
       <h1>Chatbot Pencarian Arsip</h1>
-      <p class="subjudul">Tanyakan dengan bahasa natural, jawaban hanya dari arsip Gonanku.</p>
+      <p class="subjudul" id="info-mode-chat">Sesi chat baru. Tanyakan sesuatu di bawah.</p>
     </div>
-    {% if riwayat %}
-      <form method="post" action="{{ url_for('chat.bersihkan') }}"
-            onsubmit="return confirm('Bersihkan SEMUA riwayat percakapan?');" style="margin: 0;">
-        <button type="submit" class="tombol tombol-sekunder">
-          <i class="ri-refresh-line"></i> Mulai Chat Baru
-        </button>
-      </form>
-    {% endif %}
+    <div class="aksi-baris">
+      <button type="button" class="tombol tombol-sekunder" id="tombol-chat-baru" title="Mulai sesi chat baru (riwayat tidak dihapus)">
+        <i class="ri-add-line"></i> Chat Baru
+      </button>
+      {% if riwayat %}
+        <form method="post" action="{{ url_for('chat.bersihkan') }}"
+              onsubmit="return confirm('Hapus SEMUA riwayat permanen?');" style="margin: 0;">
+          <button type="submit" class="tombol tombol-bahaya" title="Hapus semua riwayat dari database">
+            <i class="ri-delete-bin-line"></i> Hapus Semua Riwayat
+          </button>
+        </form>
+      {% endif %}
+    </div>
   </div>
 
   <div class="tata-chat">
     <div class="kartu panel-chat">
       <div class="area-pesan" id="area-pesan">
-        {% if not riwayat %}
-          <div class="pesan bot">
-            Halo! Aku bisa membantu mencari arsipmu. Coba tanyakan sesuatu, misalnya
-            "tampilkan bukti pembayaran" atau "cari dokumen kuliah".
-          </div>
-        {% endif %}
-        {# Riwayat akan dirender oleh chat.js dari window.RIWAYAT_CHAT #}
+        <div class="pesan bot" id="pesan-sapaan">
+          Halo! 👋 Aku Gonanku, asisten pencari arsip pribadimu. Coba tanyakan
+          sesuatu, misalnya <em>"tampilkan bukti pembayaran"</em> atau
+          <em>"cari dokumen kuliah"</em>.
+        </div>
       </div>
       <form class="bar-input-chat" id="form-chat">
         <input class="input-form" type="text" id="input-pertanyaan" name="pertanyaan"
@@ -51,18 +54,28 @@
         </div>
       </div>
 
-      <div class="kartu">
+      <div class="kartu panel-riwayat">
         <div class="kartu-isi">
-          <div class="kartu-judul">Riwayat Pertanyaan</div>
-          {% if riwayat %}
-            {% for q in riwayat | reverse %}
-              <div class="riwayat-item" title="{{ q.pertanyaan }}">
-                {{ q.pertanyaan[:60] }}{% if q.pertanyaan|length > 60 %}...{% endif %}
-              </div>
-            {% endfor %}
-          {% else %}
-            <p class="subjudul">Belum ada riwayat.</p>
-          {% endif %}
+          <div class="kartu-judul">Riwayat</div>
+          <ul class="list-riwayat" id="list-riwayat">
+            {% if riwayat %}
+              {% for q in riwayat %}
+                <li class="riwayat-item" data-id="{{ q.id }}" title="{{ q.pertanyaan }} · {{ q.tanggal }}">
+                  <button type="button" class="riwayat-btn" data-id="{{ q.id }}">
+                    <i class="ri-chat-3-line"></i>
+                    <span class="riwayat-judul">{{ q.pertanyaan[:50] }}{% if q.pertanyaan|length > 50 %}…{% endif %}</span>
+                  </button>
+                  <button type="button" class="riwayat-hapus" data-id="{{ q.id }}" title="Hapus riwayat ini">
+                    <i class="ri-close-line"></i>
+                  </button>
+                </li>
+              {% endfor %}
+            {% else %}
+              <li class="riwayat-kosong">
+                <p class="subjudul">Belum ada riwayat. Ajukan pertanyaan untuk memulai.</p>
+              </li>
+            {% endif %}
+          </ul>
         </div>
       </div>
     </div>
@@ -72,7 +85,8 @@
 {% block js_tambahan %}
   <script>
     window.URL_CHAT_TANYA = "{{ url_for('chat.tanya') }}";
-    window.RIWAYAT_CHAT = {{ riwayat | tojson }};
+    window.URL_CHAT_RIWAYAT = "{{ url_for('chat.detail_riwayat', riwayat_id=0)|replace('/0','') }}";
+    window.URL_CHAT_HAPUS = "{{ url_for('chat.hapus', riwayat_id=0)|replace('/0/hapus','') }}";
   </script>
   <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
 {% endblock %}

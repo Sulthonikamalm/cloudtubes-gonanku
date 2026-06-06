@@ -1,24 +1,34 @@
-// Chatbot: render riwayat dari server, kirim pertanyaan baru, dan
-// tampilkan jawaban + kartu file. Riwayat tetap utuh saat refresh/pindah tab.
+// Chatbot Gonanku — ChatGPT-style UX:
+// - Buka chat = fresh state (cuma sapaan)
+// - Riwayat di sidebar, klik untuk lihat percakapan (load on-demand)
+// - "Chat Baru" reset area pesan (DB tidak disentuh)
+// - Hemat memory: tidak load semua percakapan saat page load
 (function () {
   const form = document.getElementById("form-chat");
   const input = document.getElementById("input-pertanyaan");
   const area = document.getElementById("area-pesan");
   const tombol = document.getElementById("tombol-kirim");
+  const tombolChatBaru = document.getElementById("tombol-chat-baru");
+  const listRiwayat = document.getElementById("list-riwayat");
+  const infoMode = document.getElementById("info-mode-chat");
 
   if (!form || !area) return;
 
+  // ── Helper DOM ──
   function buatElemen(kelas, isi) {
     const el = document.createElement("div");
     el.className = kelas;
     if (isi !== undefined) el.textContent = isi;
     return el;
   }
-
   function gulirBawah() {
     area.scrollTop = area.scrollHeight;
   }
+  function bersihkanArea() {
+    area.innerHTML = "";
+  }
 
+  // ── Render pesan ──
   function tambahPesanPengguna(teks) {
     area.appendChild(buatElemen("pesan pengguna", teks));
   }
@@ -41,21 +51,20 @@
 
       const aksi = buatElemen("div");
       aksi.className = "aksi-baris";
-      const tautanDetail = document.createElement("a");
-      tautanDetail.className = "tautan-aksi";
-      tautanDetail.href = b.url_detail;
-      tautanDetail.textContent = "Detail";
-      aksi.appendChild(tautanDetail);
+      const detail = document.createElement("a");
+      detail.className = "tautan-aksi";
+      detail.href = b.url_detail;
+      detail.textContent = "Detail";
+      aksi.appendChild(detail);
       if (b.url_telegram) {
-        const tautanTg = document.createElement("a");
-        tautanTg.className = "tautan-aksi";
-        tautanTg.href = b.url_telegram;
-        tautanTg.target = "_blank";
-        tautanTg.rel = "noopener";
-        tautanTg.textContent = "Telegram";
-        aksi.appendChild(tautanTg);
+        const tg = document.createElement("a");
+        tg.className = "tautan-aksi";
+        tg.href = b.url_telegram;
+        tg.target = "_blank";
+        tg.rel = "noopener";
+        tg.textContent = "Telegram";
+        aksi.appendChild(tg);
       }
-
       kartu.appendChild(kiri);
       kartu.appendChild(aksi);
       wadah.appendChild(kartu);
@@ -65,24 +74,113 @@
 
   function tambahJawabanBot(jawaban, berkas) {
     const bubble = buatElemen("pesan bot");
-    bubble.textContent = jawaban;
+    bubble.textContent = jawaban || "";
     if (berkas && berkas.length) tambahKartuFile(bubble, berkas);
     area.appendChild(bubble);
   }
 
-  // ── Render riwayat dari server saat halaman dibuka ──
-  // window.RIWAYAT_CHAT sudah di-inject template dengan urutan lama -> baru.
-  function renderRiwayat() {
-    const riwayat = window.RIWAYAT_CHAT || [];
-    riwayat.forEach((r) => {
-      tambahPesanPengguna(r.pertanyaan);
-      tambahJawabanBot(r.jawaban || "", r.berkas);
-    });
-    gulirBawah();
+  function tambahPesanSapaan() {
+    const bubble = buatElemen("pesan bot");
+    bubble.innerHTML =
+      'Halo! 👋 Aku Gonanku, asisten pencari arsip pribadimu. Coba tanyakan ' +
+      'sesuatu, misalnya <em>"tampilkan bukti pembayaran"</em> atau ' +
+      '<em>"cari dokumen kuliah"</em>.';
+    area.appendChild(bubble);
   }
-  renderRiwayat();
 
+  // ── Mode state ──
+  function setActiveRiwayat(id) {
+    listRiwayat.querySelectorAll(".riwayat-item").forEach((li) => {
+      li.classList.toggle("aktif", li.dataset.id === String(id));
+    });
+  }
+
+  function modeChatBaru() {
+    bersihkanArea();
+    tambahPesanSapaan();
+    setActiveRiwayat(null);
+    if (infoMode) infoMode.textContent = "Sesi chat baru. Tanyakan sesuatu di bawah.";
+    input.focus();
+  }
+
+  function modeLihatRiwayat(tanggal) {
+    if (infoMode) {
+      infoMode.textContent = "Melihat percakapan dari " + (tanggal || "riwayat") +
+        ". Tulis pertanyaan baru untuk memulai sesi baru.";
+    }
+  }
+
+  // ── Load percakapan dari riwayat (on-demand AJAX) ──
+  async function bukaRiwayat(id) {
+    try {
+      const resp = await fetch(window.URL_CHAT_RIWAYAT + "/" + id);
+      if (!resp.ok) throw new Error("Gagal memuat riwayat");
+      const data = await resp.json();
+      bersihkanArea();
+      tambahPesanPengguna(data.pertanyaan);
+      tambahJawabanBot(data.jawaban, data.berkas);
+      setActiveRiwayat(id);
+      modeLihatRiwayat(data.tanggal);
+      gulirBawah();
+    } catch (e) {
+      alert("Gagal memuat riwayat. Coba lagi.");
+    }
+  }
+
+  async function hapusRiwayat(id, liElement) {
+    if (!confirm("Hapus entri riwayat ini?")) return;
+    try {
+      const resp = await fetch(window.URL_CHAT_HAPUS + "/" + id + "/hapus", {
+        method: "POST",
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+      });
+      if (resp.ok) {
+        liElement.remove();
+        // Kalau yang dihapus sedang aktif, reset ke chat baru
+        if (liElement.classList.contains("aktif")) modeChatBaru();
+        // Kalau list jadi kosong, tampilkan placeholder
+        if (listRiwayat.children.length === 0) {
+          const li = document.createElement("li");
+          li.className = "riwayat-kosong";
+          li.innerHTML = '<p class="subjudul">Belum ada riwayat. Ajukan pertanyaan untuk memulai.</p>';
+          listRiwayat.appendChild(li);
+        }
+      }
+    } catch (e) { /* silent fail */ }
+  }
+
+  // ── Tambah item riwayat baru di sidebar setelah submit pertanyaan ──
+  function tambahItemRiwayat(id, pertanyaan, tanggal) {
+    // Kalau placeholder "kosong" ada, hapus dulu
+    const kosong = listRiwayat.querySelector(".riwayat-kosong");
+    if (kosong) kosong.remove();
+
+    const li = document.createElement("li");
+    li.className = "riwayat-item";
+    li.dataset.id = id;
+    li.title = pertanyaan + " · " + (tanggal || "");
+    li.innerHTML = `
+      <button type="button" class="riwayat-btn" data-id="${id}">
+        <i class="ri-chat-3-line"></i>
+        <span class="riwayat-judul">${pertanyaan.length > 50 ? pertanyaan.slice(0, 50) + "…" : pertanyaan}</span>
+      </button>
+      <button type="button" class="riwayat-hapus" data-id="${id}" title="Hapus riwayat ini">
+        <i class="ri-close-line"></i>
+      </button>
+    `;
+    listRiwayat.insertBefore(li, listRiwayat.firstChild);
+  }
+
+  // ── Kirim pertanyaan baru ──
   async function kirimPertanyaan(pertanyaan) {
+    // Kalau sedang lihat riwayat, otomatis mulai sesi baru saat user kirim
+    if (area.querySelector(".pesan.pengguna") && !document.querySelector(".riwayat-item.aktif:last-child")) {
+      // sudah di mode chat baru, lanjut append
+    } else if (document.querySelector(".riwayat-item.aktif")) {
+      bersihkanArea();
+      setActiveRiwayat(null);
+    }
+
     tambahPesanPengguna(pertanyaan);
     gulirBawah();
 
@@ -103,6 +201,12 @@
       const hasil = await resp.json();
       bubble.textContent = hasil.jawaban;
       tambahKartuFile(bubble, hasil.berkas);
+
+      // Tambah ke sidebar riwayat
+      if (hasil.riwayat_id) {
+        tambahItemRiwayat(hasil.riwayat_id, pertanyaan, hasil.riwayat_tanggal);
+      }
+      if (infoMode) infoMode.textContent = "Sesi chat live. Tanyakan apa pun, riwayat tersimpan otomatis.";
     } catch (e) {
       bubble.textContent = "Maaf, terjadi kendala saat memproses pertanyaan.";
     } finally {
@@ -111,12 +215,13 @@
     }
   }
 
+  // ── Event listeners ──
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const pertanyaan = input.value.trim();
-    if (!pertanyaan) return;
+    const p = input.value.trim();
+    if (!p) return;
     input.value = "";
-    kirimPertanyaan(pertanyaan);
+    kirimPertanyaan(p);
   });
 
   document.querySelectorAll(".saran").forEach((btn) => {
@@ -124,5 +229,25 @@
       input.value = btn.textContent.trim();
       form.requestSubmit();
     });
+  });
+
+  if (tombolChatBaru) {
+    tombolChatBaru.addEventListener("click", modeChatBaru);
+  }
+
+  // Klik item riwayat → load percakapan
+  // Pakai event delegation supaya item baru pun otomatis ter-handle
+  listRiwayat.addEventListener("click", (e) => {
+    const btnHapus = e.target.closest(".riwayat-hapus");
+    if (btnHapus) {
+      e.stopPropagation();
+      const li = btnHapus.closest(".riwayat-item");
+      hapusRiwayat(btnHapus.dataset.id, li);
+      return;
+    }
+    const btnBuka = e.target.closest(".riwayat-btn");
+    if (btnBuka) {
+      bukaRiwayat(btnBuka.dataset.id);
+    }
   });
 })();

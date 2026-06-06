@@ -116,11 +116,95 @@
   box-shadow: 0 0 12px var(--aksen-glow);
 }
 
+/* ── Sidebar riwayat (clickable items, ChatGPT-style) ── */
+.list-riwayat {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
 .riwayat-item {
-  padding: 8px 0;
-  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+  position: relative;
+}
+.riwayat-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+.riwayat-item.aktif {
+  background: rgba(28, 77, 141, 0.12);
+}
+.riwayat-item.aktif .riwayat-btn {
+  color: var(--royal-blue);
+  font-weight: 600;
+}
+
+.riwayat-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 9px 10px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
   font-size: 13px;
-  color: var(--teks-sekunder);
+  color: var(--text-secondary, var(--teks-sekunder));
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.riwayat-btn i {
+  font-size: 14px;
+  color: var(--text-muted, var(--teks-lembut));
+  flex-shrink: 0;
+}
+
+.riwayat-judul {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.riwayat-hapus {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  color: var(--text-muted, var(--teks-lembut));
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  margin-right: 4px;
+}
+.riwayat-item:hover .riwayat-hapus,
+.riwayat-item.aktif .riwayat-hapus {
+  opacity: 1;
+}
+.riwayat-hapus:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger, #ef4444);
+}
+
+.riwayat-kosong {
+  padding: 12px;
+  text-align: center;
 }
 
 @media (max-width: 860px) {
