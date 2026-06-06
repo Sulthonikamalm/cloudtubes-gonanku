@@ -104,6 +104,39 @@ def upload():
     )
 
 
+@berkas_bp.route("/unggah-satu", methods=["POST"])
+@login_required
+def unggah_satu():
+    """Endpoint AJAX: upload 1 file per request (untuk bypass batas 32 MiB
+    Cloud Run HTTP/1).
+
+    Frontend kirim file satu-per-satu dari batch → tiap request kecil
+    → user lihat progress per file. Total kapasitas batch tidak lagi
+    dibatasi MAX_CONTENT_LENGTH karena tiap file punya request sendiri.
+    """
+    from flask import jsonify
+    file = request.files.get("file")
+    hasil_dict, pesan = None, None
+
+    try:
+        berkas, pesan = layanan_berkas.unggah_berkas(
+            current_user.id, file, request.form
+        )
+    except Exception as e:
+        return jsonify({"ok": False, "error": f"Kesalahan tak terduga: {e}"}), 500
+
+    if berkas is None:
+        return jsonify({"ok": False, "error": pesan or "Gagal upload."}), 400
+
+    return jsonify({
+        "ok": True,
+        "berkas_id": berkas.id,
+        "judul": berkas.judul,
+        "kode_arsip": berkas.kode_arsip,
+        "url_detail": url_for("berkas.detail", berkas_id=berkas.id),
+    })
+
+
 @berkas_bp.route("/sampah")
 @login_required
 def sampah():

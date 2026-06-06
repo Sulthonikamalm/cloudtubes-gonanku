@@ -18,9 +18,10 @@
     <div class="kartu-isi">
       <div class="catatan-privasi">
         File akan dikirim ke Telegram private channel, sementara Gonanku menyimpan
-        metadata agar arsip mudah dicari kembali. Maks {{ config.MAX_UPLOAD_MB }} MB per file ·
+        metadata agar arsip mudah dicari kembali. Maks <strong>30 MB per file</strong> ·
         maks <strong>{{ config.BATAS_UPLOAD_FOTO }} foto/screenshot</strong> atau
         <strong>{{ config.BATAS_UPLOAD_DOKUMEN }} dokumen</strong> per upload.
+        File dikirim satu-per-satu jadi kamu bisa lihat progress tiap file.
       </div>
 
       <form method="post" enctype="multipart/form-data" id="form-upload">
@@ -101,8 +102,35 @@
       </form>
     </div>
   </div>
+
+  <!-- Modal progress upload (muncul saat proses jalan) -->
+  <div class="overlay-progress" id="overlay-progress" hidden>
+    <div class="kartu modal-progress">
+      <div class="kartu-isi">
+        <div class="kartu-judul">
+          <span id="progress-judul">Mengunggah berkas...</span>
+          <span class="kode-arsip" id="progress-counter">0/0</span>
+        </div>
+        <div class="bar-progress-luar">
+          <div class="bar-progress-dalam" id="bar-progress-dalam" style="width: 0%"></div>
+        </div>
+        <ul class="list-progress" id="list-progress"></ul>
+        <p class="subjudul" id="progress-info">
+          Tetap di halaman ini sampai semua selesai. File berhasil bisa langsung dibuka di Telegram.
+        </p>
+        <div class="aksi-form" id="progress-aksi" hidden>
+          <a class="tombol tombol-utama" href="{{ url_for('berkas.index') }}">Lihat Arsip</a>
+          <button type="button" class="tombol tombol-sekunder" id="tombol-upload-lagi">Upload Lagi</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block js_tambahan %}
+  <script>
+    window.URL_UNGGAH_SATU = "{{ url_for('berkas.unggah_satu') }}";
+    window.MAX_FILE_MB = 30;  // Cloud Run HTTP/1 batas 32 MiB, kasih buffer 2 MiB
+  </script>
   <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 {% endblock %}

@@ -38,8 +38,11 @@ class Config:
     SQLALCHEMY_DATABASE_URI = _ambil_database_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Batas upload per file (PRD: maksimal 50 MB).
-    MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "50"))
+    # Batas upload per file. Cloud Run HTTP/1 menolak request > 32 MiB
+    # SEBELUM sampai ke aplikasi, jadi cap 30 MB memberi buffer aman.
+    # Upload per-file via AJAX (bukan bulk multipart) supaya tiap request
+    # selalu < 32 MiB walaupun user pilih banyak file.
+    MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "30"))
 
     # Batas batch upload per satu permintaan (mencegah overload AI/Telegram).
     BATAS_UPLOAD_FOTO = int(os.getenv("BATAS_UPLOAD_FOTO", "15"))
