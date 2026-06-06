@@ -1,0 +1,49 @@
+# File yang TIDAK perlu di-upload ke Cloud Build saat deploy.
+# Mempercepat upload + image lebih ringan.
+
+.git
+.gitignore
+.dockerignore
+.gcloudignore
+
+# Secret lokal (Cloud Run pakai env var, bukan .env)
+.env
+.env.production
+
+# DB & uploads lokal
+*.sqlite3
+*.db
+instance/
+uploads_temp/*
+!uploads_temp/.gitkeep
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Dokumen PRD & deploy artifact (tidak perlu di image)
+PRD*.pdf
+PRD*.md
+DEPLOY.md
+deploy.ps1
+deploy.sh
+migrate.ps1
+migrate.sh
+
+# Skrip test ad-hoc
+_*.py
+
+# Migrations versions tetap di-include (perlu untuk schema reproducibility)
+# tapi __pycache__ alembic dibuang
+migrations/__pycache__/
+migrations/versions/__pycache__/

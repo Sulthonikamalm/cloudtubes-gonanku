@@ -9,9 +9,13 @@ load_dotenv()
 def _ambil_database_url():
     """Ambil URL database dari environment.
 
-    Production memakai Cloud SQL PostgreSQL. Jika DATABASE_URL kosong,
-    pakai SQLite lokal agar aplikasi tetap bisa dijalankan saat
-    pengembangan awal tanpa server Postgres.
+    Production memakai PostgreSQL managed (Cloud SQL atau Supabase). Jika
+    DATABASE_URL kosong, pakai SQLite lokal agar aplikasi tetap bisa
+    dijalankan saat pengembangan tanpa server Postgres.
+
+    Safety net untuk Postgres publik (Supabase, Neon, dll):
+    auto-tambah `sslmode=require` bila belum diset. Tanpa SSL, koneksi
+    ke Supabase ditolak dan upload/login akan gagal silent saat deploy.
     """
     url = os.getenv("DATABASE_URL", "").strip()
     if not url:
@@ -19,6 +23,9 @@ def _ambil_database_url():
     # Normalisasi skema lama "postgres://" ke "postgresql://".
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
+    # Auto-pasang sslmode=require untuk koneksi PostgreSQL publik.
+    if url.startswith("postgresql://") and "sslmode=" not in url:
+        url += "&sslmode=require" if "?" in url else "?sslmode=require"
     return url
 
 

@@ -1,5 +1,8 @@
 # Secret lokal
 .env
+.env.production
+.env.local
+.env.*.local
 
 # File sementara upload (tidak boleh masuk repo)
 uploads_temp/*

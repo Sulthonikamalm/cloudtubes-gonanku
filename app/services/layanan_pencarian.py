@@ -12,7 +12,7 @@ yang paling relevan:
 
 from datetime import datetime
 
-from sqlalchemy import case, func
+from sqlalchemy import case
 
 from app.extensions import db
 from app.models import Berkas, Kategori, Tag

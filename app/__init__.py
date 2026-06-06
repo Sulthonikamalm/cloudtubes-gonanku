@@ -24,8 +24,16 @@ def buat_aplikasi(config_class=Config):
     _daftarkan_blueprint(app)
     _daftarkan_error_handler(app)
     _daftarkan_perintah_cli(app)
+    _daftarkan_healthcheck(app)
 
     return app
+
+
+def _daftarkan_healthcheck(app):
+    """Endpoint ringan untuk health probe Cloud Run/Docker. Tidak login required."""
+    @app.route("/health")
+    def health():
+        return {"status": "ok", "app": app.config.get("APP_NAME", "Gonanku")}, 200
 
 
 def _daftarkan_extension(app):
