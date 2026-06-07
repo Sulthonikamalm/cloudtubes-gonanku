@@ -79,6 +79,17 @@ class Config:
     # Header alternatif yang dibaca CSRFProtect untuk request AJAX.
     WTF_CSRF_HEADERS = ["X-CSRFToken", "X-CSRF-Token"]
 
+    # ───── Rate limiting (Flask-Limiter) ─────
+    # Backend storage. "memory://" cocok untuk dev dan single-instance Cloud Run.
+    # Untuk multi-instance (autoscaling), set RATELIMIT_STORAGE_URI di env ke
+    # Redis (mis. redis://10.0.0.1:6379) supaya counter konsisten antar instance.
+    RATELIMIT_STORAGE_URI = os.getenv("RATELIMIT_STORAGE_URI", "memory://")
+    # Tidak memberlakukan limit default global — hanya endpoint yang
+    # di-decorate eksplisit (saat ini: /login POST) yang dibatasi.
+    RATELIMIT_DEFAULT = ""
+    # Header Retry-After + RateLimit-Remaining biar client bisa pakai info ini.
+    RATELIMIT_HEADERS_ENABLED = True
+
     # Batas upload per file. Cloud Run HTTP/1 menolak request > 32 MiB
     # SEBELUM sampai ke aplikasi, jadi cap 30 MB memberi buffer aman.
     # Upload per-file via AJAX (bukan bulk multipart) supaya tiap request

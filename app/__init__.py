@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, url_for, flash
 
 from app.config import Config
-from app.extensions import db, migrate, login_manager, csrf
+from app.extensions import db, migrate, login_manager, csrf, limiter
 from app.utils.format_ukuran import format_ukuran
 from app.utils.format_tanggal import format_tanggal, format_tanggal_jam
 
@@ -43,6 +43,9 @@ def _daftarkan_extension(app):
     # CSRFProtect aktif untuk SEMUA POST/PUT/DELETE. Template wajib pakai
     # {{ csrf_token() }}. AJAX wajib kirim header X-CSRFToken.
     csrf.init_app(app)
+    # Rate limiter. Decorator @limiter.limit(...) di route /login membatasi
+    # brute force (5 attempt POST per 5 menit per IP).
+    limiter.init_app(app)
 
     from app.models import Pengguna  # noqa: F401 — registrasi metadata SQLAlchemy
 
@@ -115,6 +118,16 @@ def _daftarkan_error_handler(app):
             kode=400,
             pesan="Sesi telah berakhir atau permintaan tidak valid. Silakan muat ulang halaman dan coba lagi.",
         ), 400
+
+    @app.errorhandler(429)
+    def terlalu_banyak_permintaan(_e):
+        # Flask-Limiter raise saat user kena rate limit. Pesan ramah supaya
+        # user paham harus tunggu, bukan langsung ulang-ulang klik.
+        return render_template(
+            "error.html",
+            kode=429,
+            pesan="Terlalu banyak percobaan. Silakan tunggu beberapa menit sebelum mencoba lagi.",
+        ), 429
 
 
 def _daftarkan_perintah_cli(app):

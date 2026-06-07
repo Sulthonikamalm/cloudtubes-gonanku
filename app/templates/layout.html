@@ -97,8 +97,15 @@
           <form action="{{ url_for('auth.upload_profil') }}" method="post" enctype="multipart/form-data" id="form-upload-profil" style="margin: 0; padding: 0;">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <label class="profil-gambar" title="Ganti Foto Profil" style="margin: 0; display: flex; align-items: center; justify-content: center; position: relative;">
-              {% if current_user.foto_profil %}
-                <img src="{{ url_for('static', filename=current_user.foto_profil) }}" alt="Foto Profil" style="width: 100%; height: 100%; object-fit: cover;">
+              {% if current_user.foto_profil and current_user.foto_profil.startswith('data:') %}
+                {# Foto disimpan sebagai data URL base64 (persistent di Cloud Run). #}
+                <img src="{{ current_user.foto_profil }}" alt="Foto Profil" style="width: 100%; height: 100%; object-fit: cover;">
+              {% elif current_user.foto_profil %}
+                {# Legacy path-style — tidak akan ada lagi setelah migrasi, tapi
+                   kalau ada baris lama di DB, render dari static. Akan 404 di
+                   Cloud Run dan jatuh ke broken img — fallback aman. #}
+                <img src="{{ url_for('static', filename=current_user.foto_profil) }}" alt="Foto Profil" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.querySelector('span').style.display='inline'">
+                <span style="display:none;">{{ current_user.nama[0] | upper }}</span>
               {% else %}
                 <span>{{ current_user.nama[0] | upper }}</span>
               {% endif %}
