@@ -3,410 +3,466 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gonanku — Vault Memori Digital Pribadi Ditenagai AI</title>
-  <meta name="description" content="Gonanku menyimpan, mengkurasi, dan mencari arsip digital pribadimu secara otomatis dengan AI. Foto, dokumen, screenshot — semua tertata dan mudah ditemukan." />
-
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}" />
+  <title>Gonanku — Vault memori pribadi yang cerdas</title>
+  <meta name="description" content="Gonanku menyimpan, memahami, dan menemukan kembali kenanganmu lewat AI. Dibangun dengan privasi sebagai fondasi." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" />
 </head>
-<body class="landing">
+<body>
 
-  <!-- ═══════════════════ NAVBAR ═══════════════════ -->
-  <header class="navbar" id="navbar">
-    <div class="kontainer navbar-inner">
-      <a class="brand" href="{{ url_for('dashboard.beranda') }}">
+  <!-- Navbar -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/">
         <span class="brand-mark">G</span>
         <span>Gonanku</span>
       </a>
-      <nav class="nav-links">
+      <nav class="nav-menu">
         <a href="#fitur">Fitur</a>
-        <a href="#showcase">Showcase</a>
-        <a href="#alur">Cara Pakai</a>
-        <a href="#tentang">Tentang</a>
+        <a href="#cara">Cara Kerja</a>
+        <a href="#angka">Skala</a>
       </nav>
-      <a class="btn btn-primary" href="{{ url_for('auth.login') }}">
-        Masuk <i class="ri-arrow-right-line"></i>
+      <a class="nav-cta" href="{{ url_for('auth.login') }}">
+        Masuk <span class="arr">→</span>
       </a>
     </div>
   </header>
 
-  <!-- ═══════════════════ HERO ═══════════════════ -->
+  <!-- Hero -->
   <section class="hero">
-    <div class="kontainer hero-inner">
-      <div class="hero-text reveal">
-        <span class="hero-eyebrow">
-          <span class="dot"></span> Personal AI Memory Vault
-        </span>
-        <h1>
-          Vault Memori Digital
-          <span class="grad">Ditenagai AI</span>
-          untuk Hidupmu
-        </h1>
-        <p class="lead">
-          Simpan foto, dokumen, dan momen penting di tempat aman. Biarkan AI yang
-          memberi judul, kategori, ringkasan, dan menemukan kembali arsipmu kapan
-          pun kamu butuh — cukup dengan bahasa natural.
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary btn-lg" href="{{ url_for('auth.login') }}">
-            Mulai Sekarang <i class="ri-arrow-right-line"></i>
-          </a>
-          <a class="btn btn-ghost btn-lg" href="#fitur">
-            <i class="ri-play-circle-line"></i> Lihat Cara Kerja
-          </a>
-        </div>
-        <div class="hero-trust">
-          <div class="avatars">
-            <span>S</span><span>A</span><span>R</span>
-          </div>
-          <div>
-            <strong style="color: var(--navy);">4.9/5</strong> dari pengguna awal ·
-            Aktif di Cloud Run + Supabase
-          </div>
-        </div>
-      </div>
-
-      <!-- Floating mockup cards -->
-      <div class="hero-visual reveal reveal-delay-2">
-        <!-- Card 1: Dashboard metric -->
-        <div class="mock mock-1">
-          <div class="mock-head">
-            <div class="mock-icon"><i class="ri-archive-2-line"></i></div>
-            <div>
-              <div class="mock-title">Total Arsip</div>
-              <div class="mock-sub">Vault aktif</div>
-            </div>
-          </div>
-          <div class="mock-label">Berkas</div>
-          <div class="mock-value">2.259 <span class="satuan">file</span><span class="mock-badge">+20%</span></div>
-        </div>
-
-        <!-- Card 2: Chatbot center -->
-        <div class="mock mock-2">
-          <div class="mock-head">
-            <div class="mock-icon purple"><i class="ri-chat-smile-2-line"></i></div>
-            <div>
-              <div class="mock-title">Pencarian AI</div>
-              <div class="mock-sub">Bahasa natural</div>
-            </div>
-          </div>
-          <div class="mock-bubble user">
-            Foto wisuda tahun 2024?
-          </div>
-          <div class="mock-bubble">
-            Ditemukan 1 foto: <strong>Wisuda Kakak</strong> · 15 Juni 2024 di Gedung Sate.
-          </div>
-        </div>
-
-        <!-- Card 3: Vision AI -->
-        <div class="mock mock-3">
-          <div class="mock-head">
-            <div class="mock-icon green"><i class="ri-eye-line"></i></div>
-            <div>
-              <div class="mock-title">AI Vision</div>
-              <div class="mock-sub">Auto-tag</div>
-            </div>
-          </div>
-          <div class="mock-label">Terdeteksi</div>
-          <div class="mock-value" style="font-size: 16px;">Bukti Bayar Kos</div>
-          <div class="mock-sub" style="margin-top: 4px;">Juni 2026 · Rp 1.200.000</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════ STATS ═══════════════════ -->
-  <section class="stats-strip">
-    <div class="kontainer">
-      <div class="stats-grid">
-        <div class="reveal">
-          <div class="stat-num">5</div>
-          <div class="stat-label">API Key AI dengan Failover</div>
-        </div>
-        <div class="reveal reveal-delay-1">
-          <div class="stat-num">100%</div>
-          <div class="stat-label">Data Terisolasi per Pengguna</div>
-        </div>
-        <div class="reveal reveal-delay-2">
-          <div class="stat-num">30 MB</div>
-          <div class="stat-label">Per File Upload</div>
-        </div>
-        <div class="reveal reveal-delay-3">
-          <div class="stat-num">∞</div>
-          <div class="stat-label">Penyimpanan via Telegram</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════ VALUE / FITUR ═══════════════════ -->
-  <section class="section" id="fitur">
-    <div class="kontainer">
-      <div class="section-head">
-        <span class="section-eyebrow reveal">Keunggulan</span>
-        <h2 class="reveal">Lebih dari Sekadar <span class="grad">Penyimpan File</span></h2>
-        <p class="lead reveal">
-          Gonanku menggabungkan kemampuan AI multimodal, vision recognition,
-          dan pencarian semantik dalam satu vault aman.
-        </p>
-      </div>
-
-      <div class="value-grid">
-        <div class="value-card reveal">
-          <div class="value-icon"><i class="ri-magic-line"></i></div>
-          <h3>Metadata Otomatis</h3>
-          <p>Judul, kategori, tag, dan ringkasan dihasilkan AI saat upload. Tidak perlu mengetik manual.</p>
-        </div>
-        <div class="value-card reveal reveal-delay-1">
-          <div class="value-icon"><i class="ri-image-2-line"></i></div>
-          <h3>AI Vision</h3>
-          <p>Foto dan screenshot dipahami isinya — termasuk teks dalam gambar, wajah, dan konteks visual.</p>
-        </div>
-        <div class="value-card reveal reveal-delay-2">
-          <div class="value-icon"><i class="ri-search-eye-line"></i></div>
-          <h3>Pencarian Natural</h3>
-          <p>Tanya seperti ngobrol: "foto wisuda tahun lalu", "bukti bayar kos juni". AI yang nyari.</p>
-        </div>
-        <div class="value-card reveal reveal-delay-3">
-          <div class="value-icon"><i class="ri-shield-keyhole-line"></i></div>
-          <h3>Privasi Penuh</h3>
-          <p>File asli di Telegram private channel-mu sendiri. Database hanya menyimpan metadata.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════ SHOWCASE ═══════════════════ -->
-  <section class="section showcase" id="showcase">
-    <div class="kontainer">
-      <div class="section-head">
-        <span class="section-eyebrow reveal">Showcase</span>
-        <h2 class="reveal">Cara Kami <span class="grad">Membuat Hidup Lebih Rapi</span></h2>
-      </div>
-
-      <!-- Row 1: Dashboard -->
-      <div class="showcase-row">
-        <div class="showcase-text reveal">
-          <h3>Dashboard Cerdas dengan 16 Metrik</h3>
-          <p>
-            Lihat ringkasan arsip digital dalam sekali pandang. Total file per tipe,
-            ukuran, file sensitif, status AI, hingga aktivitas terbaru — semua
-            dihitung otomatis dengan zona waktu WIB.
-          </p>
-          <ul class="showcase-list">
-            <li>Komposisi file per tipe + tren bulanan</li>
-            <li>File belum dikategorikan + diproses AI</li>
-            <li>Aktivitas terbaru dengan audit log</li>
-          </ul>
-        </div>
-        <div class="showcase-visual reveal reveal-delay-1">
-          <div class="viz-stat">
-            <span class="label">Total Arsip</span>
-            <span class="val">2.259 <span class="delta">+20%</span></span>
-          </div>
-          <div class="viz-stat">
-            <span class="label">Foto</span>
-            <span class="val">1.842</span>
-          </div>
-          <div class="viz-stat">
-            <span class="label">Dokumen</span>
-            <span class="val">312</span>
-          </div>
-          <div class="viz-stat">
-            <span class="label">Total Ukuran</span>
-            <span class="val">8.4 GB</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 2: Chatbot -->
-      <div class="showcase-row reverse">
-        <div class="showcase-text reveal">
-          <h3>Chatbot Pencarian Berbahasa Natural</h3>
-          <p>
-            Tidak perlu ingat nama file atau folder. Tanya saja seperti ngobrol —
-            AI akan extract intent, cari di database, dan rerank semantik untuk
-            menampilkan hanya hasil yang benar-benar relevan.
-          </p>
-          <ul class="showcase-list">
-            <li>Anti-halu: hanya jawab dari database</li>
-            <li>Pemahaman tanggal natural ("bulan lalu", "tahun 2019")</li>
-            <li>Riwayat chat per-sesi, mudah dibuka ulang</li>
-          </ul>
-        </div>
-        <div class="showcase-visual reveal reveal-delay-1">
-          <div class="chat-demo">
-            <div class="chat-bubble user">ada foto momen di tahun 2019?</div>
-            <div class="chat-bubble bot">
-              Ditemukan 3 foto dari tahun 2019: <strong>Liburan Bali</strong>,
-              <strong>Konser Padi Reborn</strong>, <strong>Foto Keluarga Idul Fitri</strong>.
-              Ingin saya tampilkan kartunya?
-            </div>
-            <div class="chat-bubble user">iya, yang konser saja</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 3: Vision -->
-      <div class="showcase-row">
-        <div class="showcase-text reveal">
-          <h3>AI Vision: Foto yang Tahu Dirinya Sendiri</h3>
-          <p>
-            Setiap foto yang di-upload dianalisis oleh model multimodal Groq.
-            Hasilnya: judul deskriptif, kategori yang tepat, tag relevan, dan
-            ringkasan isi gambar — bahkan teks dalam foto bisa terbaca.
-          </p>
-          <ul class="showcase-list">
-            <li>OCR otomatis untuk struk, sertifikat, dokumen scan</li>
-            <li>Tanggal momen dari EXIF (foto kamera)</li>
-            <li>5 key Groq dengan failover lapis berlapis</li>
-          </ul>
-        </div>
-        <div class="showcase-visual reveal reveal-delay-1">
-          <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 16px;">
-            <div style="width: 80px; height: 80px; border-radius: 12px; background: var(--grad-primary); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px;">
-              <i class="ri-image-2-line"></i>
-            </div>
-            <div>
-              <div style="font-weight: 700; color: var(--navy); font-size: 15px;">Foto Wisuda Sarjana</div>
-              <div style="font-size: 12px; color: var(--slate-500);">GNK-A4F2B91 · 15 Juni 2024</div>
-            </div>
-          </div>
-          <div style="font-size: 13.5px; color: var(--slate-700); line-height: 1.6; padding: 14px; background: var(--slate-50); border-radius: 12px;">
-            <strong style="color: var(--blue-600);">Vision AI:</strong> Seorang
-            pria muda mengenakan toga hitam dan topi sarjana berdiri di depan
-            gedung kampus, memegang ijazah sambil tersenyum. Tampak keluarga di
-            latar belakang.
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════ STEPS ═══════════════════ -->
-  <section class="section" id="alur">
-    <div class="kontainer">
-      <div class="section-head">
-        <span class="section-eyebrow reveal">3 Langkah Mudah</span>
-        <h2 class="reveal">Mulai Pakai dalam <span class="grad">Hitungan Menit</span></h2>
-      </div>
-
-      <div class="steps">
-        <div class="step reveal">
-          <div class="step-num">1</div>
-          <h3>Masuk ke Sistem</h3>
-          <p>Login dengan akun yang sudah disiapkan. Vault pribadimu langsung siap pakai.</p>
-        </div>
-        <div class="step reveal reveal-delay-1">
-          <div class="step-num">2</div>
-          <h3>Upload File</h3>
-          <p>Drag foto/dokumen ke dashboard. AI auto-generate metadata + ekstrak tanggal dari EXIF.</p>
-        </div>
-        <div class="step reveal reveal-delay-2">
-          <div class="step-num">3</div>
-          <h3>Cari & Temukan</h3>
-          <p>Pakai chatbot untuk pencarian natural, atau filter manual via halaman Arsip.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════ CTA ═══════════════════ -->
-  <section class="cta-section" id="tentang">
-    <div class="kontainer">
-      <div class="cta-card reveal">
-        <h2>Siap Punya Vault Memori<br/>yang Mengurus Dirinya Sendiri?</h2>
-        <p>
-          Gabung dan rasakan bagaimana AI mengubah cara kamu menyimpan,
-          mengatur, dan menemukan kembali arsip digital pribadimu.
-        </p>
-        <a class="btn btn-light btn-lg" href="{{ url_for('auth.login') }}">
-          Masuk Sekarang <i class="ri-arrow-right-line"></i>
+    <div class="wrap">
+      <span class="eyebrow"><span class="dot"></span> Personal AI Memory Vault</span>
+      <h1 class="hero-title">
+        Kenanganmu, <span class="serif">terjaga</span><br />
+        dan <span class="serif">terpanggil</span> kembali.
+      </h1>
+      <p class="hero-sub">
+        Simpan foto, dokumen, dan momen ke satu tempat. Biarkan AI yang
+        mengingat detailnya — sampai kamu butuh memanggilnya lagi.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="{{ url_for('auth.login') }}">
+          Masuk ke Gonanku <span>→</span>
+        </a>
+        <a class="btn-ghost" href="#fitur">
+          Lihat caranya
         </a>
       </div>
+      <div class="hero-meta">
+        <span>Privasi-first</span>
+        <span class="sep"></span>
+        <span>AI metadata otomatis</span>
+        <span class="sep"></span>
+        <span>Tanpa kartu kredit</span>
+      </div>
+    </div>
+
+    <!-- Product mockup besar -->
+    <div class="hero-stage reveal">
+      <div class="hero-screen">
+        <div class="screen-body">
+          <aside class="screen-side">
+            <div class="screen-brand">
+              <span class="m">G</span> Gonanku
+            </div>
+            <nav class="screen-nav">
+              <div class="screen-nav-item active"><span class="ic"></span> Dashboard</div>
+              <div class="screen-nav-item"><span class="ic"></span> Arsip</div>
+              <div class="screen-nav-item"><span class="ic"></span> Chatbot</div>
+              <div class="screen-nav-item"><span class="ic"></span> Album</div>
+              <div class="screen-nav-item"><span class="ic"></span> Pengaturan</div>
+            </nav>
+          </aside>
+          <main class="screen-main">
+            <h3 class="screen-h">Selamat datang kembali</h3>
+            <p class="screen-p">Berikut ringkasan vault memorimu hari ini.</p>
+
+            <div class="kpi-row">
+              <div class="kpi">
+                <div class="kpi-label">Total Arsip</div>
+                <div class="kpi-value">1,284</div>
+                <div class="kpi-trend">+12 hari ini</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Foto</div>
+                <div class="kpi-value">972</div>
+                <div class="kpi-trend">+8 bulan ini</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Dokumen</div>
+                <div class="kpi-value">312</div>
+                <div class="kpi-trend">+4 bulan ini</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Kategori</div>
+                <div class="kpi-value">18</div>
+                <div class="kpi-trend">Aktif</div>
+              </div>
+            </div>
+
+            <div class="chart">
+              <div class="chart-h">Aktivitas Upload — 30 Hari Terakhir</div>
+              <svg viewBox="0 0 600 140" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#0F2854" stop-opacity=".25"/>
+                    <stop offset="100%" stop-color="#0F2854" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0,110 L40,95 L80,98 L120,70 L160,82 L200,55 L240,68 L280,40 L320,52 L360,30 L400,45 L440,28 L480,38 L520,20 L560,35 L600,18 L600,140 L0,140 Z" fill="url(#g1)"/>
+                <path d="M0,110 L40,95 L80,98 L120,70 L160,82 L200,55 L240,68 L280,40 L320,52 L360,30 L400,45 L440,28 L480,38 L520,20 L560,35 L600,18" fill="none" stroke="#0F2854" stroke-width="2"/>
+              </svg>
+            </div>
+          </main>
+        </div>
+
+        <!-- Floating accent: AI chat -->
+        <div class="float-chat">
+          <div class="float-chat-h">
+            <span class="pulse"></span> AI Chatbot · online
+          </div>
+          <div class="bub me">Foto tahun baru di rumah nenek?</div>
+          <div class="bub ai">Ada 7 foto cocok — dari 1 Jan 2024 di Yogyakarta.</div>
+        </div>
+
+        <!-- Floating accent: vision -->
+        <div class="float-vision">
+          <div class="fv-img"></div>
+          <div class="fv-h">AI Vision</div>
+          <span class="fv-tag">orang</span>
+          <span class="fv-tag">outdoor</span>
+          <span class="fv-tag">senja</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ═══════════════════ FOOTER ═══════════════════ -->
+  <!-- Logos / tech strip -->
+  <section class="logos">
+    <div class="wrap">
+      <div class="logos-label">Dibangun di atas teknologi terbaik</div>
+      <div class="logos-row">
+        <span>Flask</span>
+        <span>Groq AI</span>
+        <span>Cloud Run</span>
+        <span>Supabase</span>
+        <span>Telegram</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature grid -->
+  <section class="section" id="fitur">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="section-tag">— Fitur</div>
+        <h2 class="section-title">
+          Vault yang <span class="serif">paham</span> isi memorimu.
+        </h2>
+        <p class="section-sub">
+          Empat kemampuan inti yang bekerja diam-diam di belakang layar,
+          supaya pencarianmu terasa seperti bertanya pada teman.
+        </p>
+      </div>
+
+      <div class="f-grid">
+        <article class="f-card reveal">
+          <div class="f-num">01 — Metadata</div>
+          <h3 class="f-h">Otomatis ditandai</h3>
+          <p class="f-p">
+            Setiap unggahan langsung diberi judul, deskripsi, kategori,
+            dan tag — tanpa perlu mengetik satu kata pun.
+          </p>
+          <div class="f-ill ill-meta">
+            <span class="tag-mini">keluarga</span>
+            <span class="tag-mini">2024</span>
+            <span class="tag-mini">Yogyakarta</span>
+            <span class="tag-mini">outdoor</span>
+            <span class="tag-mini">tahun baru</span>
+          </div>
+        </article>
+
+        <article class="f-card reveal">
+          <div class="f-num">02 — Vision</div>
+          <h3 class="f-h">AI yang melihat</h3>
+          <p class="f-p">
+            Model vision membaca isi foto — wajah, tempat, dokumen, dan
+            tulisan — lalu menyimpannya sebagai memori yang bisa dicari.
+          </p>
+          <div class="f-ill ill-vision">
+            <div class="v"><div class="scan"></div></div>
+          </div>
+        </article>
+
+        <article class="f-card reveal">
+          <div class="f-num">03 — Chatbot</div>
+          <h3 class="f-h">Pencarian natural</h3>
+          <p class="f-p">
+            Tanya seperti ke manusia: "foto ulang tahun adik tahun lalu".
+            Gonanku akan menariknya untukmu dari ribuan arsip.
+          </p>
+          <div class="f-ill ill-chat">
+            <span class="b">Foto bermasker?</span>
+            <span class="b r">12 foto ditemukan</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Showcase rows -->
+  <section class="section" style="padding-top: 40px;">
+    <div class="wrap">
+
+      <div class="showcase-row reveal">
+        <div class="sc-copy">
+          <div class="sc-tag">— Dashboard</div>
+          <h3 class="sc-h">Ringkasan vault, dalam satu pandangan.</h3>
+          <p class="sc-p">
+            Metrik harian, grafik aktivitas, dan kategori teraktif —
+            semua kebutuhan informasimu, tanpa harus mencari.
+          </p>
+          <ul class="sc-list">
+            <li>Total arsip, foto, dan dokumen — real-time</li>
+            <li>Tren upload 30 hari dengan grafik halus</li>
+            <li>Filter cepat ke kategori paling sering dipakai</li>
+          </ul>
+        </div>
+        <div class="sc-visual sv-dash">
+          <div class="kpi-row">
+            <div class="kpi"><div class="kpi-label">Foto</div><div class="kpi-value">972</div><div class="kpi-trend">+8 ↑</div></div>
+            <div class="kpi"><div class="kpi-label">Dokumen</div><div class="kpi-value">312</div><div class="kpi-trend">+4 ↑</div></div>
+          </div>
+          <div class="chart">
+            <div class="chart-h">Aktivitas 30 Hari</div>
+            <svg viewBox="0 0 600 140" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="g2" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#1C4D8D" stop-opacity=".22"/>
+                  <stop offset="100%" stop-color="#1C4D8D" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M0,100 L60,85 L120,90 L180,60 L240,72 L300,40 L360,55 L420,30 L480,42 L540,25 L600,15 L600,140 L0,140 Z" fill="url(#g2)"/>
+              <path d="M0,100 L60,85 L120,90 L180,60 L240,72 L300,40 L360,55 L420,30 L480,42 L540,25 L600,15" fill="none" stroke="#1C4D8D" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="showcase-row flip reveal">
+        <div class="sc-copy">
+          <div class="sc-tag">— Chatbot</div>
+          <h3 class="sc-h">Tanya dengan kalimat biasa.</h3>
+          <p class="sc-p">
+            Lupa kapan, lupa di mana, lupa nama file — tidak apa.
+            Cukup tanya, AI yang merangkai ulang konteksnya.
+          </p>
+          <ul class="sc-list">
+            <li>Dipertajam dengan AI semantic re-rank</li>
+            <li>Mengingat percakapan dalam satu sesi</li>
+            <li>Sidebar riwayat — bisa lanjut kapan saja</li>
+          </ul>
+        </div>
+        <div class="sc-visual sv-chat">
+          <div class="b ai">Hai, ada yang bisa kubantu temukan hari ini?</div>
+          <div class="b me">Cari foto wisuda kakak dong</div>
+          <div class="b ai">Aku menemukan 14 foto wisuda kakak — tertanggal Agustus 2022 di kampus UGM.</div>
+          <div class="typing"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+
+      <div class="showcase-row reveal">
+        <div class="sc-copy">
+          <div class="sc-tag">— Vision AI</div>
+          <h3 class="sc-h">Membaca foto sebagai memori.</h3>
+          <p class="sc-p">
+            Wajah, suasana, ruangan, tulisan — semua diekstrak otomatis
+            menjadi tag dan deskripsi yang siap dicari.
+          </p>
+          <ul class="sc-list">
+            <li>Deteksi wajah dan ekspresi</li>
+            <li>OCR teks pada dokumen, struk, atau papan tulis</li>
+            <li>Tagging suasana: indoor, outdoor, malam, senja</li>
+          </ul>
+        </div>
+        <div class="sc-visual sv-vision">
+          <div class="vp">
+            <div class="box" data-label="WAJAH" style="left:18%; top:25%; width:24%; height:42%;"></div>
+            <div class="box" data-label="OUTDOOR" style="left:55%; top:50%; width:32%; height:35%;"></div>
+          </div>
+          <div class="tags">
+            <span class="tg">orang</span>
+            <span class="tg">outdoor</span>
+            <span class="tg">senja</span>
+            <span class="tg">keluarga</span>
+            <span class="tg">acara</span>
+          </div>
+          <div class="extract">"Sebuah foto keluarga saat senja, di teras rumah bercat krem, suasana hangat."</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Stats dark band -->
+  <section class="section" id="angka" style="padding: 60px 0;">
+    <div class="stats reveal">
+      <div class="inner">
+        <div class="stats-eyebrow">— Dirancang untuk skala pribadi</div>
+        <h3 class="stats-h">Cepat, ringan, dan privasimu — selalu utama.</h3>
+        <div class="stats-grid">
+          <div>
+            <div class="stat-num">5</div>
+            <div class="stat-lbl">Distribusi AI key untuk respons cepat</div>
+          </div>
+          <div>
+            <div class="stat-num">100<span style="font-size:.5em;">%</span></div>
+            <div class="stat-lbl">Isolasi data per akun pengguna</div>
+          </div>
+          <div>
+            <div class="stat-num">30<span style="font-size:.45em;">MB</span></div>
+            <div class="stat-lbl">Maksimal per file diunggah</div>
+          </div>
+          <div>
+            <div class="stat-num">∞</div>
+            <div class="stat-lbl">Penyimpanan via Telegram channel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Steps -->
+  <section class="section" id="cara">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="section-tag">— Cara kerja</div>
+        <h2 class="section-title">
+          Tiga langkah, <span class="serif">selesai</span>.
+        </h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step reveal">
+          <span class="step-n">— Langkah 01</span>
+          <h4 class="step-h">Masuk ke vault</h4>
+          <p class="step-p">
+            Daftarkan email dan amankan akunmu. Vault pribadi langsung
+            tersedia, terpisah penuh dari pengguna lain.
+          </p>
+        </div>
+        <div class="step reveal">
+          <span class="step-n">— Langkah 02</span>
+          <h4 class="step-h">Unggah memori</h4>
+          <p class="step-p">
+            Tarik foto atau dokumen — AI langsung memberi judul,
+            kategori, tanggal momen, dan deskripsi tanpa kamu sentuh.
+          </p>
+        </div>
+        <div class="step reveal">
+          <span class="step-n">— Langkah 03</span>
+          <h4 class="step-h">Panggil kembali</h4>
+          <p class="step-p">
+            Tanya pada chatbot pakai bahasa sehari-hari. Gonanku akan
+            menariknya dari ribuan arsip dalam hitungan detik.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-wrap">
+    <div class="wrap reveal">
+      <h2 class="cta-h">
+        Memorimu pantas <span class="serif">disimpan</span><br />
+        dengan baik.
+      </h2>
+      <p class="cta-p">
+        Mulai dari satu unggahan. Biarkan vault tumbuh bersama harimu.
+      </p>
+      <a class="btn-primary" href="{{ url_for('auth.login') }}">
+        Masuk ke Gonanku <span>→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
   <footer class="footer">
-    <div class="kontainer">
+    <div class="wrap">
       <div class="footer-grid">
         <div>
           <div class="brand">
             <span class="brand-mark">G</span>
             <span>Gonanku</span>
           </div>
-          <p>
-            Personal AI Memory Vault. Dirancang dan dikembangkan sebagai tugas
-            besar Komputasi Awan — siap demo, siap pakai.
+          <p class="foot-brand-p">
+            Vault memori pribadi yang cerdas — dibangun sebagai proyek
+            akhir Cloud Computing dengan fokus privasi dan kesederhanaan.
           </p>
         </div>
-        <div>
-          <h4>Produk</h4>
+        <div class="foot-col">
+          <h5>Produk</h5>
           <ul>
             <li><a href="#fitur">Fitur</a></li>
-            <li><a href="#showcase">Showcase</a></li>
-            <li><a href="#alur">Cara Pakai</a></li>
+            <li><a href="#cara">Cara Kerja</a></li>
+            <li><a href="#angka">Skala</a></li>
           </ul>
         </div>
-        <div>
-          <h4>Teknologi</h4>
+        <div class="foot-col">
+          <h5>Teknologi</h5>
           <ul>
-            <li><a href="#">Flask + PostgreSQL</a></li>
-            <li><a href="#">Groq Multimodal AI</a></li>
-            <li><a href="#">Telegram Bot API</a></li>
+            <li><a href="#">Flask · Groq AI</a></li>
+            <li><a href="#">Cloud Run · Supabase</a></li>
+            <li><a href="#">Telegram Storage</a></li>
           </ul>
         </div>
-        <div>
-          <h4>Infrastruktur</h4>
+        <div class="foot-col">
+          <h5>Akun</h5>
           <ul>
-            <li><a href="#">Google Cloud Run</a></li>
-            <li><a href="#">Supabase Postgres</a></li>
-            <li><a href="#">Artifact Registry</a></li>
+            <li><a href="{{ url_for('auth.login') }}">Masuk</a></li>
+            <li><a href="{{ url_for('auth.login') }}">Mulai gratis</a></li>
           </ul>
         </div>
       </div>
-      <div class="footer-bottom">
-        <div>© 2026 Gonanku — Sulthonika · Tugas Besar Komputasi Awan</div>
-        <div>Dibuat dengan ❤ di Indonesia</div>
+      <div class="foot-bottom">
+        <div>© 2026 Gonanku. Personal AI Memory Vault.</div>
+        <div>Sulthonika M. · Proyek Cloud Computing</div>
       </div>
     </div>
   </footer>
 
   <script>
     // Navbar shadow on scroll
-    const nav = document.getElementById("navbar");
-    window.addEventListener("scroll", () => {
-      nav.classList.toggle("scrolled", window.scrollY > 16);
-    });
+    const nav = document.getElementById('nav');
+    const onScroll = () => {
+      if (window.scrollY > 8) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 
-    // Reveal-on-scroll (IntersectionObserver = smooth, performant)
+    // Reveal on scroll
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) {
-          e.target.classList.add("show");
+          e.target.classList.add('in');
           io.unobserve(e.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
-    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
-
-    // Smooth scroll untuk anchor links
+    // Smooth anchor scroll
     document.querySelectorAll('a[href^="#"]').forEach((a) => {
-      a.addEventListener("click", (e) => {
-        const target = document.querySelector(a.getAttribute("href"));
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href');
+        if (id.length < 2) return;
+        const t = document.querySelector(id);
+        if (!t) return;
+        e.preventDefault();
+        t.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
   </script>
