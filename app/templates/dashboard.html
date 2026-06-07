@@ -21,31 +21,31 @@
       <div class="ikon-metrik"><i class="ri-folder-2-line"></i></div>
       <div class="label">Total Arsip</div>
       <div class="angka">{{ r.total_arsip }}</div>
-      <div class="trend naik"><i class="ri-arrow-right-up-line"></i> 12% dari bulan lalu</div>
+      <div class="trend netral"><i class="ri-history-line"></i> Semua arsip Anda</div>
     </div>
     <div class="metrik">
       <div class="ikon-metrik"><i class="ri-image-line"></i></div>
       <div class="label">Foto</div>
       <div class="angka">{{ r.total_foto }}</div>
-      <div class="trend netral"><i class="ri-subtract-line"></i> 0% dari bulan lalu</div>
+      <div class="trend netral"><i class="ri-image-2-line"></i> {% if r.total_arsip %}{{ ((r.total_foto / r.total_arsip) * 100)|round|int }}{% else %}0{% endif %}% dari total</div>
     </div>
     <div class="metrik">
       <div class="ikon-metrik"><i class="ri-video-line"></i></div>
       <div class="label">Video</div>
       <div class="angka">{{ r.total_video }}</div>
-      <div class="trend netral"><i class="ri-subtract-line"></i> 0% dari bulan lalu</div>
+      <div class="trend netral"><i class="ri-movie-line"></i> {% if r.total_arsip %}{{ ((r.total_video / r.total_arsip) * 100)|round|int }}{% else %}0{% endif %}% dari total</div>
     </div>
     <div class="metrik">
       <div class="ikon-metrik"><i class="ri-file-text-line"></i></div>
       <div class="label">Dokumen</div>
       <div class="angka">{{ r.total_dokumen }}</div>
-      <div class="trend netral"><i class="ri-subtract-line"></i> 0% dari bulan lalu</div>
+      <div class="trend netral"><i class="ri-file-text-line"></i> {% if r.total_arsip %}{{ ((r.total_dokumen / r.total_arsip) * 100)|round|int }}{% else %}0{% endif %}% dari total</div>
     </div>
     <div class="metrik">
       <div class="ikon-metrik"><i class="ri-database-2-line"></i></div>
       <div class="label">Total Ukuran</div>
       <div class="angka">{{ r.total_ukuran | ukuran }}</div>
-      <div class="trend naik"><i class="ri-arrow-right-up-line"></i> 5% dari bulan lalu</div>
+      <div class="trend netral"><i class="ri-hard-drive-2-line"></i> Kapasitas tersimpan</div>
     </div>
     <div class="metrik">
       <div class="ikon-metrik"><i class="ri-cloud-upload-line"></i></div>
@@ -111,7 +111,7 @@
             {% for t in tren %}
               <div style="width: 34px; height: 100%; display: flex; align-items: flex-end; justify-content: center; position: relative;">
                 <!-- Tooltip hover -->
-                <div class="mock-bar" style="height: {{ t.persen }}%; width: 100%; border-radius: 4px 4px 0 0; position: relative;" title="{{ t.persen }}% aktivitas"></div>
+                <div class="mock-bar" style="height: {{ t.persen }}%; width: 100%; border-radius: 4px 4px 0 0; position: relative;" title="{{ t.jumlah }} file"></div>
               </div>
             {% endfor %}
           </div>
