@@ -3,7 +3,7 @@
 > **Dokumen ini bukan dokumentasi teknis singkat — ini buku panduan lengkap.**
 > Ditulis untuk dua tujuan:
 > 1. **Bahan baca pribadi** — kamu (Sulthonika) bisa baca ulang dan ingat semua keputusan yang sudah diambil
-> 2. **Bahan presentasi** — kalimat-kalimat di sini sudah disusun supaya bisa langsung kamu ucapkan di depan dosen (Bu Alifia) tanpa perlu menerjemahkan jargon teknis
+> 2. **Bahan presentasi** — kalimat-kalimat di sini sudah disusun supaya bisa langsung kamu ucapkan di depan dosen (Bapak (dosen penguji)) tanpa perlu menerjemahkan jargon teknis
 
 **Aturan baca:** ikuti urutan bab. Tiap bab nyambung ke bab berikutnya. Jangan loncat.
 
@@ -18,6 +18,7 @@
 5. [Setup Development di Laptop](#bab-5-setup-development-di-laptop)
 6. [Database & Migrasi Schema (Alembic)](#bab-6-database--migrasi-schema)
 7. [Fitur Utama — Apa Saja & Bagaimana Cara Kerjanya](#bab-7-fitur-utama)
+   - 7.11 ⭐ **[CRUD Sistem — Operasi Lengkap (Bagian yang Diminta Dosen)](#711--crud-sistem--operasi-lengkap-bagian-yang-diminta-dosen)**
 8. [Security Hardening — Membuat Aplikasi Aman untuk Production](#bab-8-security-hardening)
 9. [💥 Kegagalan & Cara Memperbaiki (Bagian PENTING untuk Presentasi)](#bab-9-kegagalan--cara-memperbaiki)
 10. [Deploy ke Cloud Run — Langkah Demi Langkah](#bab-10-deploy-ke-cloud-run)
@@ -31,7 +32,7 @@
 
 ## Cerita yang Bisa Kamu Ucapkan ke Dosen
 
-> "Bu, kita semua punya masalah yang sama. Tahun 2019 saya foto wisuda kakak. Hari ini kalau ibu minta saya tunjukkan foto itu, saya harus scroll galeri puluhan menit, mungkin malah tidak ketemu karena namanya `IMG_20190805_140312.jpg` — tidak ada konteks. Sama dengan dokumen — saya lupa di folder mana surat keterangan aktif kuliah semester 2 disimpan.
+> "Pak, kita semua punya masalah yang sama. Tahun 2019 saya foto wisuda kakak. Hari ini kalau Bapak minta saya tunjukkan foto itu, saya harus scroll galeri puluhan menit — mungkin malah tidak ketemu karena namanya `IMG_20190805_140312.jpg`, tidak ada petunjuk apa-apa. Sama dengan dokumen — saya sering lupa surat keterangan aktif kuliah semester 2 disimpan di folder mana.
 >
 > **Gonanku** adalah jawaban dari masalah itu. Gonanku adalah **vault arsip pribadi yang cerdas**. Aplikasi web ini menyimpan, memahami, dan memanggil kembali kenangan saya — foto, dokumen, screenshot — lewat **AI**.
 >
@@ -99,7 +100,9 @@ Gonanku = gabungan: **penyimpanan + pemahaman + pencarian natural**.
 
 ## Cara Membaca Diagram di Atas (untuk Dosen)
 
-> "Bu, kalau User upload foto, file fisik foto-nya **tidak disimpan di Cloud Run**. Cloud Run cuma jadi 'jembatan'. File-nya dilempar ke **Telegram private channel** (storage gratis, kapasitas tak terbatas), dan **metadata-nya** — judul, kategori, tag, tanggal momen, ringkasan AI — disimpan di **Supabase PostgreSQL**. Jadi tiga layanan eksternal bekerja sama: Cloud Run sebagai otak, Telegram sebagai gudang file, Supabase sebagai gudang informasi."
+> "Pak, kalau ada user upload foto, file foto-nya **tidak disimpan di Cloud Run**. Cloud Run cuma jadi 'jembatan/penerima sementara'. File-nya langsung dilempar ke **private channel Telegram** (storage gratis, kapasitas tidak terbatas). Sedangkan **informasi tentang file-nya** — judul, kategori, tag, tanggal momen, ringkasan AI — disimpan di **Supabase PostgreSQL**.
+>
+> Jadi tiga layanan bekerja sama dengan tugas jelas: **Cloud Run = otak/server aplikasi**, **Telegram = gudang file fisik**, **Supabase = gudang informasi/metadata**. Ini namanya arsitektur **storage hybrid** — kombinasi storage berbeda sesuai jenis data."
 
 ---
 
@@ -133,9 +136,11 @@ Ini adalah **bagian paling penting untuk presentasi** — dosen pasti tanya "ken
 
 ### Kalimat untuk dosen:
 
-> "Bu, ini project kuliah dengan budget Rp 0. Supabase memberikan PostgreSQL managed dengan free tier permanen — 500 MB database cukup untuk metadata ratusan ribu file. Saya pakai connection pooling Supabase (port 6543) supaya tidak boros connection.
+> "Pak, ini project kuliah dengan budget Rp 0. Saya butuh database yang gratis selamanya. Supabase memberikan PostgreSQL managed — artinya tidak perlu setup server sendiri — dengan **free tier permanen**, kapasitas 500 MB. Untuk catatan tentang file (judul, kategori, tag), 500 MB cukup untuk metadata ratusan ribu file.
 >
-> Kalau pakai Cloud SQL — yang notabene produk GCP — paling murah Rp 165.000/bulan **walaupun tidak ada user**. Saya cek billing report saya enam hari pertama deploy: total **Rp 1.029** untuk Cloud Run dan egress bandwidth, tidak ada biaya DB. Itulah hematnya."
+> Bandingkan dengan Cloud SQL — yang juga produk GCP — paling murah **Rp 165.000 per bulan walaupun nol user yang akses**. Itu fixed cost, tetap dicharge.
+>
+> Saya cek tagihan saya 6 hari pertama deploy: total cuma **Rp 1.029**. Itu pun bukan biaya DB (DB-nya di Supabase free), tapi biaya Cloud Run dan transfer data. Setahun ekstrapolasi ~Rp 60.000 — lebih murah dari kopi sehari."
 
 ### Bonus: Cloud SQL sebenarnya ada free tier?
 
@@ -163,9 +168,11 @@ Ini adalah **bagian paling penting untuk presentasi** — dosen pasti tanya "ken
 
 ### Kalimat untuk dosen:
 
-> "Bu, ini bagian kreatif Gonanku. File fisik foto, dokumen, screenshot — semua dikirim ke **private channel Telegram** lewat Bot API. Telegram secara resmi **tidak ada batas total storage** untuk channel. Setiap file dapat URL CDN gratis yang bisa diakses langsung dari aplikasi.
+> "Pak, ini bagian paling kreatif dari Gonanku. File fisik — foto, dokumen, screenshot — semua dikirim ke **private channel Telegram** saya lewat Bot API.
 >
-> Logikanya: Telegram sudah menyediakan infrastructure file storage kelas dunia secara gratis untuk channel mereka. Saya manfaatkan ini sebagai backend storage. Trade-off-nya: ada limit 50 MB per file via Bot API. Untuk vault pribadi (foto + dokumen), ini lebih dari cukup."
+> Kenapa Telegram? Pertama, Telegram secara **resmi tidak ada batas total storage** untuk channel — boleh upload terus selamanya. Kedua, setiap file otomatis dapat URL CDN (Content Delivery Network) gratis — artinya bisa diakses cepat dari mana saja.
+>
+> Logikanya begini, Pak: Telegram sudah punya infrastruktur penyimpanan file kelas dunia, dan mereka berikan gratis untuk pengguna channel. Saya manfaatkan ini sebagai 'storage backend' aplikasi saya. Trade-off-nya: maksimal 50 MB per file via Bot API. Untuk vault pribadi (foto + dokumen), itu lebih dari cukup — kebanyakan file kita di bawah 10 MB."
 
 ### Aliran upload (untuk dijelaskan ke dosen):
 
@@ -219,9 +226,9 @@ Kalau Key utama kena rate limit (HTTP 429) → otomatis coba Key cadangan.
 
 ### Kalimat untuk dosen:
 
-> "Bu, Cloud Run itu **serverless container**. Konsepnya: kalau aplikasi tidak ada user yang akses, **instance di-shut down** dan **biaya = 0**. Begitu ada request masuk, instance baru di-spawn dalam 1-2 detik (cold start), lalu handle request, lalu mati lagi.
+> "Pak, Cloud Run itu **serverless container**. Konsepnya sederhana: kalau aplikasi saya tidak ada user yang akses (idle), **instance/server-nya di-shutdown otomatis** dan **biaya = 0**. Begitu ada satu request masuk lagi, Cloud Run nyalakan instance baru dalam 1-2 detik (ini disebut 'cold start'), handle request, terus matikan lagi kalau idle.
 >
-> Untuk Gonanku yang paling cuma diakses saya + Ibu sebagai dosen + 1-2 orang demo, ini perfect. Total bill saya 6 hari pertama deploy: **Rp 1.029** — itu pun karena egress bandwidth (Asia Pacific lebih mahal dari US). Kalau dihitung setahun, mungkin Rp 60.000."
+> Untuk Gonanku — yang paling cuma diakses saya, Bapak sebagai penguji, dan 1-2 orang saat demo — ini perfect. Tidak ada beban operasional saat tidak ada user. Total tagihan saya 6 hari pertama deploy: **Rp 1.029** — itu pun karena transfer data Asia Pacific yang memang lebih mahal dari US. Kalau dihitung setahun, kira-kira Rp 60.000 saja."
 
 ---
 
@@ -629,6 +636,231 @@ Bisa dilihat di /aktivitas. User bisa hapus entry individual atau bersihkan semu
 
 ---
 
+## 7.11 ⭐ CRUD Sistem — Operasi Lengkap (Bagian yang Diminta Dosen)
+
+> **Pak, ini bagian yang Bapak tanyakan: apakah sistem ada operasi CRUD lengkap.**
+> **Jawaban: YA, ada di 5 tabel/entitas.** Berikut detail lengkapnya.
+
+### Apa itu CRUD?
+
+**CRUD = Create, Read, Update, Delete** — empat operasi dasar dalam manajemen data. Sebuah aplikasi yang punya CRUD lengkap berarti user bisa **menambah** data, **melihat** data, **mengubah** data, dan **menghapus** data.
+
+Analogi sederhana: ibarat buku catatan, kamu bisa **menulis catatan baru** (Create), **membaca catatan** (Read), **mengoreksi catatan** (Update), dan **menghapus halaman catatan** (Delete).
+
+### Tabel yang Punya CRUD di Gonanku
+
+| # | Entitas (Tabel) | C | R | U | D | Halaman/Endpoint |
+|---|---|:-:|:-:|:-:|:-:|---|
+| 1 | **Berkas** (file arsip) | ✅ | ✅ | ✅ | ✅ | `/berkas/*` |
+| 2 | **Kategori** | ✅ | ✅ | ✅ | ✅ | `/kategori/*` |
+| 3 | **Tag** | ✅ | ✅ | ✅ | ✅ | `/tag/*` |
+| 4 | **Riwayat Chat** | ✅ | ✅ | — | ✅ | `/chat/*` |
+| 5 | **Aktivitas (Log)** | (otomatis) | ✅ | — | ✅ | `/aktivitas/*` |
+| 6 | **Pengguna (Profil)** | (registrasi CLI) | ✅ | ✅ (foto) | — | `/profil/*` |
+
+---
+
+### 1️⃣ CRUD BERKAS (File Arsip) — Yang Paling Lengkap
+
+**Tabel:** `berkas` di database Supabase PostgreSQL
+**Kolom utama:** id, pengguna_id, kode_arsip, judul, nama_file_asli, tipe_file, ukuran_file, deskripsi, tanggal_momen, kategori_id, status_privasi, status_ai, ringkasan_ai, tag_ai, telegram_chat_id, telegram_message_id, tanggal_upload, dihapus_pada
+
+#### ➕ CREATE — Tambah file baru
+**URL:** `POST /berkas/upload` (form biasa) atau `POST /berkas/unggah-satu` (AJAX per-file)
+**Yang terjadi:**
+1. User pilih file di browser
+2. Server validasi (ekstensi, ukuran maks 30 MB)
+3. File dikirim ke Telegram channel
+4. AI Groq baca isi file → kasih judul, kategori, tag, ringkasan
+5. Semua metadata + referensi Telegram disimpan ke tabel `berkas`
+6. Activity log dicatat: "upload"
+
+**Kalimat untuk Bapak:**
+> "Operasi Create di sini bukan cuma insert row ke database, Pak. Ada 4 langkah: validasi, kirim ke Telegram, panggil AI, lalu simpan metadata. Jadi satu operasi Create berinteraksi dengan **3 layanan eksternal** sekaligus."
+
+#### 👁️ READ — Lihat file
+**URL:**
+- `GET /berkas/` — daftar semua file aktif dengan **filter & pagination**
+- `GET /berkas/<id>` — detail satu file (judul, ringkasan AI, status, tag, log riwayat)
+- `GET /berkas/sampah` — daftar file yang sudah dihapus (di sampah)
+
+**Filter yang bisa dipakai di list:**
+- Pencarian kata kunci (`q`) — cari di judul, deskripsi, kode arsip, ringkasan AI
+- Filter kategori
+- Filter tipe file (foto/dokumen/video/audio)
+- Filter status privasi (normal/penting/sensitif/rahasia)
+
+**Kalimat untuk Bapak:**
+> "Operasi Read di Gonanku tidak cuma 'tampilkan semua'. Ada 4 filter yang bisa dikombinasikan, plus pagination supaya tidak load 1000 row sekaligus. Plus operasi Read juga ada di chatbot — pakai natural language."
+
+#### ✏️ UPDATE — Edit metadata file
+**URL:** `GET /berkas/<id>/edit` (form) → `POST /berkas/<id>/update` (submit)
+**Yang bisa diubah:**
+- Judul
+- Deskripsi
+- Tanggal momen
+- Kategori
+- Status privasi
+- Tag (ditambah/dikurangi)
+
+**Plus operasi Update khusus:** `POST /berkas/<id>/regenerasi-ai` — minta AI kerja ulang generate metadata baru.
+
+**Kalimat untuk Bapak:**
+> "Update ada dua macam, Pak: edit metadata manual oleh user, dan regenerasi otomatis oleh AI. User bisa pilih, AI yang nulis judul (otomatis saat upload), atau user yang nulis sendiri (saat edit)."
+
+#### 🗑️ DELETE — Hapus file (DUA TAHAP)
+
+Gonanku punya konsep **soft delete + hard delete**, seperti Recycle Bin di Windows.
+
+**Tahap 1: Soft Delete** — `POST /berkas/<id>/hapus`
+- File **tidak benar-benar hilang**, cuma ditandai `dihapus_pada = sekarang`
+- Hilang dari list utama, tapi masih di tabel
+- File fisik di Telegram **masih ada**
+- Bisa di-restore dari halaman Sampah
+
+**Tahap 2: Restore** — `POST /berkas/<id>/pulihkan`
+- Bersihkan tanda `dihapus_pada` → file muncul lagi di list utama
+
+**Tahap 3: Hard Delete** — `POST /berkas/<id>/hapus-permanen`
+- **Permanen**, tidak bisa dikembalikan
+- Operasi: (1) hapus file dari Telegram channel, (2) hapus row di database, (3) cascade hapus relasi tag dan log
+
+**Tahap 4: Kosongkan Sampah** — `POST /berkas/kosongkan-sampah`
+- Hard delete **semua** file yang ada di sampah sekaligus
+
+**Kalimat untuk Bapak:**
+> "Delete di Gonanku saya design 2 lapis, Pak. Soft delete dulu — supaya kalau user salah pencet, masih bisa kembalikan. Baru hard delete kalau yakin. Hard delete ini lebih kompleks karena harus juga hapus file fisik di Telegram, bukan cuma row database. Saya pakai pattern best-effort: kalau Telegram gagal hapus, database tetap clear, dan user dapat pesan warning."
+
+---
+
+### 2️⃣ CRUD KATEGORI
+
+**Tabel:** `kategori`
+**Kolom:** id, pengguna_id, nama
+**Default:** saat akun dibuat, otomatis ada 10 kategori (Keuangan, Pendidikan, Pekerjaan, dll.)
+
+| Operasi | URL | Cara |
+|---|---|---|
+| **Create** | `POST /kategori/tambah` | Form di halaman kategori, input nama baru |
+| **Read** | `GET /kategori/` | Tabel semua kategori + jumlah berkas per kategori |
+| **Update** | `POST /kategori/<id>/update` | Edit nama langsung di tabel |
+| **Delete** | `POST /kategori/<id>/hapus` | Hapus, file yang pakai kategori ini akan jadi "Lainnya" |
+
+**Kalimat untuk Bapak:**
+> "Pak, kategori juga lengkap CRUD-nya. Yang menarik: saat user hapus satu kategori, file yang pakai kategori itu tidak ikut terhapus — mereka otomatis dipindah ke kategori 'Lainnya'. Ini cascade behavior yang saya design di code, bukan default database."
+
+---
+
+### 3️⃣ CRUD TAG
+
+**Tabel:** `tag` dan tabel relasi many-to-many `berkas_tag`
+**Kolom tag:** id, pengguna_id, nama
+
+| Operasi | URL | Cara |
+|---|---|---|
+| **Create** | `POST /tag/tambah` | Form di halaman tag |
+| **Read** | `GET /tag/` | Tabel tag + jumlah berkas yang pakai tag itu |
+| **Update** | `POST /tag/<id>/update` | Rename tag |
+| **Delete** | `POST /tag/<id>/hapus` | Hapus tag, otomatis hapus juga relasi di `berkas_tag` |
+
+**Plus:** tag juga **otomatis ditambah oleh AI** saat upload — tidak harus manual.
+
+**Kalimat untuk Bapak:**
+> "Tag relasi many-to-many, Pak. Artinya satu file bisa punya banyak tag, satu tag bisa dipakai banyak file. Saat user hapus tag, saya pakai SQLAlchemy cascade — relasi `berkas_tag` ikut hapus otomatis. Tidak ada orphan record."
+
+---
+
+### 4️⃣ CRUD RIWAYAT CHAT
+
+**Tabel:** `riwayat_chat`
+**Kolom:** id, pengguna_id, pertanyaan, jawaban, daftar_berkas_relevan, dibuat_pada
+
+| Operasi | URL | Cara |
+|---|---|---|
+| **Create** | `POST /chat/tanya` | User submit pertanyaan, jawaban + ID file relevan disimpan |
+| **Read** | `GET /chat/riwayat/<id>` (AJAX) | Klik item sidebar → load percakapan |
+| Update | — | (Tidak ada — chat history sifatnya read-only) |
+| **Delete** (per item) | `POST /chat/<id>/hapus` | Hapus 1 entry riwayat |
+| **Delete** (semua) | `POST /chat/bersihkan` | Hapus semua riwayat user |
+
+**Kalimat untuk Bapak:**
+> "Riwayat chat punya CRD (tanpa Update), Pak. Logis — kalau user sudah tanya 'foto wisuda', tidak masuk akal di-edit nanti. User bisa hapus per item kalau ada riwayat yang sensitif, atau hapus semua untuk privacy."
+
+---
+
+### 5️⃣ CRUD AKTIVITAS (LOG)
+
+**Tabel:** `log_aktivitas`
+**Kolom:** id, pengguna_id, aksi, keterangan, berkas_id, dibuat_pada
+
+**Aksi yang dicatat:** `upload`, `edit`, `hapus`, `pulihkan`, `hapus_permanen`, `regenerasi_ai`, `login`, `tambah_kategori`, dll.
+
+| Operasi | Cara |
+|---|---|
+| **Create** | Otomatis saat user lakukan aksi (background) |
+| **Read** | `GET /aktivitas/` — daftar log |
+| Update | — (log immutable per audit best practice) |
+| **Delete** (per entry) | `POST /aktivitas/<id>/hapus` |
+| **Delete** (semua) | `POST /aktivitas/bersihkan` |
+
+**Kalimat untuk Bapak:**
+> "Pak, log aktivitas itu konsepnya audit trail — siapa, kapan, melakukan apa. Best practice: log harus immutable (tidak bisa di-edit), supaya valid sebagai bukti. Tapi user boleh hapus log mereka sendiri untuk privacy. Compromise: Read + Delete saja, no Update."
+
+---
+
+### 6️⃣ UPDATE PROFIL PENGGUNA
+
+**Tabel:** `pengguna`
+**Kolom yang bisa diupdate:** `foto_profil`
+
+| Operasi | URL | Cara |
+|---|---|---|
+| Create | (lewat CLI `flask buat-pengguna`) | Saat registrasi awal |
+| **Read** | (otomatis di sidebar tiap halaman) | Tampilkan nama, email, foto |
+| **Update** | `POST /profil/upload` | Klik foto profil di sidebar → upload baru |
+| Delete | — (akun tidak bisa dihapus dari UI, by design — single-user vault) |
+
+**Kalimat untuk Bapak:**
+> "Pak, foto profil khusus saya design simpan langsung di database sebagai **base64 data URL**, bukan sebagai file di filesystem. Kenapa? Karena Cloud Run filesystem-nya ephemeral — file di disk hilang setiap restart. Kalau saya simpan sebagai file, foto profil user hilang setiap 15 menit. Solusinya: resize ke 256x256, JPEG quality 80, encode base64, simpan di kolom TEXT database. Persistent forever."
+
+---
+
+### Ringkasan CRUD Sistem (Untuk Slide PPT)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│             GONANKU — CRUD COMPLETENESS                  │
+├─────────────────────────────────────────────────────────┤
+│  Entitas        │ Create │ Read │ Update │ Delete       │
+│─────────────────┼────────┼──────┼────────┼──────────────│
+│  Berkas         │   ✅   │  ✅  │   ✅   │  ✅ (2-tahap)│
+│  Kategori       │   ✅   │  ✅  │   ✅   │  ✅          │
+│  Tag            │   ✅   │  ✅  │   ✅   │  ✅          │
+│  Riwayat Chat   │   ✅   │  ✅  │   —    │  ✅          │
+│  Log Aktivitas  │   ✅   │  ✅  │   —    │  ✅          │
+│  Profil         │  CLI   │  ✅  │   ✅   │  —           │
+└─────────────────────────────────────────────────────────┘
+
+Total operasi CRUD: 18 endpoint
+Total tabel terlibat: 7 (pengguna, berkas, kategori, tag,
+                       berkas_tag, riwayat_chat, log_aktivitas)
+```
+
+### Apa yang Membuat CRUD Gonanku Spesial
+
+1. **Bukan CRUD biasa** — setiap Create di Berkas memicu 3 service eksternal (Telegram, Groq, DB)
+2. **Soft delete + Hard delete** — pattern profesional, bukan langsung hapus
+3. **Cascade behavior** — hapus kategori tidak hapus file, tapi pindah ke "Lainnya"
+4. **AI-augmented Create** — saat upload, AI otomatis isi judul, kategori, tag, ringkasan
+5. **Audit trail otomatis** — setiap CRUD aksi dicatat di log_aktivitas
+6. **Data isolation** — semua query WAJIB filter `pengguna_id` (User A tidak bisa lihat data User B)
+7. **CSRF protected** — semua endpoint Update & Delete dilindungi token CSRF (security)
+
+**Kalimat penutup section CRUD untuk Bapak:**
+> "Jadi Pak, kalau Bapak tanya 'mana CRUD-nya?' — jawabannya: ada di 5 entitas, total 18 endpoint, dengan pattern profesional (soft delete, cascade, audit trail). Bukan cuma 'add edit delete' biasa, tapi dengan integrasi 3 service eksternal dan AI sebagai augmentation. Saya rasa ini menjawab pertanyaan Bapak tentang CRUD."
+
+---
+
 # BAB 8: Security Hardening
 
 Ini bagian audit production-readiness. Saya lakukan ini di akhir pengembangan, sebelum deploy production.
@@ -818,7 +1050,9 @@ User upload 10 foto sekaligus, total 50 MB. Browser kirim 1 request multipart-fo
 - **UX bonus:** user lihat progress per file, kalau 1 gagal yang lain tetap lanjut
 
 ### Kalimat untuk dosen:
-> "Bu, di awal saya kira Cloud Run terima request sebesar apapun. Ternyata ada hard limit 32 MiB. Saat saya coba upload 15 foto kebetulan total > 32 MiB, langsung HTTP 413. Saya tidak bisa naikkan limit Cloud Run, jadi saya redesign: bulk upload jadi per-file AJAX. Tiap request kecil < 32 MiB, lolos batas. Bonus user lihat progress per file."
+> "Pak, di awal saya kira Cloud Run terima request sebesar apapun. Ternyata ada batas hard 32 MB per request. Saat saya coba upload 15 foto sekaligus yang totalnya lebih dari 32 MB, langsung muncul HTTP 413. Saya tidak bisa naikkan batas itu — itu peraturan Cloud Run sendiri.
+>
+> Jadi saya redesign: dari satu request besar dipecah jadi **request kecil per file pakai AJAX**. Browser kirim 15 request berurutan, masing-masing < 32 MB, semua lolos. Bonus-nya: user bisa lihat progress per file — file mana yang sedang diupload, mana yang sudah selesai, mana yang gagal."
 
 ## 9.2 KEGAGALAN: PostgreSQL Strict ORDER BY dengan SELECT DISTINCT
 
@@ -1314,7 +1548,7 @@ Penjelasan flag-flag:
 
 ## 12.1 Elevator Pitch (30 Detik)
 
-> "Selamat pagi Ibu. Saya Sulthonika. Hari ini saya presentasikan Gonanku — vault arsip pribadi yang cerdas.
+> "Selamat pagi Bapak. Saya Sulthonika. Hari ini saya presentasikan Gonanku — vault arsip pribadi yang cerdas.
 >
 > Masalah: kita punya ribuan foto dan dokumen, tapi sulit menemukan kembali yang dibutuhkan karena nama file generik dan pencarian kita masih pakai keyword tepat.
 >
@@ -1337,7 +1571,7 @@ Penjelasan flag-flag:
 ### Skrip Demo:
 
 **[0:00-0:30] Landing & Value Proposition**
-> "Bu, ini halaman depan Gonanku. Saya design pakai vibe editorial — palette navy dan ice blue match dengan dashboard. Konten utama: hero serif italic, demo mockup interaktif, statistik teknis di band navy."
+> "Pak, ini halaman depan Gonanku. Saya design pakai vibe editorial — palette navy dan ice blue match dengan dashboard. Konten utama: hero serif italic, demo mockup interaktif, statistik teknis di band navy."
 >
 > Scroll perlahan, tunjuk parallax effect.
 
@@ -1493,7 +1727,7 @@ Kalau presentasi PowerPoint:
 **Jawaban:**
 > "Setiap berkas, kategori, tag, riwayat chat punya kolom `pengguna_id` (foreign key ke `pengguna.id`). Semua query SQLAlchemy WAJIB filter `pengguna_id == current_user.id`.
 >
-> Verifikasi yang sudah saya jalankan: bikin User A (saya) upload 50 file. Bikin User B (Ibu Alifia) login. Cek:
+> Verifikasi yang sudah saya jalankan: bikin User A (saya) upload 50 file. Bikin User B (akun demo lain) login. Cek:
 > - GET /berkas/ → User B lihat list KOSONG ✅
 > - GET /berkas/1 (akses langsung URL file User A) → 404 ✅
 > - Chat 'tampilkan semua' di User B → AI return 'arsip kosong' ✅
@@ -1526,7 +1760,7 @@ Tapi lebih dari teknologi, Gonanku adalah cerita tentang **proses iteratif**:
 - Hardening untuk production (CSRF, rate limit, ProxyFix)
 - Polish UX sampai detail (landing editorial, parallax subtle, logo asli)
 
-> "Bu, kalau ada satu kalimat yang saya pelajari dari project ini: **production-ready bukan tentang kode yang sempurna, tapi tentang kode yang gagalnya graceful**. CSRF gagal? 400 dengan pesan ramah. Telegram down? Upload retry. AI down? Manual fallback. Itulah engineering yang sesungguhnya."
+> "Pak, kalau ada satu kalimat yang saya pelajari dari project ini: **siap produksi itu bukan tentang kode yang sempurna, tapi tentang kode yang gagalnya pun masih bisa ditangani dengan baik**. CSRF gagal? Tampilkan pesan 400 yang ramah. Telegram down? User bisa coba upload lagi. AI down? User bisa input manual. Itulah pikiran engineering yang sesungguhnya."
 
 **Terima kasih.**
 
@@ -1554,4 +1788,4 @@ Tunjukkan ke dosen: setiap commit ada cerita engineering decision-nya. Bukan asa
 
 > **Dokumen ini dibuat:** 7 Juni 2026
 > **Untuk:** Tugas akhir Cloud Computing — Sulthonika Mulia / Telkom University Surabaya
-> **Dosen pembimbing:** Bu Alifia
+> **Dosen pembimbing:** Bapak (dosen penguji)
