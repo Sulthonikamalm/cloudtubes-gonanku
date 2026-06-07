@@ -16,7 +16,7 @@
   <header class="nav" id="nav">
     <div class="wrap nav-inner">
       <a class="brand" href="/">
-        <span class="brand-mark">G</span>
+        <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="" class="brand-mark" />
         <span>Gonanku</span>
       </a>
       <nav class="nav-menu">
@@ -31,7 +31,8 @@
   </header>
 
   <!-- Hero -->
-  <section class="hero">
+  <section class="hero has-grid">
+    <div class="grid-overlay" data-parallax="0.18" aria-hidden="true"></div>
     <div class="wrap">
       <span class="eyebrow"><span class="dot"></span> Personal AI Memory Vault</span>
       <h1 class="hero-title">
@@ -60,12 +61,12 @@
     </div>
 
     <!-- Product mockup besar -->
-    <div class="hero-stage reveal">
+    <div class="hero-stage reveal" data-parallax="-0.08">
       <div class="hero-screen">
         <div class="screen-body">
           <aside class="screen-side">
             <div class="screen-brand">
-              <span class="m">G</span> Gonanku
+              <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="" class="m" /> Gonanku
             </div>
             <nav class="screen-nav">
               <div class="screen-nav-item active"><span class="ic"></span> Dashboard</div>
@@ -268,7 +269,7 @@
         <div class="sc-visual sv-chat">
           <div class="b ai">Hai, ada yang bisa kubantu temukan hari ini?</div>
           <div class="b me">Cari foto wisuda kakak dong</div>
-          <div class="b ai">Aku menemukan 14 foto wisuda kakak — tertanggal Agustus 2022 di kampus UGM.</div>
+          <div class="b ai">Aku menemukan 14 foto wisuda kakak — tertanggal Agustus 2022 di kampus Telkom University Surabaya.</div>
           <div class="typing"><span></span><span></span><span></span></div>
         </div>
       </div>
@@ -373,7 +374,8 @@
   </section>
 
   <!-- CTA -->
-  <section class="cta-wrap">
+  <section class="cta-wrap has-grid">
+    <div class="grid-overlay" data-parallax="0.12" aria-hidden="true"></div>
     <div class="wrap reveal">
       <h2 class="cta-h">
         Memorimu pantas <span class="serif">disimpan</span><br />
@@ -394,7 +396,7 @@
       <div class="footer-grid">
         <div>
           <div class="brand">
-            <span class="brand-mark">G</span>
+            <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="" class="brand-mark" />
             <span>Gonanku</span>
           </div>
           <p class="foot-brand-p">
@@ -434,16 +436,36 @@
   </footer>
 
   <script>
-    // Navbar shadow on scroll
+    // Navbar shadow on scroll + parallax handler
+    // Pakai requestAnimationFrame biar scroll smooth tanpa jank di mobile.
     const nav = document.getElementById('nav');
-    const onScroll = () => {
-      if (window.scrollY > 8) nav.classList.add('scrolled');
-      else nav.classList.remove('scrolled');
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    const parallaxNodes = Array.from(document.querySelectorAll('[data-parallax]'));
+    let ticking = false;
 
-    // Reveal on scroll
+    function onScrollUpdate() {
+      const y = window.scrollY;
+      if (y > 8) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+
+      // Parallax: tiap elemen bergerak sesuai data-parallax speed (negatif =
+      // bergerak lebih lambat dari scroll, positif = sebaliknya). Subtle,
+      // bukan parallax besar yang bikin pusing.
+      parallaxNodes.forEach((el) => {
+        const speed = parseFloat(el.dataset.parallax) || 0;
+        el.style.transform = `translate3d(0, ${y * speed}px, 0)`;
+      });
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(onScrollUpdate);
+        ticking = true;
+      }
+    }, { passive: true });
+    onScrollUpdate();
+
+    // Reveal on scroll (sudah dipakai untuk fade-in section)
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) {

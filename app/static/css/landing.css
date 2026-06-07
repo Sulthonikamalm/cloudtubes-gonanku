@@ -78,11 +78,15 @@ button { font-family: inherit; cursor: pointer; }
   display: flex; align-items: center; justify-content: space-between; height: 76px;
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -.02em; }
+/* brand-mark sekarang <img> bukan span. Box tipis dengan kontras lembut
+   biar logo asli kelihatan jelas di atas canvas cream. */
 .brand-mark {
-  width: 30px; height: 30px; border-radius: 8px;
-  background: var(--ink); color: var(--canvas);
-  display: grid; place-items: center;
-  font-family: var(--font-serif); font-style: italic; font-size: 18px; font-weight: 500;
+  width: 32px; height: 32px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--paper);
+  padding: 4px;
+  box-shadow: 0 1px 3px rgba(15, 40, 84, .08);
 }
 .nav-menu { display: flex; align-items: center; gap: 36px; }
 .nav-menu a { font-size: 14px; color: var(--ink-mute); font-weight: 500; transition: color .2s; }
@@ -96,6 +100,45 @@ button { font-family: inherit; cursor: pointer; }
 .nav-cta:hover { background: #0a1d3f; transform: translateY(-1px); }
 .nav-cta .arr { transition: transform .2s; }
 .nav-cta:hover .arr { transform: translateX(3px); }
+
+/* ---------- Grid background pattern (Linear/Vercel-style linework) ----------
+   Pakai dua linear-gradient repeating: garis vertikal + garis horizontal,
+   tipis (1px) di atas line-soft. Mask-image fade-out di tepi supaya tidak
+   menabrak konten. Parallax dilakukan dari JS lewat translate3d.
+   ---------------------------------------------------------------------- */
+.has-grid { position: relative; overflow: hidden; }
+.grid-overlay {
+  position: absolute;
+  inset: -10% -5% -5%;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(to right, rgba(15, 40, 84, .07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 40, 84, .07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  /* Sapuan fade radial di tengah supaya grid terlihat solid di edge dan
+     lembut di area konten — terkesan editorial bukan grid biasa. */
+  mask-image: radial-gradient(
+    ellipse 70% 80% at 50% 40%,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.55) 55%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 80% at 50% 40%,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.55) 55%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  will-change: transform;
+}
+/* Konten hero/cta posisi relatif supaya tidak ketimbun overlay. */
+.has-grid > .wrap,
+.has-grid > .hero-stage,
+.has-grid > .stats { position: relative; z-index: 1; }
+
+/* Elemen parallax: hint browser untuk compositor, transform via JS. */
+[data-parallax] { will-change: transform; }
 
 /* ---------- Hero ---------- */
 .hero { padding: 80px 0 60px; text-align: center; position: relative; }
@@ -173,10 +216,12 @@ h1.hero-title {
 }
 .screen-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 28px; }
 .screen-brand .m {
-  width: 22px; height: 22px; border-radius: 6px;
-  background: var(--ink); color: var(--canvas);
-  display: grid; place-items: center;
-  font-family: var(--font-serif); font-style: italic; font-size: 13px;
+  width: 24px; height: 24px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: var(--paper);
+  padding: 2px;
+  box-shadow: 0 1px 2px rgba(15, 40, 84, .1);
 }
 .screen-nav { display: flex; flex-direction: column; gap: 4px; }
 .screen-nav-item {
