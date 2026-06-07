@@ -46,6 +46,23 @@ if [ ! -f .env.production ]; then
     exit 1
 fi
 
+# ---------- WARNING MIGRATION ----------
+# Cek apakah ada migration file lebih baru dari image terakhir.
+# Tidak block — cuma prompt. Migration alembic idempoten, aman re-run.
+echo ""
+echo "==> [0/3] Cek migration database..."
+LATEST_MIGRATION=$(ls -t migrations/versions/*.py 2>/dev/null | head -n1)
+if [ -n "${LATEST_MIGRATION}" ]; then
+    echo "    Migration terbaru: $(basename "${LATEST_MIGRATION}")"
+    echo "    Pastikan sudah jalankan: ./migrate.sh"
+    read -p "    Sudah migrate? (y/N): " -n 1 -r REPLY
+    echo ""
+    if [[ ! ${REPLY} =~ ^[Yy]$ ]]; then
+        echo "    Batalkan deploy. Jalankan: ./migrate.sh dulu."
+        exit 1
+    fi
+fi
+
 # ---------- BUILD ----------
 echo "==> [1/3] Build image via Cloud Build (~3-5 menit)..."
 gcloud builds submit --tag "${IMAGE}" --region="${REGION}"
