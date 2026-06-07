@@ -8,7 +8,10 @@ dashboard_bp = Blueprint("dashboard", __name__)
 
 @dashboard_bp.route("/")
 def beranda():
-    return redirect(url_for("dashboard.dashboard"))
+    """Landing page publik. User yang sudah login langsung ke dashboard."""
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard.dashboard"))
+    return render_template("landing.html")
 
 
 @dashboard_bp.route("/dashboard")
