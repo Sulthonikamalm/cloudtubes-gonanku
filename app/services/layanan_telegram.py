@@ -79,3 +79,44 @@ def buat_tautan_telegram(chat_id, message_id):
         internal = teks_id[4:]
         return f"https://t.me/c/{internal}/{message_id}"
     return None
+
+
+def hapus_pesan_telegram(chat_id, message_id):
+    """Hapus pesan dari channel via Bot API deleteMessage. Best-effort.
+
+    Return (ok: bool, info: str). TIDAK pernah raise — defensive supaya
+    workflow hapus permanen di Gonanku bisa tetap lanjut walau Telegram
+    gagal (mis. file sudah dihapus manual, bot kicked, network gagal).
+
+    Bot harus admin channel dengan permission Delete Messages — sudah
+    dipenuhi saat setup Fase B.
+    """
+    if not chat_id or not message_id:
+        return False, "Tidak ada referensi Telegram"
+
+    token = current_app.config.get("TELEGRAM_BOT_TOKEN", "")
+    if not token:
+        return False, "Konfigurasi Telegram kosong"
+
+    url = f"{_basis_url(token)}/deleteMessage"
+    try:
+        respons = requests.post(
+            url,
+            data={"chat_id": chat_id, "message_id": message_id},
+            timeout=15,
+        )
+    except requests.RequestException:
+        return False, "Koneksi ke Telegram gagal"
+
+    try:
+        isi = respons.json()
+    except ValueError:
+        return False, "Respons Telegram tidak valid"
+
+    if respons.ok and isi.get("ok"):
+        return True, "OK"
+    # Telegram return description aman (tidak mengandung token)
+    desc = isi.get("description", "Telegram menolak")
+    # Kasus umum: "message to delete not found" → file sudah dihapus manual.
+    # Tetap report sebagai not-ok tapi user-friendly pesannya.
+    return False, desc[:100]

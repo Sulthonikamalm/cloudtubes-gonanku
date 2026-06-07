@@ -105,8 +105,18 @@
                   <a class="tautan-aksi" href="{{ url_for('berkas.detail', berkas_id=b.id) }}">Detail</a>
                   <a class="tautan-aksi" href="{{ url_for('berkas.edit', berkas_id=b.id) }}">Edit</a>
                   <form method="post" action="{{ url_for('berkas.hapus', berkas_id=b.id) }}"
-                        onsubmit="return confirm('Pindahkan berkas ini ke sampah?');">
-                    <button class="tautan-aksi bahaya" type="submit">Hapus</button>
+                        onsubmit="return confirm('Pindahkan berkas ini ke sampah? Bisa dipulihkan dari halaman Sampah.');"
+                        style="display:inline;">
+                    <button class="tautan-aksi" type="submit" title="Pindah ke Sampah (bisa di-restore)">
+                      <i class="ri-archive-line"></i> Sampah
+                    </button>
+                  </form>
+                  <form method="post" action="{{ url_for('berkas.hapus_permanen', berkas_id=b.id) }}"
+                        onsubmit="return konfirmasiHapusPermanen({{ b.judul | tojson }});"
+                        style="display:inline;">
+                    <button class="tautan-aksi bahaya" type="submit" title="Hapus permanen — DB + Telegram, tidak bisa dibatalkan">
+                      <i class="ri-delete-bin-line"></i> Hapus
+                    </button>
                   </form>
                 </div>
               </td>
@@ -139,4 +149,22 @@
       {% endif %}
     </div>
   {% endif %}
+
+  <script>
+    // Double-confirm untuk aksi irreversible (hapus permanen dari DB + Telegram)
+    function konfirmasiHapusPermanen(judul) {
+      const ok1 = confirm(
+        "⚠ HAPUS PERMANEN — TIDAK BISA DIBATALKAN\n\n" +
+        "Berkas \"" + judul + "\" akan dihapus dari Gonanku DAN file fisik " +
+        "akan dihapus dari Telegram channel.\n\nLanjutkan?"
+      );
+      if (!ok1) return false;
+      const ok2 = confirm(
+        "Konfirmasi sekali lagi:\n" +
+        "Hapus permanen \"" + judul + "\"?\n\n" +
+        "Klik OK untuk hapus, Cancel untuk batal."
+      );
+      return ok2;
+    }
+  </script>
 {% endblock %}

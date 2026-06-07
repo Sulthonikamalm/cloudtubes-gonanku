@@ -10,9 +10,25 @@
   <div class="header-halaman">
     <div>
       <h1>Sampah</h1>
-      <p class="subjudul">Berkas yang dihapus dapat dipulihkan kembali.</p>
+      <p class="subjudul">
+        Berkas dapat dipulihkan, atau dihapus PERMANEN (termasuk file di Telegram).
+      </p>
     </div>
-    <a class="tombol tombol-sekunder" href="{{ url_for('berkas.index') }}">Kembali ke Arsip</a>
+    <div class="aksi-baris">
+      <a class="tombol tombol-sekunder" href="{{ url_for('berkas.index') }}">
+        <i class="ri-arrow-left-line"></i> Kembali ke Arsip
+      </a>
+      {% if daftar %}
+        <form method="post" action="{{ url_for('berkas.kosongkan_sampah') }}"
+              onsubmit="return konfirmasiKosongkanSampah({{ daftar | length }});"
+              style="margin: 0;">
+          <button type="submit" class="tombol tombol-bahaya"
+                  title="Hapus permanen semua isi sampah (DB + Telegram)">
+            <i class="ri-delete-bin-line"></i> Kosongkan Sampah ({{ daftar | length }})
+          </button>
+        </form>
+      {% endif %}
+    </div>
   </div>
 
   <div class="kartu">
@@ -24,7 +40,7 @@
             <th>Tipe</th>
             <th>Ukuran</th>
             <th>Dihapus Pada</th>
-            <th>Aksi</th>
+            <th style="width: 240px;">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -40,9 +56,22 @@
               <td>{{ b.ukuran_file | ukuran }}</td>
               <td>{{ b.dihapus_pada | tanggal_jam }}</td>
               <td>
-                <form method="post" action="{{ url_for('berkas.pulihkan', berkas_id=b.id) }}">
-                  <button class="tautan-aksi" type="submit">Pulihkan</button>
-                </form>
+                <div class="aksi-baris">
+                  <form method="post" action="{{ url_for('berkas.pulihkan', berkas_id=b.id) }}"
+                        style="display:inline;">
+                    <button class="tautan-aksi" type="submit" title="Kembalikan ke arsip">
+                      <i class="ri-refresh-line"></i> Pulihkan
+                    </button>
+                  </form>
+                  <form method="post" action="{{ url_for('berkas.hapus_permanen', berkas_id=b.id) }}"
+                        onsubmit="return konfirmasiHapusPermanen({{ b.judul | tojson }});"
+                        style="display:inline;">
+                    <button class="tautan-aksi bahaya" type="submit"
+                            title="Hapus permanen — DB + Telegram, tidak bisa dibatalkan">
+                      <i class="ri-delete-bin-line"></i> Hapus Permanen
+                    </button>
+                  </form>
+                </div>
               </td>
             </tr>
           {% endfor %}
@@ -56,4 +85,34 @@
       </div>
     {% endif %}
   </div>
+
+  <script>
+    function konfirmasiHapusPermanen(judul) {
+      const ok1 = confirm(
+        "⚠ HAPUS PERMANEN — TIDAK BISA DIBATALKAN\n\n" +
+        "Berkas \"" + judul + "\" akan dihapus dari Gonanku DAN file fisik " +
+        "akan dihapus dari Telegram channel.\n\nLanjutkan?"
+      );
+      if (!ok1) return false;
+      return confirm(
+        "Konfirmasi sekali lagi:\n" +
+        "Hapus permanen \"" + judul + "\"?\n\n" +
+        "Klik OK untuk hapus, Cancel untuk batal."
+      );
+    }
+
+    function konfirmasiKosongkanSampah(jumlah) {
+      const ok1 = confirm(
+        "⚠ KOSONGKAN SAMPAH — TIDAK BISA DIBATALKAN\n\n" +
+        jumlah + " berkas di sampah akan dihapus PERMANEN dari Gonanku DAN " +
+        "file fisik akan dihapus dari Telegram channel.\n\nLanjutkan?"
+      );
+      if (!ok1) return false;
+      return confirm(
+        "Konfirmasi sekali lagi:\n" +
+        "Hapus PERMANEN " + jumlah + " berkas dari sampah?\n\n" +
+        "Tidak ada cara untuk mengembalikan setelah ini."
+      );
+    }
+  </script>
 {% endblock %}

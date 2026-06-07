@@ -211,6 +211,43 @@ def pulihkan(berkas_id):
     return redirect(url_for("berkas.sampah"))
 
 
+@berkas_bp.route("/<int:berkas_id>/hapus-permanen", methods=["POST"])
+@login_required
+def hapus_permanen(berkas_id):
+    """Hapus permanen — DB + file Telegram. IRREVERSIBLE."""
+    hasil = layanan_berkas.hapus_permanen_berkas(current_user.id, berkas_id)
+    if not hasil["ok"]:
+        flash(hasil["pesan"], "bahaya")
+    elif hasil["telegram_ok"]:
+        flash(hasil["pesan"], "sukses")
+    else:
+        # DB bersih tapi Telegram fail — warning, bukan error
+        flash(hasil["pesan"], "peringatan")
+    asal = request.referrer or url_for("berkas.index")
+    return redirect(asal)
+
+
+@berkas_bp.route("/kosongkan-sampah", methods=["POST"])
+@login_required
+def kosongkan_sampah():
+    """Hapus permanen seluruh isi sampah user. IRREVERSIBLE."""
+    hasil = layanan_berkas.kosongkan_sampah(current_user.id)
+    n = hasil["jumlah_dihapus"]
+    n_gagal = hasil["gagal_telegram"]
+    if n == 0:
+        flash("Sampah sudah kosong.", "peringatan")
+    elif n_gagal == 0:
+        flash(f"Sampah dikosongkan: {n} berkas dihapus permanen (DB + Telegram).",
+              "sukses")
+    else:
+        flash(
+            f"Sampah dikosongkan: {n} berkas dihapus dari DB. "
+            f"{n_gagal} file di Telegram tidak bisa dihapus (mungkin sudah dihapus manual).",
+            "peringatan",
+        )
+    return redirect(url_for("berkas.sampah"))
+
+
 @berkas_bp.route("/<int:berkas_id>/regenerasi-ai", methods=["POST"])
 @login_required
 def regenerasi_ai(berkas_id):
