@@ -100,10 +100,12 @@
                     title="Tautan tidak tersedia">Buka di Telegram</button>
           {% endif %}
           <form method="post" action="{{ url_for('berkas.regenerasi_ai', berkas_id=berkas.id) }}" style="margin-bottom: 10px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <button class="tombol tombol-sekunder tombol-blok" type="submit">Regenerasi Metadata AI</button>
           </form>
           <form method="post" action="{{ url_for('berkas.hapus', berkas_id=berkas.id) }}"
                 onsubmit="return confirm('Pindahkan berkas ini ke sampah?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <button class="tombol tombol-bahaya tombol-blok" type="submit">Hapus</button>
           </form>
         </div>

@@ -107,6 +107,7 @@
                   <form method="post" action="{{ url_for('berkas.hapus', berkas_id=b.id) }}"
                         onsubmit="return confirm('Pindahkan berkas ini ke sampah? Bisa dipulihkan dari halaman Sampah.');"
                         style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                     <button class="tautan-aksi" type="submit" title="Pindah ke Sampah (bisa di-restore)">
                       <i class="ri-archive-line"></i> Sampah
                     </button>
@@ -114,6 +115,7 @@
                   <form method="post" action="{{ url_for('berkas.hapus_permanen', berkas_id=b.id) }}"
                         onsubmit="return konfirmasiHapusPermanen({{ b.judul | tojson }});"
                         style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                     <button class="tautan-aksi bahaya" type="submit" title="Hapus permanen — DB + Telegram, tidak bisa dibatalkan">
                       <i class="ri-delete-bin-line"></i> Hapus
                     </button>

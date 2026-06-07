@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, url_for, flash
 
 from app.config import Config
-from app.extensions import db, migrate, login_manager
+from app.extensions import db, migrate, login_manager, csrf
 from app.utils.format_ukuran import format_ukuran
 from app.utils.format_tanggal import format_tanggal, format_tanggal_jam
 
@@ -40,6 +40,9 @@ def _daftarkan_extension(app):
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
+    # CSRFProtect aktif untuk SEMUA POST/PUT/DELETE. Template wajib pakai
+    # {{ csrf_token() }}. AJAX wajib kirim header X-CSRFToken.
+    csrf.init_app(app)
 
     from app.models import Pengguna  # noqa: F401 — registrasi metadata SQLAlchemy
 
@@ -90,6 +93,28 @@ def _daftarkan_error_handler(app):
     def tidak_ditemukan(_e):
         return render_template("error.html", kode=404,
                                pesan="Halaman atau berkas tidak ditemukan."), 404
+
+    @app.errorhandler(500)
+    def kesalahan_server(e):
+        # Tanpa handler ini, Flask production menampilkan halaman "Internal
+        # Server Error" generik. Dengan handler ini user dapat pesan sopan,
+        # dan log lengkap tetap tercatat lewat app.logger.exception.
+        app.logger.exception("Kesalahan tak tertangani: %s", e)
+        return render_template(
+            "error.html",
+            kode=500,
+            pesan="Terjadi gangguan di server. Tim Gonanku sudah dapat notifikasi.",
+        ), 500
+
+    @app.errorhandler(400)
+    def permintaan_buruk(_e):
+        # CSRF gagal (token expired / hilang) jatuh ke 400. Beri pesan jelas
+        # supaya user paham apa yang harus dilakukan.
+        return render_template(
+            "error.html",
+            kode=400,
+            pesan="Sesi telah berakhir atau permintaan tidak valid. Silakan muat ulang halaman dan coba lagi.",
+        ), 400
 
 
 def _daftarkan_perintah_cli(app):

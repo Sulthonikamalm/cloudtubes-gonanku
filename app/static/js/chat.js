@@ -14,6 +14,11 @@
 
   if (!form || !area) return;
 
+  // CSRF token dari meta tag (di-set oleh layout.html). Wajib dikirim
+  // pada semua request POST AJAX agar Flask-WTF CSRFProtect lolos.
+  const CSRF_TOKEN =
+    document.querySelector('meta[name="csrf-token"]')?.content || "";
+
   // ── Helper DOM ──
   function buatElemen(kelas, isi) {
     const el = document.createElement("div");
@@ -132,7 +137,10 @@
     try {
       const resp = await fetch(window.URL_CHAT_HAPUS + "/" + id + "/hapus", {
         method: "POST",
-        headers: { "X-Requested-With": "XMLHttpRequest" },
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRFToken": CSRF_TOKEN,
+        },
       });
       if (resp.ok) {
         liElement.remove();
@@ -195,7 +203,10 @@
       data.append("pertanyaan", pertanyaan);
       const resp = await fetch(window.URL_CHAT_TANYA, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRFToken": CSRF_TOKEN,
+        },
         body: data,
       });
       const hasil = await resp.json();

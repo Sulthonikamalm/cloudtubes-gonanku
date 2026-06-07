@@ -17,6 +17,7 @@
   <div class="kartu" style="margin-bottom: 16px;">
     <div class="kartu-isi">
       <form method="post" action="{{ url_for('kategori.tambah') }}" class="toolbar-filter" style="margin: 0;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="kolom-filter tumbuh">
           <label class="label-form">Nama Kategori Baru</label>
           <input class="input-form" type="text" name="nama" placeholder="mis. Dokumen Magang" required />
@@ -38,6 +39,7 @@
               <td>
                 <form method="post" action="{{ url_for('kategori.update', kategori_id=k.id) }}"
                       style="display:flex; gap:8px; align-items:center;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                   <input class="input-form" type="text" name="nama" value="{{ k.nama }}" style="max-width: 260px;" />
                   <button class="tautan-aksi" type="submit">Simpan</button>
                 </form>
@@ -46,6 +48,7 @@
               <td>
                 <form method="post" action="{{ url_for('kategori.hapus', kategori_id=k.id) }}"
                       onsubmit="return confirm('Hapus kategori ini? Berkas akan dipindahkan ke Lainnya.');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                   <button class="tautan-aksi bahaya" type="submit">Hapus</button>
                 </form>
               </td>

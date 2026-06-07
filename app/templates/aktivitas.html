@@ -12,6 +12,7 @@
     {% if daftar %}
       <form method="post" action="{{ url_for('aktivitas.bersihkan') }}"
             onsubmit="return confirm('Yakin ingin menghapus SEMUA riwayat aktivitas? Tindakan ini tidak dapat dibatalkan.');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <button type="submit" class="tombol tombol-bahaya">
           <i class="ri-delete-bin-line"></i> Bersihkan Semua
         </button>
@@ -41,6 +42,7 @@
               <td>
                 <form method="post" action="{{ url_for('aktivitas.hapus', log_id=a.id) }}"
                       onsubmit="return confirm('Hapus entri aktivitas ini?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                   <button type="submit" class="tautan-aksi bahaya" title="Hapus entri ini">
                     <i class="ri-delete-bin-line"></i>
                   </button>

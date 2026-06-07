@@ -22,6 +22,7 @@
         <form method="post" action="{{ url_for('berkas.kosongkan_sampah') }}"
               onsubmit="return konfirmasiKosongkanSampah({{ daftar | length }});"
               style="margin: 0;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <button type="submit" class="tombol tombol-bahaya"
                   title="Hapus permanen semua isi sampah (DB + Telegram)">
             <i class="ri-delete-bin-line"></i> Kosongkan Sampah ({{ daftar | length }})
@@ -59,6 +60,7 @@
                 <div class="aksi-baris">
                   <form method="post" action="{{ url_for('berkas.pulihkan', berkas_id=b.id) }}"
                         style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                     <button class="tautan-aksi" type="submit" title="Kembalikan ke arsip">
                       <i class="ri-refresh-line"></i> Pulihkan
                     </button>
@@ -66,6 +68,7 @@
                   <form method="post" action="{{ url_for('berkas.hapus_permanen', berkas_id=b.id) }}"
                         onsubmit="return konfirmasiHapusPermanen({{ b.judul | tojson }});"
                         style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                     <button class="tautan-aksi bahaya" type="submit"
                             title="Hapus permanen — DB + Telegram, tidak bisa dibatalkan">
                       <i class="ri-delete-bin-line"></i> Hapus Permanen

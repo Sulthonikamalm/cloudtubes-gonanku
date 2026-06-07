@@ -19,6 +19,7 @@
       {% if riwayat %}
         <form method="post" action="{{ url_for('chat.bersihkan') }}"
               onsubmit="return confirm('Hapus SEMUA riwayat permanen?');" style="margin: 0;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <button type="submit" class="tombol tombol-bahaya" title="Hapus semua riwayat dari database">
             <i class="ri-delete-bin-line"></i> Hapus Semua Riwayat
           </button>

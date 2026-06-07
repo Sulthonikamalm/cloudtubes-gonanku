@@ -17,6 +17,7 @@
   <div class="kartu" style="margin-bottom: 16px;">
     <div class="kartu-isi">
       <form method="post" action="{{ url_for('tag.tambah') }}" class="toolbar-filter" style="margin: 0;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="kolom-filter tumbuh">
           <label class="label-form">Nama Tag Baru</label>
           <input class="input-form" type="text" name="nama" placeholder="mis. komputasi-awan" required />
@@ -38,6 +39,7 @@
               <td>
                 <form method="post" action="{{ url_for('tag.update', tag_id=t.id) }}"
                       style="display:flex; gap:8px; align-items:center;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                   <input class="input-form" type="text" name="nama" value="{{ t.nama }}" style="max-width: 260px;" />
                   <button class="tautan-aksi" type="submit">Simpan</button>
                 </form>
@@ -46,6 +48,7 @@
               <td>
                 <form method="post" action="{{ url_for('tag.hapus', tag_id=t.id) }}"
                       onsubmit="return confirm('Hapus tag ini?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                   <button class="tautan-aksi bahaya" type="submit">Hapus</button>
                 </form>
               </td>

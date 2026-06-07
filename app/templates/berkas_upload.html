@@ -25,6 +25,7 @@
       </div>
 
       <form method="post" enctype="multipart/form-data" id="form-upload">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="area-dropzone" id="dropzone">
           <div class="ikon-unggah">↑</div>
           <div class="teks-utama">Tarik banyak file ke sini atau klik untuk memilih</div>

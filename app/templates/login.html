@@ -54,6 +54,7 @@
       {% endwith %}
 
       <form method="post" action="{{ url_for('auth.login') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="kolom-form">
           <label class="label-form" for="email">Email</label>
           <input class="input-form" type="email" id="email" name="email"

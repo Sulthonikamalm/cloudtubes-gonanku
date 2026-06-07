@@ -29,14 +29,55 @@ def _ambil_database_url():
     return url
 
 
+_SECRET_KEY_DEV_FALLBACK = "secret_dev_jangan_dipakai_di_production"
+
+
+def _ambil_secret_key():
+    """Ambil SECRET_KEY dari env. Fail-fast jika production memakai fallback dev.
+
+    Tanpa pengecekan ini, deploy yang lupa set SECRET_KEY akan memakai string
+    publik yang membuat semua session bisa dipalsukan. Lebih baik aplikasi
+    menolak boot daripada bocor.
+    """
+    nilai = os.getenv("SECRET_KEY", "").strip()
+    env = os.getenv("APP_ENV", "development").strip().lower()
+    if not nilai:
+        if env in ("production", "prod"):
+            raise RuntimeError(
+                "SECRET_KEY wajib diset di environment produksi. "
+                "Set env var SECRET_KEY ke string acak panjang (>=32 karakter)."
+            )
+        return _SECRET_KEY_DEV_FALLBACK
+    return nilai
+
+
 class Config:
     APP_NAME = os.getenv("APP_NAME", "Gonanku")
     APP_ENV = os.getenv("APP_ENV", "development")
 
-    SECRET_KEY = os.getenv("SECRET_KEY", "secret_dev_jangan_dipakai_di_production")
+    SECRET_KEY = _ambil_secret_key()
 
     SQLALCHEMY_DATABASE_URI = _ambil_database_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # ───── Session cookie hardening (production-safe) ─────
+    # Cookie hanya boleh dikirim via HTTPS di production (mencegah MITM).
+    # Di development lokal HTTP, fallback ke False supaya tetap bisa login.
+    SESSION_COOKIE_SECURE = APP_ENV.lower() in ("production", "prod")
+    REMEMBER_COOKIE_SECURE = SESSION_COOKIE_SECURE
+    # HttpOnly: JS di halaman tidak bisa membaca cookie (mencegah XSS curi sesi).
+    SESSION_COOKIE_HTTPONLY = True
+    REMEMBER_COOKIE_HTTPONLY = True
+    # SameSite=Lax: cookie tidak ikut request cross-origin POST (proteksi CSRF
+    # lapisan kedua di samping Flask-WTF). "Strict" terlalu agresif untuk
+    # flow redirect dari Telegram link.
+    SESSION_COOKIE_SAMESITE = "Lax"
+
+    # CSRF: token berlaku 1 jam — cukup untuk form panjang (upload batch),
+    # tidak terlalu lama untuk session yang menganggur.
+    WTF_CSRF_TIME_LIMIT = 3600
+    # Header alternatif yang dibaca CSRFProtect untuk request AJAX.
+    WTF_CSRF_HEADERS = ["X-CSRFToken", "X-CSRF-Token"]
 
     # Batas upload per file. Cloud Run HTTP/1 menolak request > 32 MiB
     # SEBELUM sampai ke aplikasi, jadi cap 30 MB memberi buffer aman.

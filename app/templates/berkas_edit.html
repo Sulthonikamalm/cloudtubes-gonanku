@@ -17,6 +17,7 @@
   <div class="kartu form-kartu">
     <div class="kartu-isi">
       <form method="post" action="{{ url_for('berkas.update', berkas_id=berkas.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="kolom-form">
           <label class="label-form" for="judul">Judul</label>
           <input class="input-form" type="text" id="judul" name="judul" value="{{ berkas.judul }}" required />

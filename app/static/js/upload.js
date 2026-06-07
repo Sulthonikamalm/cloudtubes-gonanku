@@ -23,6 +23,11 @@
 
   if (!dropzone || !input) return;
 
+  // CSRF token dari meta tag (di-set oleh layout.html). Wajib dikirim
+  // pada semua request POST AJAX agar Flask-WTF CSRFProtect lolos.
+  const CSRF_TOKEN =
+    document.querySelector('meta[name="csrf-token"]')?.content || "";
+
   const BATAS_FOTO = 15;
   const BATAS_DOK = 10;
   const MAX_MB = window.MAX_FILE_MB || 30;
@@ -176,7 +181,11 @@
     data.append("file", file);
     Object.keys(metadata).forEach((k) => data.append(k, metadata[k]));
 
-    const resp = await fetch(window.URL_UNGGAH_SATU, { method: "POST", body: data });
+    const resp = await fetch(window.URL_UNGGAH_SATU, {
+      method: "POST",
+      headers: { "X-CSRFToken": CSRF_TOKEN },
+      body: data,
+    });
     const text = await resp.text();
     let json;
     try { json = JSON.parse(text); } catch (e) { json = { ok: false, error: text.slice(0, 80) }; }
