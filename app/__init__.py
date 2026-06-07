@@ -3,6 +3,7 @@ import os
 import click
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, url_for, flash
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from app.config import Config
 from app.extensions import db, migrate, login_manager, csrf, limiter
@@ -16,6 +17,16 @@ def buat_aplikasi(config_class=Config):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    # Production di belakang load balancer (Cloud Run/Nginx): trust 1 hop
+    # proxy untuk membaca X-Forwarded-Proto/Host/For. Tanpa ini, Flask
+    # menyangka request HTTP (bukan HTTPS), url_for(_external=True) jadi
+    # http://, dan SESSION_COOKIE_SECURE bisa miscarry. Hanya aktif di
+    # production supaya dev (HTTP murni) tidak ikut percaya header palsu.
+    if app.config.get("APP_ENV", "").lower() in ("production", "prod"):
+        app.wsgi_app = ProxyFix(
+            app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
+        )
 
     os.makedirs(app.config["UPLOAD_TEMP_DIR"], exist_ok=True)
 
