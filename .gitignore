@@ -30,3 +30,6 @@ Thumbs.db
 # AI / Agent folders
 .claude/
 .gemini/
+
+# PDF generated dari MD — jangan ikut commit
+*.pdf
