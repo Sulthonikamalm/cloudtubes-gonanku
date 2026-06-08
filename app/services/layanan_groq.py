@@ -295,15 +295,22 @@ def susun_jawaban_chatbot(pertanyaan, ringkasan_hasil):
 
 
 def pilih_dan_susun_jawaban(pertanyaan, kandidat):
-    """Re-rank semantik + susun jawaban dalam satu panggilan Groq.
+    """Re-rank semantik PRESISI TINGGI dengan chain-of-thought + keyword_trap detection.
 
     kandidat: list of dict {id, judul, tipe_file, kategori, ringkasan, tanggal}
-    Return: {ids_relevan: [int], jawaban: str}
+    Return: {ids_relevan: [int], jawaban: str, atribut_diminta: list, analisis: list}
 
-    Filter hasil keyword search yang asal cocok tapi konteks tidak nyambung
-    (mis. semua foto buku muncul saat user cari foto 'bersikap bodo amat').
-    AI menilai berdasarkan judul + ringkasan, bukan sekadar string match.
+    Strategi (SISTEM_RERANK v2):
+    - Dekomposisi pertanyaan jadi atribut diskrit dulu
+    - Chain-of-thought per kandidat (atribut_match, atribut_kontradiksi)
+    - Hierarki sumber bukti: ringkasan > judul
+    - keyword_trap detection: kalau judul cocok tapi ringkasan tidak mendukung
+    - Sanity check internal: ID di ids_relevan WAJIB punya verdict INCLUDE
+    - Suhu 0.0 = deterministic (rerank task, bukan generative)
     """
+    import logging
+    logger = logging.getLogger(__name__)
+
     if not kandidat:
         return {"ids_relevan": [], "jawaban": ""}
 
@@ -325,21 +332,52 @@ def pilih_dan_susun_jawaban(pertanyaan, kandidat):
             {"role": "user", "content": konteks},
         ],
         mode_json=True,
-        suhu=0.2,
+        suhu=0.0,  # rerank = klasifikasi diskrit, butuh deterministic
         tugas="chatbot",
     )
     data = _muat_json(jawaban)
-    ids = data.get("ids_relevan") or []
-    # Validasi: ids HARUS subset dari kandidat (anti-halu)
+
     valid_ids = {k["id"] for k in kandidat}
-    ids_bersih = [
-        int(i)
-        for i in ids
+    ids_raw = data.get("ids_relevan") or []
+    ids_clean = [
+        int(i) for i in ids_raw
         if isinstance(i, (int, str)) and str(i).isdigit() and int(i) in valid_ids
     ]
+
+    # Sanity check: ID di ids_relevan HARUS punya verdict INCLUDE di analisis.
+    # Guard terhadap inkonsistensi internal LLM (jarang terjadi tapi katastrofik).
+    analisis = data.get("analisis") or []
+    verdict_map = {}
+    for a in analisis:
+        try:
+            aid = int(a.get("id"))
+            verdict_map[aid] = (a.get("verdict") or "").upper()
+        except (TypeError, ValueError):
+            continue
+    ids_final = [
+        i for i in ids_clean
+        if verdict_map.get(i, "INCLUDE") == "INCLUDE"
+    ]
+    dropped = [i for i in ids_clean if i not in ids_final]
+    if dropped:
+        logger.warning(
+            "rerank inkonsisten: drop ids=%s (verdict EXCLUDE walau di ids_relevan)",
+            dropped,
+        )
+
+    # Audit log keyword_trap detection
+    for a in analisis:
+        if a.get("keyword_trap"):
+            logger.info(
+                "rerank keyword_trap detected id=%s alasan=%s",
+                a.get("id"), (a.get("alasan") or "")[:120],
+            )
+
     return {
-        "ids_relevan": ids_bersih,
+        "ids_relevan": ids_final,
         "jawaban": (data.get("jawaban") or "").strip(),
+        "atribut_diminta": data.get("atribut_diminta") or [],
+        "analisis": analisis,
     }
 
 
@@ -347,18 +385,26 @@ def pilih_dan_susun_jawaban(pertanyaan, kandidat):
 # VISION: OCR + deskripsi visual untuk foto/screenshot
 # ===================================================================
 
-def ekstrak_teks_dari_gambar(path_gambar, batas_karakter=2500, offset_kunci=0):
-    """Baca isi gambar (teks + deskripsi + tag retrieval) lewat Groq Vision.
+def ekstrak_teks_dari_gambar(path_gambar, batas_karakter=3500, offset_kunci=0):
+    """Vision OCR + deskripsi atribut dengan validator + retry layer.
 
-    Kembalikan string ringkasan untuk disimpan ke teks_ekstraksi dan dipakai
-    sebagai bahan metadata AI. Melempar GagalGroq jika model menolak atau
-    file tidak didukung. Pemanggil bertanggung jawab menangani kegagalan
-    (upload tetap sukses meski vision gagal — sesuai PRD).
+    Pattern: Instructor-style reask dengan max_retries=2.
+    - Validate output vs format SISTEM_VISION v2 (TAG_RETRIEVAL + ORANG_JSON + ...).
+    - Kalau gagal, build reask prompt yang sebut field hilang BY NAME.
+    - Suhu naik di retry (0.1 -> 0.25 -> 0.4) supaya output beda dari yg gagal.
+    - Rotate offset_kunci di retry supaya pakai API key berbeda.
+    - Fallback graceful: return output terakhir (walau partial) tanpa raise.
 
-    batas_karakter dinaikkan ke 2500 (dari 2000) karena prompt baru
-    menghasilkan output lebih panjang (atribut detail + blok TAG_RETRIEVAL).
-    offset_kunci untuk paralel bulk upload.
+    batas_karakter dinaikkan ke 3500 untuk akomodasi ORANG_JSON multi-orang.
+    Truncation pakai line-aware (jaga TAG_RETRIEVAL & ORANG_JSON tetap utuh).
     """
+    from app.services.vision_validator import (
+        validasi_output_vision, build_reask_prompt, truncate_line_aware,
+        MAX_RETRY,
+    )
+    import logging
+    logger = logging.getLogger(__name__)
+
     ekstensi = os.path.splitext(path_gambar)[1].lower().lstrip(".")
     mime = _EKSTENSI_VISION.get(ekstensi)
     if mime is None:
@@ -370,21 +416,18 @@ def ekstrak_teks_dari_gambar(path_gambar, batas_karakter=2500, offset_kunci=0):
     except OSError:
         raise GagalGroq("Tidak dapat membaca file gambar.")
 
-    # Resize ke 1280px sisi terpanjang sebelum encode (hemat payload + tetap
-    # detail). Selalu output JPEG setelah resize.
     sized_bytes = _resize_untuk_vision(raw_bytes)
     if sized_bytes is not raw_bytes:
-        mime = "image/jpeg"  # _resize_untuk_vision selalu output JPEG
-    data_uri = f"data:{mime};base64,{base64.b64encode(sized_bytes).decode('ascii')}"
+        mime = "image/jpeg"
+    data_uri = (
+        f"data:{mime};base64,{base64.b64encode(sized_bytes).decode('ascii')}"
+    )
 
     model_vision = current_app.config.get(
         "GROQ_MODEL_VISION", "meta-llama/llama-4-scout-17b-16e-instruct"
     )
 
-    # Model vision multimodal pakai format content array.
-    # Sebagian model Groq menolak system prompt + image dalam satu request,
-    # jadi instruksi sistem digabung ke pesan user.
-    pesan = [
+    pesan_awal = [
         {
             "role": "user",
             "content": [
@@ -394,12 +437,55 @@ def ekstrak_teks_dari_gambar(path_gambar, batas_karakter=2500, offset_kunci=0):
         }
     ]
 
-    teks = _panggil_groq(
-        pesan,
-        mode_json=False,
-        suhu=0.2,
-        tugas="vision",
-        model_override=model_vision,
-        offset_kunci=offset_kunci,
-    ).strip()
-    return teks[:batas_karakter] if batas_karakter else teks
+    output_terakhir = ""
+    pesan = pesan_awal
+    hasil_validasi = None
+
+    for attempt in range(MAX_RETRY + 1):
+        # Suhu naik di retry: 0.1 -> 0.25 -> 0.40
+        suhu_attempt = 0.1 + (0.15 * attempt)
+        try:
+            teks = _panggil_groq(
+                pesan,
+                mode_json=False,
+                suhu=suhu_attempt,
+                tugas="vision",
+                model_override=model_vision,
+                offset_kunci=offset_kunci + attempt,
+            ).strip()
+        except GagalGroq as e:
+            logger.warning("vision attempt=%d gagal API: %s", attempt + 1, e)
+            if attempt == MAX_RETRY and not output_terakhir:
+                raise
+            continue
+
+        output_terakhir = teks
+        hasil_validasi = validasi_output_vision(teks)
+
+        if hasil_validasi.valid:
+            logger.info(
+                "vision sukses attempt=%d len=%d orang=%d",
+                attempt + 1, len(teks),
+                len(hasil_validasi.parsed.get("orang", [])),
+            )
+            break
+
+        logger.warning(
+            "vision attempt=%d invalid: %s",
+            attempt + 1, hasil_validasi.alasan_singkat,
+        )
+
+        if attempt < MAX_RETRY:
+            reask_text = build_reask_prompt(hasil_validasi, teks)
+            pesan = pesan_awal + [
+                {"role": "assistant", "content": teks},
+                {"role": "user", "content": reask_text},
+            ]
+
+    if hasil_validasi and not hasil_validasi.valid:
+        logger.error(
+            "vision habis retry, partial saved. masalah=%s",
+            hasil_validasi.alasan_singkat,
+        )
+
+    return truncate_line_aware(output_terakhir, batas_karakter)
