@@ -226,17 +226,22 @@
     });
 
     const total = filesArr.length;
-    let nSukses = 0, nGagal = 0;
+    let nSukses = 0, nGagal = 0, nSelesai = 0;
     counterProgress.textContent = `0/${total}`;
     barDalam.style.width = "0%";
-    judulProgress.textContent = `Mengunggah ${total} berkas...`;
+    judulProgress.textContent = `Mengunggah ${total} berkas (paralel 5)...`;
 
-    // Process sequential agar Telegram dan AI tidak overload
-    for (let i = 0; i < filesArr.length; i++) {
-      const li = items[i];
+    // PARALLEL POOL: max 5 upload bersamaan. Server Gunicorn handle 4 thread
+    // + Groq punya 7 keys yang dirotasi per request → tiap upload pakai key
+    // berbeda, tidak rebut quota. Bulk 15 foto sequential ~150s; paralel
+    // pool 5 ~ 30-40s.
+    const MAX_PARALEL = 5;
+
+    async function prosesSatu(idx) {
+      const li = items[idx];
       setStatus(li, "proses");
       try {
-        const hasil = await uploadSatu(filesArr[i], metadata);
+        const hasil = await uploadSatu(filesArr[idx], metadata);
         if (hasil.ok) {
           setStatus(li, "sukses", `${hasil.kode_arsip} · ${hasil.judul}`);
           nSukses++;
@@ -248,11 +253,24 @@
         setStatus(li, "gagal", "Koneksi gagal");
         nGagal++;
       }
-
-      const selesai = i + 1;
-      counterProgress.textContent = `${selesai}/${total}`;
-      barDalam.style.width = `${(selesai / total) * 100}%`;
+      nSelesai++;
+      counterProgress.textContent = `${nSelesai}/${total}`;
+      barDalam.style.width = `${(nSelesai / total) * 100}%`;
     }
+
+    // Simple semaphore: queue index, max MAX_PARALEL aktif.
+    let nextIdx = 0;
+    async function worker() {
+      while (nextIdx < total) {
+        const myIdx = nextIdx++;
+        await prosesSatu(myIdx);
+      }
+    }
+    const workers = [];
+    for (let w = 0; w < Math.min(MAX_PARALEL, total); w++) {
+      workers.push(worker());
+    }
+    await Promise.all(workers);
 
     // Finalisasi
     if (nGagal === 0) {

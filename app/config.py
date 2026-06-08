@@ -128,6 +128,8 @@ class Config:
     GROQ_API_KEY_3 = os.getenv("GROQ_API_KEY_3", "")
     GROQ_API_KEY_4 = os.getenv("GROQ_API_KEY_4", "")
     GROQ_API_KEY_5 = os.getenv("GROQ_API_KEY_5", "")
+    GROQ_API_KEY_6 = os.getenv("GROQ_API_KEY_6", "")
+    GROQ_API_KEY_7 = os.getenv("GROQ_API_KEY_7", "")
     GROQ_MODEL_TEXT = (
         os.getenv("GROQ_MODEL_TEXT", "").strip() or "llama-3.3-70b-versatile"
     )

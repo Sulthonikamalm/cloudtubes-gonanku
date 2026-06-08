@@ -37,6 +37,42 @@ _EKSTENSI_VISION = {
     "webp": "image/webp",
 }
 
+# Llama-4 Scout proses image dalam tile 336x336. Sweet spot input ~1280px
+# sisi terpanjang (Anthropic vision docs, OpenAI multimodal cookbook).
+# Lebih besar → boros payload base64 tanpa gain detail. Lebih kecil →
+# detail tipis (kacamata bingkai, motif jilbab) hilang.
+_UKURAN_MAX_VISION = 1280
+
+
+def _resize_untuk_vision(data_bytes):
+    """Resize gambar ke max 1280px sisi terpanjang sebelum kirim ke Groq.
+
+    Hemat payload base64 ~3-5x untuk foto HD. Pakai Pillow LANCZOS supaya
+    detail kontras tinggi (mata, kacamata, motif kain) tetap tajam.
+    """
+    try:
+        from PIL import Image
+        import io as _io
+    except ImportError:
+        # Pillow tidak ada (seharusnya selalu ada, dependency requirements.txt).
+        return data_bytes
+
+    try:
+        img = Image.open(_io.BytesIO(data_bytes))
+        # Convert RGBA/palette → RGB supaya JPEG output valid.
+        if img.mode not in ("RGB", "L"):
+            img = img.convert("RGB")
+        w, h = img.size
+        if max(w, h) > _UKURAN_MAX_VISION:
+            ratio = _UKURAN_MAX_VISION / float(max(w, h))
+            img = img.resize((int(w * ratio), int(h * ratio)), Image.LANCZOS)
+        buf = _io.BytesIO()
+        img.save(buf, format="JPEG", quality=88, optimize=True)
+        return buf.getvalue()
+    except Exception:
+        # Best-effort: kalau resize gagal, kirim file asli.
+        return data_bytes
+
 
 class GagalGroq(Exception):
     """Dilempar ketika pemanggilan Groq gagal atau belum dikonfigurasi."""
@@ -46,14 +82,18 @@ class GagalGroq(Exception):
 # Internal: rotasi kunci API + pemanggilan HTTP
 # ===================================================================
 
-def _urutan_kunci(tugas):
-    """Tentukan urutan API key sesuai tugas, lalu key cadangan untuk failover.
+def _urutan_kunci(tugas, offset_kunci=0):
+    """Tentukan urutan API key sesuai tugas + offset round-robin.
 
-    Lima key dipisah berdasarkan beban tugas agar limit harian tidak cepat habis:
-      Key 1 = metadata teks (dokumen)                         -> [1, 4, 5, 3, 2]
-      Key 2 = chatbot (intent + jawaban)                      -> [2, 4, 5, 1, 3]
-      Key 3 = vision (image-to-text, payload base64 besar)    -> [3, 5, 4, 1, 2]
-      Key 4 & 5 = cadangan, dipakai sebagai fallback utama.
+    Tujuh key dipisah berdasarkan beban tugas + rotasi paralel:
+      Key 1 = metadata teks (dokumen)
+      Key 2 = chatbot (intent + jawaban + rerank)
+      Key 3 = vision (image-to-text, payload base64 besar)
+      Key 4, 5, 6, 7 = cadangan untuk failover & bulk paralel
+
+    offset_kunci: rotasi cyclical untuk paralel bulk upload supaya
+    tiap worker pakai key berbeda sebagai prioritas (mengurangi
+    rate limit hit di satu key). Worker N pakai offset=N.
 
     Bila satu key kosong/limit, sistem otomatis lanjut ke key berikutnya.
     """
@@ -62,13 +102,20 @@ def _urutan_kunci(tugas):
     key3 = current_app.config.get("GROQ_API_KEY_3", "")
     key4 = current_app.config.get("GROQ_API_KEY_4", "")
     key5 = current_app.config.get("GROQ_API_KEY_5", "")
+    key6 = current_app.config.get("GROQ_API_KEY_6", "")
+    key7 = current_app.config.get("GROQ_API_KEY_7", "")
 
     if tugas == "chatbot":
-        kandidat = [key2, key4, key5, key1, key3]
+        kandidat = [key2, key4, key5, key6, key7, key1, key3]
     elif tugas == "vision":
-        kandidat = [key3, key5, key4, key1, key2]
+        kandidat = [key3, key5, key6, key7, key4, key1, key2]
     else:  # "metadata" dan default
-        kandidat = [key1, key4, key5, key3, key2]
+        kandidat = [key1, key4, key5, key6, key7, key3, key2]
+
+    # Rotasi round-robin untuk bulk paralel.
+    if offset_kunci and kandidat:
+        n = len(kandidat)
+        kandidat = kandidat[offset_kunci % n:] + kandidat[: offset_kunci % n]
 
     # Buang yang kosong dan duplikat sambil menjaga urutan.
     urut = []
@@ -78,15 +125,21 @@ def _urutan_kunci(tugas):
     return urut
 
 
-def _panggil_groq(pesan, mode_json=True, suhu=0.2, tugas="metadata", model_override=None):
+def _panggil_groq(pesan, mode_json=True, suhu=0.2, tugas="metadata",
+                  model_override=None, offset_kunci=0):
     """Panggil Groq chat completion. Coba key sesuai tugas, failover bila limit.
 
     Bila key utama kena rate limit (HTTP 429) atau gagal, otomatis mencoba
     key cadangan. Kembalikan teks jawaban model.
 
     model_override dipakai untuk panggilan vision (model multimodal khusus).
+    offset_kunci dipakai untuk paralel bulk upload (lihat _urutan_kunci).
+
+    Timeout: (5, 45) artinya max 5 detik connect, 45 detik baca response.
+    Worst-case failover 7 key × 45s = 315s, dibanding sebelumnya 60s tunggal
+    yang sering hang. Tapi praktiknya tiap key gagal cepat (<2s response).
     """
-    daftar_kunci = _urutan_kunci(tugas)
+    daftar_kunci = _urutan_kunci(tugas, offset_kunci=offset_kunci)
     if not daftar_kunci:
         raise GagalGroq("API key Groq belum dikonfigurasi.")
 
@@ -104,7 +157,7 @@ def _panggil_groq(pesan, mode_json=True, suhu=0.2, tugas="metadata", model_overr
                 _URL_GROQ,
                 headers={"Authorization": f"Bearer {api_key}"},
                 json=muatan,
-                timeout=60,
+                timeout=(5, 45),
             )
         except requests.RequestException:
             galat_terakhir = "Tidak dapat terhubung ke Groq."
@@ -294,13 +347,17 @@ def pilih_dan_susun_jawaban(pertanyaan, kandidat):
 # VISION: OCR + deskripsi visual untuk foto/screenshot
 # ===================================================================
 
-def ekstrak_teks_dari_gambar(path_gambar, batas_karakter=2000):
-    """Baca isi gambar (teks + deskripsi) lewat Groq Vision.
+def ekstrak_teks_dari_gambar(path_gambar, batas_karakter=2500, offset_kunci=0):
+    """Baca isi gambar (teks + deskripsi + tag retrieval) lewat Groq Vision.
 
     Kembalikan string ringkasan untuk disimpan ke teks_ekstraksi dan dipakai
     sebagai bahan metadata AI. Melempar GagalGroq jika model menolak atau
     file tidak didukung. Pemanggil bertanggung jawab menangani kegagalan
     (upload tetap sukses meski vision gagal — sesuai PRD).
+
+    batas_karakter dinaikkan ke 2500 (dari 2000) karena prompt baru
+    menghasilkan output lebih panjang (atribut detail + blok TAG_RETRIEVAL).
+    offset_kunci untuk paralel bulk upload.
     """
     ekstensi = os.path.splitext(path_gambar)[1].lower().lstrip(".")
     mime = _EKSTENSI_VISION.get(ekstensi)
@@ -309,11 +366,16 @@ def ekstrak_teks_dari_gambar(path_gambar, batas_karakter=2000):
 
     try:
         with open(path_gambar, "rb") as f:
-            data_uri = (
-                f"data:{mime};base64,{base64.b64encode(f.read()).decode('ascii')}"
-            )
+            raw_bytes = f.read()
     except OSError:
         raise GagalGroq("Tidak dapat membaca file gambar.")
+
+    # Resize ke 1280px sisi terpanjang sebelum encode (hemat payload + tetap
+    # detail). Selalu output JPEG setelah resize.
+    sized_bytes = _resize_untuk_vision(raw_bytes)
+    if sized_bytes is not raw_bytes:
+        mime = "image/jpeg"  # _resize_untuk_vision selalu output JPEG
+    data_uri = f"data:{mime};base64,{base64.b64encode(sized_bytes).decode('ascii')}"
 
     model_vision = current_app.config.get(
         "GROQ_MODEL_VISION", "meta-llama/llama-4-scout-17b-16e-instruct"
@@ -338,5 +400,6 @@ def ekstrak_teks_dari_gambar(path_gambar, batas_karakter=2000):
         suhu=0.2,
         tugas="vision",
         model_override=model_vision,
+        offset_kunci=offset_kunci,
     ).strip()
     return teks[:batas_karakter] if batas_karakter else teks

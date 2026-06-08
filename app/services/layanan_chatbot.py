@@ -6,7 +6,8 @@ agar fitur tetap berjalan saat demo tanpa API key.
 """
 
 from app.extensions import db
-from app.models import RiwayatChat
+from app.models import RiwayatChat, Berkas
+from app.models.konstanta import TIPE_BERKAS
 from app.services import layanan_groq, layanan_pencarian, layanan_log
 from app.utils.format_tanggal import format_tanggal
 
@@ -67,6 +68,29 @@ def proses_pertanyaan_chatbot(pengguna_id, pertanyaan):
     )
 
     if not hasil:
+        # ────────────────────────────────────────────────────────────────
+        # FALLBACK SEMANTIK: keyword search 0 → minta AI baca konten file
+        # terbaru dan tentukan mana yang relevan secara konsep.
+        #
+        # Pattern: LLM-as-retriever fallback (Pedro Alonso 2026,
+        # ZeroEntropy 2025). Saat keyword bangkrut, kirim sample berkas
+        # terbaru ke Groq, biar dia decide based on ringkasan_ai +
+        # judul + tag yang sudah ada. Ini menyelamatkan kasus:
+        # "cewek berkacamata" tidak match "wanita berjilbab kacamata"
+        # secara literal tapi AI bisa decide they're the same concept.
+        # ────────────────────────────────────────────────────────────────
+        hasil_fallback = _fallback_semantik(pengguna_id, pertanyaan, intent)
+        if hasil_fallback:
+            hasil_final, jawaban_ai = _rerank_dan_jawab(
+                pertanyaan, hasil_fallback
+            )
+            if hasil_final:
+                _simpan_riwayat(
+                    pengguna_id, pertanyaan, jawaban_ai, hasil_final
+                )
+                return {"jawaban": jawaban_ai, "berkas": hasil_final}
+
+        # Fallback semantik juga 0 → baru kirim pesan "tidak ditemukan".
         kata = intent.get("kata_kunci") or []
         saran = ""
         if kata:
@@ -90,6 +114,31 @@ def proses_pertanyaan_chatbot(pengguna_id, pertanyaan):
     hasil_final, jawaban = _rerank_dan_jawab(pertanyaan, hasil)
     _simpan_riwayat(pengguna_id, pertanyaan, jawaban, hasil_final)
     return {"jawaban": jawaban, "berkas": hasil_final}
+
+
+_BATAS_FALLBACK = 30  # Berapa berkas terbaru yang dikirim ke AI saat fallback
+
+
+def _fallback_semantik(pengguna_id, pertanyaan, intent):
+    """Ambil berkas terbaru untuk dikirim ke AI sebagai kandidat semantik.
+
+    Dipakai HANYA saat keyword search return 0 hasil. Tujuannya: kasih AI
+    kesempatan baca isi berkas dan decide secara konsep, bukan literal match.
+
+    Filter:
+    - Berkas user, belum dihapus
+    - Jika intent.tipe_file valid → filter tipe (jaga konteks)
+    - Order desc tanggal_upload → 30 terbaru saja (latency reasonable)
+    """
+    q = Berkas.query.filter(
+        Berkas.pengguna_id == pengguna_id,
+        Berkas.dihapus_pada.is_(None),
+    )
+    tipe = (intent or {}).get("tipe_file")
+    if tipe and tipe in TIPE_BERKAS:
+        q = q.filter(Berkas.tipe_file == tipe)
+
+    return q.order_by(Berkas.tanggal_upload.desc()).limit(_BATAS_FALLBACK).all()
 
 
 def _rerank_dan_jawab(pertanyaan, kandidat):

@@ -164,3 +164,82 @@ def _daftarkan_perintah_cli(app):
             db.session.add(Kategori(pengguna_id=pengguna.id, nama=nama_kategori))
         db.session.commit()
         click.echo(f"Pengguna {email} dibuat dengan {len(KATEGORI_DEFAULT)} kategori default.")
+
+    @app.cli.command("re-describe-fotos")
+    @click.option("--user", "email", required=True, help="Email pemilik vault")
+    @click.option("--batas", default=999, type=int, help="Maks foto diproses")
+    def re_describe_fotos(email, batas):
+        """Regenerate metadata AI untuk SEMUA foto user pakai vision prompt baru.
+
+        Berguna setelah update prompt vision (mis. tambah checklist atribut
+        + TAG_RETRIEVAL): foto LAMA yang ter-upload sebelum patch masih punya
+        deskripsi miskin. Command ini menjalankan ulang vision + metadata AI
+        untuk tiap foto, supaya bisa dicari pakai atribut spesifik.
+        """
+        from app.models import Pengguna, Berkas
+        from app.services import layanan_groq, layanan_metadata
+        from app.utils.hapus_file_sementara import hapus_file_sementara
+        import tempfile
+        import requests
+
+        pengguna = Pengguna.query.filter_by(email=email.strip().lower()).first()
+        if pengguna is None:
+            click.echo(f"User {email} tidak ditemukan.")
+            return
+
+        # Filter foto + screenshot saja (yang pakai vision)
+        fotos = (
+            Berkas.query.filter(
+                Berkas.pengguna_id == pengguna.id,
+                Berkas.dihapus_pada.is_(None),
+                Berkas.tipe_file.in_(["foto", "screenshot"]),
+            )
+            .order_by(Berkas.tanggal_upload.desc())
+            .limit(batas)
+            .all()
+        )
+        click.echo(f"Akan memproses {len(fotos)} foto/screenshot milik {email}...")
+
+        bot_token = app.config.get("TELEGRAM_BOT_TOKEN", "")
+        ok, gagal = 0, 0
+        for i, b in enumerate(fotos, 1):
+            click.echo(f"[{i}/{len(fotos)}] {b.kode_arsip} — {b.judul[:60]}")
+            try:
+                # Download file dari Telegram ke temp
+                if not (bot_token and b.telegram_file_id):
+                    click.echo("  (lewati: tidak ada referensi Telegram)")
+                    gagal += 1
+                    continue
+                r = requests.get(
+                    f"https://api.telegram.org/bot{bot_token}/getFile",
+                    params={"file_id": b.telegram_file_id}, timeout=30,
+                )
+                r.raise_for_status()
+                fp = r.json()["result"]["file_path"]
+                file_url = f"https://api.telegram.org/file/bot{bot_token}/{fp}"
+                r2 = requests.get(file_url, timeout=60)
+                r2.raise_for_status()
+                suffix = "." + fp.rsplit(".", 1)[-1] if "." in fp else ".jpg"
+                tmp_path = tempfile.mktemp(suffix=suffix)
+                with open(tmp_path, "wb") as f:
+                    f.write(r2.content)
+
+                # Re-run vision dengan prompt baru
+                teks_baru = layanan_groq.ekstrak_teks_dari_gambar(
+                    tmp_path, batas_karakter=2500
+                )
+                b.teks_ekstraksi = teks_baru
+                db.session.flush()
+
+                # Re-run metadata text AI
+                layanan_metadata.jalankan_metadata_ai(b, paksa=True)
+                db.session.commit()
+                hapus_file_sementara(tmp_path)
+                ok += 1
+                click.echo("  OK")
+            except Exception as e:
+                db.session.rollback()
+                gagal += 1
+                click.echo(f"  GAGAL: {e}")
+
+        click.echo(f"\n=== SELESAI: {ok} sukses, {gagal} gagal ===")

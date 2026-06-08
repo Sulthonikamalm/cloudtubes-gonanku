@@ -38,7 +38,94 @@ _STOPWORDS = frozenset({
     "ini", "itu", "semua", "satu", "beberapa", "banyak", "sedikit",
     # Common verbs
     "menggunakan", "memakai", "pakai", "punya", "memiliki",
+    # Verba aksi yang muncul di pertanyaan tapi tidak match metadata
+    "berfoto", "berfotonya", "berfoto-foto", "selfie", "wefie",
 })
+
+
+# Peta sinonim Bahasa Indonesia (informal ↔ formal) + atribut khas Gonanku.
+# Dipakai oleh _ekspansi_sinonim() untuk menjembatani vocabulary gap antara
+# query user (informal: "cewek", "berkacamata") dan output vision AI yang
+# kadang formal ("wanita", "memakai kacamata"). Sumber pattern: ChatReID
+# (arXiv 2502.19958), Memory-QA caption-for-retrieval (arXiv 2509.18436).
+_SINONIM = {
+    # Gender
+    "cewek": ["wanita", "perempuan", "gadis", "mbak"],
+    "cowok": ["pria", "laki", "lelaki", "lakilaki", "mas"],
+    "wanita": ["cewek", "perempuan", "gadis"],
+    "perempuan": ["cewek", "wanita", "gadis"],
+    "pria": ["cowok", "laki", "lelaki"],
+    "laki": ["cowok", "pria", "lelaki"],
+    # Atribut kepala / wajah
+    "berkacamata": ["kacamata", "berkaca", "kaca-mata"],
+    "kacamata": ["berkacamata", "kaca-mata"],
+    "berjilbab": ["jilbab", "hijab", "kerudung", "berhijab", "berkerudung"],
+    "berhijab": ["hijab", "jilbab", "kerudung", "berjilbab", "berkerudung"],
+    "berkerudung": ["kerudung", "jilbab", "hijab"],
+    "jilbab": ["hijab", "kerudung", "berjilbab", "berhijab"],
+    "hijab": ["jilbab", "kerudung", "berhijab", "berjilbab"],
+    "kerudung": ["jilbab", "hijab", "berkerudung"],
+    "berjenggot": ["jenggot", "berjanggut", "janggut"],
+    "berkumis": ["kumis", "kumisan"],
+    "bermasker": ["masker", "pakai-masker"],
+    "masker": ["bermasker"],
+    "berpeci": ["peci", "kopiah", "songkok"],
+    "peci": ["berpeci", "kopiah", "songkok"],
+    # Panggilan / hubungan
+    "ibu": ["mama", "ibunda", "wanita", "perempuan"],
+    "bapak": ["ayah", "papa", "pria", "laki"],
+    "anak": ["bocah", "balita"],
+    "kakak": ["kak", "abang", "mas", "mbak"],
+    "adik": ["dik", "ade"],
+    "teman": ["kawan", "sahabat", "rekan"],
+    # Pakaian
+    "kemeja": ["kameja"],
+    "kaos": ["kaus", "tshirt", "t-shirt"],
+    "jaket": ["jacket"],
+    # Tempat
+    "kampus": ["universitas", "kuliah"],
+    "kelas": ["ruangkelas", "ruang-kelas"],
+    "kantor": ["office", "tempat-kerja"],
+}
+
+
+# Prefix Bahasa Indonesia yang umum dipakai dan layak di-strip untuk
+# mendapatkan akar kata. Sederhana, tidak full stemmer Sastrawi supaya
+# tetap ringan dan tidak ada dependency baru.
+_PREFIX_BI = ("ber", "men", "meng", "mem", "me", "ter", "pe", "pen")
+
+
+def _ekspansi_sinonim(kata_kunci):
+    """Ekspansi kata kunci dengan sinonim + ber-stripping akar kata.
+
+    Contoh:
+      ["cewek", "berkacamata"] → ["cewek", "wanita", "perempuan", "gadis",
+                                  "mbak", "berkacamata", "kacamata", ...]
+
+    Strategy: kalau kata ada di _SINONIM, tambah semua sinonimnya. Kalau
+    kata pakai prefix BI (ber-, men-, dll), tambahkan juga akar katanya
+    plus sinonim akar tersebut. Dedupe sambil pertahankan urutan.
+    """
+    diperluas = list(kata_kunci)
+    for k in kata_kunci:
+        kl = str(k).lower().strip()
+        if kl in _SINONIM:
+            diperluas.extend(_SINONIM[kl])
+        for prefix in _PREFIX_BI:
+            if kl.startswith(prefix) and len(kl) > len(prefix) + 2:
+                akar = kl[len(prefix):]
+                if akar not in diperluas:
+                    diperluas.append(akar)
+                if akar in _SINONIM:
+                    diperluas.extend(_SINONIM[akar])
+                break
+    seen, hasil = set(), []
+    for k in diperluas:
+        k_norm = str(k).lower().strip()
+        if k_norm and k_norm not in seen:
+            seen.add(k_norm)
+            hasil.append(k_norm)
+    return hasil
 
 
 def _bersihkan_kata_kunci(kata_kunci):
@@ -130,6 +217,13 @@ def _jalankan_query(pengguna_id, intent, batas):
     # Filter stopwords agar kata generik tidak meluas hasil ke semua file.
     # Mis. "foto bermasker" -> ["masker"] (kata "foto" sudah jadi tipe_file).
     kata_kunci = _bersihkan_kata_kunci(intent.get("kata_kunci") or [])
+    # Ekspansi sinonim BI: "cewek" → +["wanita","perempuan"], "berkacamata"
+    # → +["kacamata"]. Menjembatani vocabulary gap antara query informal user
+    # dan output vision yang kadang formal. Bersihkan stopword sekali lagi
+    # karena ekspansi bisa menghasilkan kata yang masuk stopword.
+    if kata_kunci:
+        kata_kunci = _ekspansi_sinonim(kata_kunci)
+        kata_kunci = _bersihkan_kata_kunci(kata_kunci)
     if kata_kunci:
         kondisi = []
         for kata in kata_kunci:
