@@ -617,19 +617,22 @@ h1.hero-title {
 
 .stabilo {
   display: inline;
-  /* Warna stabilo navy #0F2854 dengan opacity lembut agar teks tetap terbaca */
-  background-image: linear-gradient(rgba(15, 40, 84, 0.13), rgba(15, 40, 84, 0.13));
+  /* Background navy pekat solid */
+  background-image: linear-gradient(#0F2854, #0F2854);
   background-repeat: no-repeat;
   background-position: left center;
-  background-size: 0% 80%;
-  /* Sapuan lebih lambat dan dramatis: 3.8s dengan delay 0.4s */
-  transition: background-size 3.8s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 0 3px;
-  border-radius: 3px;
+  background-size: 0% 105%;
+  /* Animasi bg menyapu (2.8s), diikuti transisi teks memudar jadi putih (1.2s) */
+  transition: background-size 2.8s cubic-bezier(0.16, 1, 0.3, 1), color 1.2s ease;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: var(--ink); /* Warna awal teks sebelum disapu */
+  line-height: 1.4;
 }
 .reveal.in .stabilo {
-  background-size: 100% 80%;
-  transition-delay: 0.4s;
+  background-size: 100% 105%;
+  color: #FFFFFF; /* Berubah jadi putih pekat */
+  transition-delay: 0.2s, 0.7s; /* Sapuan mulai di 0.2s, teks mulai putih di 0.7s (saat bg sedang lewat) */
 }
 
 /* ---------- Responsive ---------- */
