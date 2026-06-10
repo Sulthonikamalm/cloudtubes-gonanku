@@ -41,10 +41,14 @@ def buat_aplikasi(config_class=Config):
 
 
 def _daftarkan_healthcheck(app):
-    """Endpoint ringan untuk health probe Cloud Run/Docker. Tidak login required."""
+    """Endpoint ringan untuk health probe Cloud Run/Docker serta favicon. Tidak login required."""
     @app.route("/health")
     def health():
         return {"status": "ok", "app": app.config.get("APP_NAME", "Gonanku")}, 200
+
+    @app.route("/favicon.ico")
+    def favicon():
+        return app.send_static_file("images/favicon.png")
 
 
 def _daftarkan_extension(app):
