@@ -35,16 +35,16 @@
   <section class="hero has-grid">
     <div class="grid-overlay" data-parallax="0.18" aria-hidden="true"></div>
     <div class="wrap">
-      <span class="eyebrow"><span class="dot"></span> Personal AI Memory Vault</span>
-      <h1 class="hero-title">
+      <span class="eyebrow reveal"><span class="dot"></span> Personal AI Memory Vault</span>
+      <h1 class="hero-title reveal">
         Kenanganmu, <span class="serif">terjaga</span><br />
         dan <span class="serif">terpanggil</span> kembali.
       </h1>
-      <p class="hero-sub">
+      <p class="hero-sub reveal">
         Simpan foto, dokumen, dan momen ke satu tempat. Biarkan AI yang
         mengingat detailnya — sampai kamu butuh memanggilnya lagi.
       </p>
-      <div class="hero-actions">
+      <div class="hero-actions reveal">
         <a class="btn-primary" href="{{ url_for('auth.login') }}">
           Masuk ke Gonanku <span>→</span>
         </a>
@@ -52,7 +52,7 @@
           Lihat caranya
         </a>
       </div>
-      <div class="hero-meta">
+      <div class="hero-meta reveal">
         <span>Privasi-first</span>
         <span class="sep"></span>
         <span>AI metadata otomatis</span>
@@ -63,6 +63,7 @@
 
     <!-- Product mockup besar -->
     <div class="hero-stage reveal" data-parallax="-0.08">
+      <div class="glow-blob"></div>
       <div class="hero-screen">
         <div class="screen-body">
           <aside class="screen-side">
@@ -123,7 +124,8 @@
         <!-- Floating accent: AI chat -->
         <div class="float-chat">
           <div class="float-chat-h">
-            <span class="pulse"></span> AI Chatbot · online
+            <div class="chat-avatar">AI</div>
+            AI Chatbot · online <span class="pulse"></span>
           </div>
           <div class="bub me">Foto tahun baru di rumah nenek?</div>
           <div class="bub ai">Ada 7 foto cocok — dari 1 Jan 2024 di Yogyakarta.</div>
@@ -161,7 +163,7 @@
       <div class="section-head reveal">
         <div class="section-tag">— Fitur</div>
         <h2 class="section-title">
-          Vault yang <span class="serif">paham</span> isi memorimu.
+          <span class="stabilo">Vault yang <span class="serif">paham</span> isi memorimu.</span>
         </h2>
         <p class="section-sub">
           Empat kemampuan inti yang bekerja diam-diam di belakang layar,
@@ -219,7 +221,7 @@
     <div class="wrap">
 
       <div class="showcase-row reveal">
-        <div class="sc-copy">
+        <div class="sc-copy" data-parallax="-0.02">
           <div class="sc-tag">— Dashboard</div>
           <h3 class="sc-h">Ringkasan vault, dalam satu pandangan.</h3>
           <p class="sc-p">
@@ -232,7 +234,7 @@
             <li>Filter cepat ke kategori paling sering dipakai</li>
           </ul>
         </div>
-        <div class="sc-visual sv-dash">
+        <div class="sc-visual sv-dash" data-parallax="0.04">
           <div class="kpi-row">
             <div class="kpi"><div class="kpi-label">Foto</div><div class="kpi-value">972</div><div class="kpi-trend">+8 ↑</div></div>
             <div class="kpi"><div class="kpi-label">Dokumen</div><div class="kpi-value">312</div><div class="kpi-trend">+4 ↑</div></div>
@@ -254,7 +256,7 @@
       </div>
 
       <div class="showcase-row flip reveal">
-        <div class="sc-copy">
+        <div class="sc-copy" data-parallax="-0.02">
           <div class="sc-tag">— Chatbot</div>
           <h3 class="sc-h">Tanya dengan kalimat biasa.</h3>
           <p class="sc-p">
@@ -267,7 +269,7 @@
             <li>Sidebar riwayat — bisa lanjut kapan saja</li>
           </ul>
         </div>
-        <div class="sc-visual sv-chat">
+        <div class="sc-visual sv-chat" data-parallax="0.05">
           <div class="b ai">Hai, ada yang bisa kubantu temukan hari ini?</div>
           <div class="b me">Cari foto wisuda kakak dong</div>
           <div class="b ai">Aku menemukan 14 foto wisuda kakak — tertanggal Agustus 2022 di kampus Telkom University Surabaya.</div>
@@ -276,7 +278,7 @@
       </div>
 
       <div class="showcase-row reveal">
-        <div class="sc-copy">
+        <div class="sc-copy" data-parallax="-0.02">
           <div class="sc-tag">— Vision AI</div>
           <h3 class="sc-h">Membaca foto sebagai memori.</h3>
           <p class="sc-p">
@@ -289,7 +291,7 @@
             <li>Tagging suasana: indoor, outdoor, malam, senja</li>
           </ul>
         </div>
-        <div class="sc-visual sv-vision">
+        <div class="sc-visual sv-vision" data-parallax="0.03">
           <div class="vp">
             <div class="box" data-label="WAJAH" style="left:18%; top:25%; width:24%; height:42%;"></div>
             <div class="box" data-label="OUTDOOR" style="left:55%; top:50%; width:32%; height:35%;"></div>
