@@ -7,7 +7,13 @@
   <!-- CSRF token untuk AJAX (chat.js, upload.js). Wajib ada di setiap halaman
        yang punya request fetch ke endpoint POST. -->
   <meta name="csrf-token" content="{{ csrf_token() }}" />
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png', v='3') }}" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='images/favicon-48.png', v='4') }}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32.png', v='4') }}" />
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16.png', v='4') }}" />
+  <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png', v='4') }}" />
+  <meta name="theme-color" content="#0F2854" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

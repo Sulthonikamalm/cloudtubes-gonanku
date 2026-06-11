@@ -1,13 +1,161 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gonanku — Vault memori pribadi yang cerdas</title>
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png', v='3') }}" />
-  <meta name="description" content="Gonanku menyimpan, memahami, dan menemukan kembali kenanganmu lewat AI. Dibangun dengan privasi sebagai fondasi." />
+  <title>Gonanku — Penyimpanan Cerdas Berbasis AI & Vault Memori Pribadi</title>
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://gonanku.my.id/" />
+
+  <!-- Favicon & App Icons (multi-size untuk Google SERP + browser tabs) -->
+  <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='images/favicon-48.png', v='4') }}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32.png', v='4') }}" />
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16.png', v='4') }}" />
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='images/favicon-192.png', v='4') }}" />
+  <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png', v='4') }}" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0F2854" />
+  <meta name="msapplication-TileColor" content="#0F2854" />
+  <meta name="msapplication-TileImage" content="{{ url_for('static', filename='images/favicon-192.png', v='4') }}" />
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Gonanku adalah platform penyimpanan cerdas berbasis AI dan vault memori pribadi. Simpan foto, dokumen, dan momen Anda dengan aman, serta temukan kembali secara instan lewat chatbot AI. Gratis, tanpa kartu kredit." />
+  <meta name="keywords" content="penyimpanan cerdas berbasis ai, memori vault penyimpanan cerdas, vault memori pribadi, gonanku, cloud storage ai, penyimpanan cloud bertenaga ai, pencarian berkas cerdas, ai document search, vault foto digital, cloud storage indonesia" />
+  <meta name="author" content="Gonanku Team — Sulthonika M." />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow" />
+  <meta name="google" content="notranslate" />
+  <meta http-equiv="content-language" content="id" />
+  <link rel="alternate" hreflang="id" href="https://gonanku.my.id/" />
+  <link rel="alternate" hreflang="x-default" href="https://gonanku.my.id/" />
+
+  <!-- Geo Targeting -->
+  <meta name="geo.region" content="ID" />
+  <meta name="geo.placename" content="Indonesia" />
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gonanku" />
+  <meta property="og:locale" content="id_ID" />
+  <meta property="og:url" content="https://gonanku.my.id/" />
+  <meta property="og:title" content="Gonanku — Penyimpanan Cerdas Berbasis AI & Vault Memori Pribadi" />
+  <meta property="og:description" content="Simpan foto, dokumen, dan momen di vault memori pribadi cerdas. Temukan kembali secara instan dengan chatbot bertenaga AI. Gratis, tanpa kartu kredit." />
+  <meta property="og:image" content="https://gonanku.my.id{{ url_for('static', filename='images/favicon-512.png') }}" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:alt" content="Gonanku Logo — Penyimpanan Cerdas Berbasis AI" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:url" content="https://gonanku.my.id/" />
+  <meta name="twitter:title" content="Gonanku — Penyimpanan Cerdas Berbasis AI & Vault Memori Pribadi" />
+  <meta name="twitter:description" content="Simpan foto dan dokumen Anda di vault memori pribadi cerdas. Temukan kembali secara instan dengan chatbot bertenaga AI." />
+  <meta name="twitter:image" content="https://gonanku.my.id{{ url_for('static', filename='images/favicon-512.png') }}" />
+  <meta name="twitter:image:alt" content="Gonanku Logo" />
+
+  <!-- Structured Data: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Gonanku",
+    "url": "https://gonanku.my.id",
+    "logo": "https://gonanku.my.id{{ url_for('static', filename='images/favicon-512.png') }}",
+    "description": "Platform penyimpanan cerdas berbasis AI dan vault memori pribadi.",
+    "foundingDate": "2026",
+    "sameAs": []
+  }
+  </script>
+
+  <!-- Structured Data: SoftwareApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Gonanku",
+    "url": "https://gonanku.my.id",
+    "description": "Platform penyimpanan cerdas berbasis AI dan vault memori pribadi untuk menyimpan serta menemukan kembali dokumen dan foto Anda secara instan lewat chatbot AI.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "IDR"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "ratingCount": "1"
+    },
+    "featureList": [
+      "Penyimpanan cerdas berbasis AI",
+      "Vault memori pribadi",
+      "Pencarian berkas bertenaga AI",
+      "AI Vision untuk metadata otomatis pada foto",
+      "Chatbot pencarian natural language",
+      "Integrasi Telegram untuk penyimpanan unlimited",
+      "Kategori dan tag otomatis"
+    ],
+    "screenshot": "https://gonanku.my.id{{ url_for('static', filename='images/logo.png') }}"
+  }
+  </script>
+
+  <!-- Structured Data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Beranda",
+        "item": "https://gonanku.my.id/"
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured Data: FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Apa itu Gonanku?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Gonanku adalah platform penyimpanan cerdas berbasis AI dan vault memori pribadi. Anda bisa menyimpan foto, dokumen, dan momen secara aman, lalu menemukan kembali secara instan lewat chatbot AI."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Apakah Gonanku gratis?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ya, Gonanku sepenuhnya gratis tanpa kartu kredit. Penyimpanan unlimited melalui integrasi Telegram channel."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Bagaimana cara kerja AI di Gonanku?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Setiap file yang diunggah otomatis dianalisis oleh AI untuk memberi judul, deskripsi, kategori, dan tag. Foto diproses dengan AI Vision untuk mendeteksi wajah, tempat, dan teks. Anda bisa mencari file cukup dengan bertanya ke chatbot menggunakan bahasa sehari-hari."
+        }
+      }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" />
 </head>
@@ -17,7 +165,7 @@
   <header class="nav" id="nav">
     <div class="wrap nav-inner">
       <a class="brand" href="/">
-        <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="" class="brand-mark" />
+        <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="Gonanku — Penyimpanan Cerdas Berbasis AI" class="brand-mark" />
         <span>Gonanku</span>
       </a>
       <nav class="nav-menu">
@@ -35,14 +183,13 @@
   <section class="hero has-grid">
     <div class="grid-overlay" data-parallax="0.18" aria-hidden="true"></div>
     <div class="wrap">
-      <span class="eyebrow reveal"><span class="dot"></span> Personal AI Memory Vault</span>
+      <span class="eyebrow reveal"><span class="dot"></span> Vault Memori Pribadi & Penyimpanan Cerdas Berbasis AI</span>
       <h1 class="hero-title reveal">
-        Kenanganmu, <span class="serif">terjaga</span><br />
-        dan <span class="serif">terpanggil</span> kembali.
+        Penyimpanan <span class="serif">cerdas</span><br />
+        berbasis <span class="serif">AI</span> &amp; vault memori.
       </h1>
       <p class="hero-sub reveal">
-        Simpan foto, dokumen, dan momen ke satu tempat. Biarkan AI yang
-        mengingat detailnya — sampai kamu butuh memanggilnya lagi.
+        Gonanku adalah <strong>penyimpanan cerdas berbasis AI</strong> dan <strong>memori vault penyimpanan cerdas</strong> pribadi untuk mengamankan foto, dokumen, serta berkas penting Anda. Biarkan AI merangkai detailnya dan memanggilnya kembali kapan saja.
       </p>
       <div class="hero-actions reveal">
         <a class="btn-primary" href="{{ url_for('auth.login') }}">
@@ -68,7 +215,7 @@
         <div class="screen-body">
           <aside class="screen-side">
             <div class="screen-brand">
-              <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="" class="m" /> Gonanku
+              <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="Gonanku Logo" class="m" /> Gonanku
             </div>
             <nav class="screen-nav">
               <div class="screen-nav-item active"><span class="ic"></span> Dashboard</div>
@@ -163,11 +310,10 @@
       <div class="section-head reveal">
         <div class="section-tag">— Fitur</div>
         <h2 class="section-title">
-          <span class="stabilo">Vault yang <span class="serif">paham</span> isi memorimu.</span>
+          <span class="stabilo">Vault Memori dan <span class="serif">Penyimpanan Cerdas</span> Berbasis AI.</span>
         </h2>
         <p class="section-sub">
-          Empat kemampuan inti yang bekerja diam-diam di belakang layar,
-          supaya pencarianmu terasa seperti bertanya pada teman.
+          Gonanku melengkapi Anda dengan teknologi <strong>penyimpanan cerdas berbasis AI</strong>. Kami merancang <strong>memori vault penyimpanan cerdas</strong> ini dengan empat pilar kemampuan utama untuk mengelola berkas Anda.
         </p>
       </div>
 
@@ -399,12 +545,11 @@
       <div class="footer-grid">
         <div>
           <div class="brand">
-            <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="" class="brand-mark" />
+            <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="Gonanku — Vault Memori Pribadi Cerdas" class="brand-mark" />
             <span>Gonanku</span>
           </div>
           <p class="foot-brand-p">
-            Vault memori pribadi yang cerdas — dibangun sebagai proyek
-            akhir Cloud Computing dengan fokus privasi dan kesederhanaan.
+            Gonanku adalah platform <strong>penyimpanan cerdas berbasis AI</strong> dan <strong>memori vault penyimpanan cerdas</strong> pribadi, dirancang sebagai tugas akhir Cloud Computing dengan prioritas pada privasi data Anda.
           </p>
         </div>
         <div class="foot-col">

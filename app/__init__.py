@@ -48,7 +48,7 @@ def _daftarkan_healthcheck(app):
 
     @app.route("/favicon.ico")
     def favicon():
-        return app.send_static_file("images/favicon.png")
+        return app.send_static_file("images/favicon.ico")
 
 
 def _daftarkan_extension(app):
