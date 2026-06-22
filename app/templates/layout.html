@@ -202,5 +202,20 @@
     });
   </script>
   {% block js_tambahan %}{% endblock %}
+
+  <!-- Registrasi Service Worker untuk PWA caching -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/static/sw.js', { scope: '/' })
+          .then(function(reg) {
+            // SW aktif — halaman statis akan dimuat instan pada kunjungan berikutnya
+          })
+          .catch(function() {
+            // Gagal register SW — tidak memengaruhi fungsionalitas apapun
+          });
+      });
+    }
+  </script>
 </body>
 </html>

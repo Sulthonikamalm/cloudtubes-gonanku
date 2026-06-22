@@ -85,6 +85,29 @@ def sitemap():
     return Response(content, mimetype="text/xml")
 
 
+@dashboard_bp.route("/ping-google")
+def ping_google():
+    """
+    Endpoint tersembunyi untuk memaksa (ping) Google membaca ulang sitemap.
+    Akses URL ini (https://gonanku.my.id/ping-google) setiap kali Anda
+    menambah/mengubah struktur utama agar cepat terindeks.
+    """
+    import urllib.request
+    try:
+        sitemap_url = "https://gonanku.my.id/sitemap.xml"
+        ping_url = f"http://www.google.com/ping?sitemap={sitemap_url}"
+        urllib.request.urlopen(ping_url, timeout=10)
+        return jsonify({
+            "status": "success", 
+            "message": "Berhasil mengirim instruksi (ping) ke Google untuk crawling ulang sitemap."
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "error", 
+            "message": f"Gagal mengirim ping ke Google: {str(e)}"
+        })
+
+
 @dashboard_bp.route("/manifest.json")
 def manifest():
     """Web App Manifest — membantu Google menampilkan logo/ikon di SERP."""

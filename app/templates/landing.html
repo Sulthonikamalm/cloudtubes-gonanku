@@ -156,7 +156,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+  <!-- Preload font utama: mencegah FOUT (Flash of Unstyled Text) —
+       teks langsung muncul dengan font yang benar tanpa kedipan. -->
+  <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  </noscript>
+
+  <!-- Preload CSS kritis agar render tidak terblokir -->
+  <link rel="preload" as="style" href="{{ url_for('static', filename='css/landing.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" />
 </head>
 <body>
@@ -165,7 +177,9 @@
   <header class="nav" id="nav">
     <div class="wrap nav-inner">
       <a class="brand" href="/">
-        <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="Gonanku — Penyimpanan Cerdas Berbasis AI" class="brand-mark" />
+        <!-- fetchpriority="high": browser langsung mendahulukan gambar ini
+             sebagai LCP (Largest Contentful Paint) — metrik utama Core Web Vitals. -->
+        <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="Gonanku — Penyimpanan Cerdas Berbasis AI" class="brand-mark" fetchpriority="high" />
         <span>Gonanku</span>
       </a>
       <nav class="nav-menu">
@@ -545,7 +559,9 @@
       <div class="footer-grid">
         <div>
           <div class="brand">
-            <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="Gonanku — Vault Memori Pribadi Cerdas" class="brand-mark" />
+            <!-- loading="lazy": gambar footer hanya dimuat saat pengguna scroll ke bawah,
+               menghemat bandwidth dan mempercepat render awal halaman. -->
+          <img src="{{ url_for('static', filename='images/logo-sm.png', v='3') }}" alt="Gonanku — Vault Memori Pribadi Cerdas" class="brand-mark" loading="lazy" />
             <span>Gonanku</span>
           </div>
           <p class="foot-brand-p">
@@ -635,6 +651,26 @@
         t.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
+  </script>
+
+  <!-- ─── Registrasi Service Worker (PWA Caching) ───────────────────
+       Service Worker menyimpan file CSS/JS/gambar di browser pengguna.
+       Kunjungan kedua = loading instan (0ms dari server).
+       Tidak akan memengaruhi halaman internal yang butuh login karena
+       sw.js sudah dikonfigurasi untuk melewati /dashboard, /berkas, dll.
+  ──────────────────────────────────────────────────────────────────── -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/static/sw.js', { scope: '/' })
+          .then(function(reg) {
+            console.log('[Gonanku SW] Terdaftar, scope:', reg.scope);
+          })
+          .catch(function(err) {
+            console.warn('[Gonanku SW] Gagal mendaftar:', err);
+          });
+      });
+    }
   </script>
 </body>
 </html>
