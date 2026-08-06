@@ -9,7 +9,7 @@ Panduan ini menambahkan deployment Vercel untuk demo portfolio. Panduan Cloud Ru
 - Supabase PostgreSQL menyimpan user dan metadata.
 - Telegram private channel menyimpan file asli.
 - Groq API menjalankan metadata, vision, dan chatbot.
-- Vercel filesystem ephemeral. Aplikasi hanya memakai filesystem untuk file sementara sebelum upload ke Telegram.
+- Vercel project bundle read-only. Aplikasi memakai `/tmp/gonanku-uploads` untuk file sementara sebelum upload ke Telegram; file itu tidak persisten setelah invocation.
 
 ## Batas penting Vercel
 
@@ -136,6 +136,10 @@ Uji di browser:
 7. Upload file >4 MB untuk memastikan guardrail menolak file sebelum request.
 
 ## Troubleshooting
+
+### `FUNCTION_INVOCATION_FAILED` atau HTTP 500 saat semua route gagal
+
+Buka **Vercel → Project → Deployments → deployment aktif → Functions → Logs**. Jika log berisi `SECRET_KEY wajib diset`, isi `APP_ENV=production` dan `SECRET_KEY`. Jika log berisi `Read-only file system`, gunakan deployment terbaru yang memakai `/tmp/gonanku-uploads` pada [app/config.py](app/config.py). Jika log berisi `ModuleNotFoundError`, pastikan `requirements.txt` berada di root repository dan redeploy.
 
 ### `FUNCTION_PAYLOAD_TOO_LARGE` atau HTTP 413
 

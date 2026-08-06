@@ -1,4 +1,5 @@
 import os
+import tempfile
 
 from dotenv import load_dotenv
 
@@ -110,8 +111,10 @@ class Config:
     AI_TEXT_LIMIT = int(os.getenv("AI_TEXT_LIMIT", "4000"))
 
     # Folder file sementara sebelum dikirim ke Telegram.
-    UPLOAD_TEMP_DIR = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "uploads_temp"
+    # Vercel menyediakan project bundle read-only; /tmp writable per invocation.
+    UPLOAD_TEMP_DIR = os.getenv(
+        "UPLOAD_TEMP_DIR",
+        os.path.join(tempfile.gettempdir(), "gonanku-uploads"),
     )
 
     # Konfigurasi layanan eksternal (dibaca saat dibutuhkan, bukan disimpan di kode).
