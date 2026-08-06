@@ -1,19 +1,40 @@
-"""Vercel entrypoint for the Gonanku Flask application."""
+"""Vercel DEBUG entrypoint — SEMENTARA untuk diagnosa routing.
 
-from app import buat_aplikasi
+Setelah debug selesai, kembalikan ke Flask app.
+"""
+import json
+import os
+import sys
+import traceback
 
-app = buat_aplikasi()
 
-# Vercel Serverless Function sering menetapkan SCRIPT_NAME ke 
-# '/api/index.py', sehingga route Flask seperti '/' menjadi 404.
-# Middleware ini memastikan SCRIPT_NAME dikosongkan.
-class VercelProxyFix:
-    def __init__(self, app):
-        self.app = app
+def app(environ, start_response):
+    """Raw WSGI app: dump semua environ variable sebagai JSON."""
+    info = {"_NOTE": "DEBUG MODE — bukan Flask app"}
 
-    def __call__(self, environ, start_response):
-        # Hapus prefix path fungsi Vercel agar Flask membaca route dari root (/)
-        environ["SCRIPT_NAME"] = ""
-        return self.app(environ, start_response)
+    # Kumpulkan semua environ yang bisa di-serialize
+    for key in sorted(environ):
+        val = environ[key]
+        if isinstance(val, (str, int, float, bool)):
+            info[key] = val
 
-app.wsgi_app = VercelProxyFix(app.wsgi_app)
+    # Coba juga import Flask app untuk cek apakah boot berhasil
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from app import buat_aplikasi
+        _app = buat_aplikasi()
+        info["_FLASK_BOOT"] = "OK"
+        # Daftarkan semua route Flask
+        info["_FLASK_ROUTES"] = [
+            str(rule) for rule in _app.url_map.iter_rules()
+        ]
+    except Exception:
+        info["_FLASK_BOOT"] = "FAILED"
+        info["_FLASK_ERROR"] = traceback.format_exc()
+
+    body = json.dumps(info, indent=2, default=str).encode("utf-8")
+    start_response("200 OK", [
+        ("Content-Type", "application/json; charset=utf-8"),
+        ("Content-Length", str(len(body))),
+    ])
+    return [body]
