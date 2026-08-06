@@ -31,6 +31,16 @@
     <div class="kartu-login" style="text-align: center;">
       <div class="kode-error" style="font-size: 56px; font-weight: 800; color: var(--navy-deep);">{{ kode }}</div>
       <p class="login-subjudul" style="margin-bottom: 20px;">{{ pesan }}</p>
+      
+      <!-- DEBUG INFO -->
+      <div style="margin-bottom: 20px; font-size: 12px; color: red; text-align: left; background: #ffebeb; padding: 10px; border-radius: 4px;">
+        <strong>DEBUG INFO:</strong><br>
+        PATH_INFO: {{ request.path }}<br>
+        SCRIPT_ROOT: {{ request.script_root }}<br>
+        URL: {{ request.url }}<br>
+        BLUEPRINTS: {{ config['APP_NAME'] }}
+      </div>
+
       <a class="tombol tombol-utama tombol-blok" href="{{ url_for('dashboard.dashboard') }}">Kembali ke Dashboard</a>
     </div>
   </div>
