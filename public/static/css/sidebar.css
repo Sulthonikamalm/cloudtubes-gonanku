@@ -1,0 +1,242 @@
+/* ============================================================
+   Gonanku - sidebar.css
+   ============================================================ */
+
+.sidebar-merek {
+  height: 76px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.merek-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.merek-judul {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 12px 0 8px 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  gap: 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-item i {
+  font-size: 20px;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.nav-item:hover {
+  background: var(--bg-soft);
+  color: var(--royal-blue);
+}
+
+.nav-item:hover i {
+  color: var(--royal-blue);
+}
+
+.nav-item.aktif {
+  background: var(--bg-soft);
+  color: var(--royal-blue);
+  font-weight: 600;
+}
+
+.nav-item.aktif i {
+  color: var(--royal-blue);
+}
+
+.sidebar-bawah {
+  padding: 16px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.profil-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-solid);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  min-width: 0;
+  width: 100%;
+}
+
+.profil-gambar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--soft-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFF;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profil-gambar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profil-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.profil-gambar:hover .profil-overlay {
+  opacity: 1;
+}
+
+.sidebar-pengguna {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pengguna-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.pengguna-info .nama {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pengguna-info .email-teks {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tombol-logout-icon {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.tombol-logout-icon:hover {
+  color: var(--danger);
+}
+
+#toggle-sidebar {
+  display: flex; /* Overriding previous display: none; */
+}
+
+/* ── Sidebar Collapsed State ── */
+.sidebar.collapsed .merek-judul,
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .nav-label,
+.sidebar.collapsed .sidebar-pengguna {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-merek {
+  padding: 0;
+  justify-content: center;
+}
+
+.sidebar.collapsed .profil-wrapper {
+  padding: 8px;
+  justify-content: center;
+}
+.sidebar.collapsed .profil-gambar {
+  margin: 0;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 38px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background: var(--bg-panel-solid);
+  border: 1px solid var(--border-soft);
+  border-radius: 50%;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 101;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s ease;
+  transform: translateY(-50%);
+}
+
+.sidebar-toggle-btn:hover {
+  color: var(--royal-blue);
+  background: var(--bg-soft);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.sidebar.collapsed .sidebar-toggle-btn i {
+  transform: rotate(180deg);
+}

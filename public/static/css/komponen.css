@@ -1,0 +1,260 @@
+/* ============================================================
+   Gonanku - komponen.css
+   ============================================================ */
+
+/* Buttons */
+.tombol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tombol-utama {
+  background: var(--royal-blue);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(28, 77, 141, 0.2);
+}
+
+.tombol-utama:hover {
+  background: var(--navy-deep);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.tombol-sekunder {
+  background: var(--bg-soft);
+  color: var(--royal-blue);
+}
+
+.tombol-sekunder:hover {
+  background: var(--ice-blue);
+  color: var(--navy-deep);
+}
+
+/* Icons / Icon Buttons */
+.tombol-ikon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tombol-ikon:hover {
+  background: var(--bg-soft);
+  color: var(--royal-blue);
+}
+
+/* Cards */
+.kartu {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.kartu-isi {
+  padding: 24px;
+  flex: 1;
+}
+
+.kartu-judul {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-sukses {
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--success);
+}
+
+.badge-info {
+  background: rgba(14, 165, 233, 0.1);
+  color: var(--info);
+}
+
+.badge-peringatan {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.badge-bahaya {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+/* Forms & Inputs */
+.input-form {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-page);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.input-form:focus {
+  outline: none;
+  border-color: var(--royal-blue);
+  box-shadow: 0 0 0 3px rgba(28, 77, 141, 0.1);
+}
+
+/* Search Bar (khusus di topbar) */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--bg-page);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  gap: 8px;
+  width: 300px;
+  transition: all 0.2s ease;
+}
+
+.search-bar:focus-within {
+  border-color: var(--royal-blue);
+  box-shadow: 0 0 0 3px rgba(28, 77, 141, 0.1);
+}
+
+.search-bar i {
+  color: var(--text-muted);
+}
+
+.search-bar input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.search-bar input:focus {
+  outline: none;
+}
+
+.search-bar input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Tables */
+.tabel-wadah {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabel {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  font-size: 13.5px;
+}
+
+.tabel th {
+  padding: 16px 20px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border-soft);
+  white-space: nowrap;
+}
+
+.tabel td {
+  padding: 16px 20px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--text-primary);
+  transition: background 0.2s ease;
+}
+
+.tabel tbody tr:hover td {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .tabel tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tabel tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Action Links & Groups */
+.tautan-aksi {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--royal-blue);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tautan-aksi:hover {
+  color: var(--navy-deep);
+  text-decoration: underline;
+}
+
+.tautan-aksi.bahaya {
+  color: var(--danger);
+}
+.tautan-aksi.bahaya:hover {
+  color: #DC2626;
+}
+
+.aksi-baris {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.aksi-baris form {
+  margin: 0;
+  display: inline-flex;
+}

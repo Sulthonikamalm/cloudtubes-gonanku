@@ -1,0 +1,212 @@
+/* ============================================================
+   Gonanku - tema.css
+   Unified Dark Glassmorphism Theme.
+   Smooth transitions and ambient styling.
+   ============================================================ */
+
+/* ── Global transition layer ── */
+body,
+.kartu, .metrik, .sidebar, .topbar, .input-form, .tombol,
+.kartu-login, .panel-chat, .badge, .chip {
+  transition: background-color 0.25s ease, color 0.25s ease,
+    border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* ── Toggle login button ── */
+.toggle-login {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  z-index: 10;
+}
+
+/* ── Metric cards ── */
+.metrik {
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.25s ease, border-color 0.25s ease;
+}
+.metrik:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+  border-color: var(--glass-border-hover);
+}
+
+.metrik .angka { color: var(--teks-utama); }
+.metrik.peringatan .angka { color: var(--peringatan); }
+.metrik.bahaya .angka { color: var(--bahaya); }
+.metrik.sukses .angka { color: var(--sukses); }
+.metrik.sorot {
+  border-left: 3px solid var(--aksen);
+}
+
+/* ── Progress bars ── */
+.bar-luar {
+  background: var(--glass-bg);
+  border-radius: var(--radius-full);
+}
+.bar-dalam {
+  background: linear-gradient(90deg, var(--aksen), #8B5CF6);
+  border-radius: var(--radius-full);
+}
+
+/* ── Chat components ── */
+.pesan.bot {
+  background: var(--glass-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
+}
+
+/* ── File-specific components ── */
+.kotak-ringkasan,
+.preview-file,
+.saran,
+.kartu-file {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+}
+
+.area-dropzone {
+  background: var(--glass-bg);
+  border: 2px dashed rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  transition: all 0.25s ease;
+}
+.area-dropzone:hover,
+.area-dropzone.aktif {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: var(--aksen);
+}
+
+.catatan-privasi {
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: var(--ice-blue);
+  border-radius: var(--radius-sm);
+}
+
+/* ── Error page ── */
+.kode-error {
+  color: var(--teks-utama) !important;
+}
+
+/* ══════════════════════════════════════════════
+   LIGHT THEME OVERRIDES (TEMA TERANG)
+   ══════════════════════════════════════════════ */
+html.tema-terang {
+  /* ── Core palette ── */
+  --bg-overlay: linear-gradient(
+    135deg,
+    rgba(240, 244, 248, 0.85) 0%,
+    rgba(248, 250, 252, 0.78) 40%,
+    rgba(241, 245, 249, 0.85) 100%
+  );
+
+  /* Light Glass surface tokens */
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-bg-hover: rgba(255, 255, 255, 0.65);
+  --glass-bg-active: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --glass-border-hover: rgba(15, 23, 42, 0.14);
+
+  /* Text colors */
+  --teks-utama: #0F172A; /* Slate 900 */
+  --teks-sekunder: #334155; /* Slate 700 */
+  --teks-lembut: #64748B; /* Slate 500 */
+  --teks-aksen: #0284C7; /* Sky 600 */
+
+  /* Accent / Brand colors tuned for light theme */
+  --aksen: #0284C7;
+  --aksen-hover: #0369A1;
+  --aksen-glow: rgba(2, 132, 199, 0.12);
+  --soft-blue: #2563EB;
+  --ice-blue: #0369A1;
+
+  /* Neutral surfaces */
+  --panel: rgba(255, 255, 255, 0.5);
+  --garis: rgba(0, 0, 0, 0.08);
+
+  /* Layout backgrounds */
+  --sidebar-bg: rgba(255, 255, 255, 0.8);
+  --topbar-bg: rgba(255, 255, 255, 0.5);
+  --login-card-bg: rgba(255, 255, 255, 0.65);
+
+  /* Header gradient text */
+  --header-gradien: linear-gradient(135deg, #0F172A, #334155);
+
+  /* Adjust shadows for light mode */
+  --bayang-lembut: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --bayang-kartu: 0 4px 24px rgba(15, 23, 42, 0.06), 0 1px 4px rgba(15, 23, 42, 0.03);
+}
+
+/* Base override for body background color in light mode */
+html.tema-terang body {
+  background-color: #F1F5F9;
+  color: var(--teks-utama);
+}
+
+/* Light mode selection colors */
+html.tema-terang ::selection {
+  background: rgba(2, 132, 199, 0.18);
+  color: #0F172A;
+}
+
+/* Light mode scrollbar */
+html.tema-terang ::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.12);
+}
+html.tema-terang ::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.22);
+}
+
+/* Dropdown option background overrides for light mode */
+html.tema-terang select.input-form option {
+  background: #FFFFFF;
+  color: var(--teks-utama);
+}
+
+/* Tooltip light mode */
+html.tema-terang .nav-item[data-tooltip]::after {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(15, 23, 42, 0.12);
+  color: var(--teks-utama);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+/* Chat components specific overrides */
+html.tema-terang .pesan.bot {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(15, 23, 42, 0.08);
+  color: var(--teks-utama);
+}
+
+/* Input elements focus backgrounds for light mode */
+html.tema-terang .input-form:focus {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Drag & Drop zone adjustments for light mode */
+html.tema-terang .area-dropzone {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+html.tema-terang .area-dropzone:hover,
+html.tema-terang .area-dropzone.aktif {
+  background: rgba(2, 132, 199, 0.05);
+}
+
+/* Item preview lists in file upload */
+html.tema-terang .item-preview {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* Active navigation item styling in light mode */
+html.tema-terang .nav-item.aktif {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.12), rgba(139, 92, 246, 0.08));
+  border-color: rgba(2, 132, 199, 0.18);
+}
+
+/* Mobile backdrop overlay for light mode */
+html.tema-terang .backdrop-sidebar {
+  background: rgba(240, 244, 248, 0.65);
+}
+

@@ -371,7 +371,8 @@ flowchart LR
 | **AI Engine** | Groq API (LLaMA 3.3 70B) | Metadata otomatis, chatbot, OCR |
 | **Vision AI** | Groq Vision (LLaMA 4 Scout) | Membaca teks dari gambar |
 | **File Storage** | Telegram Bot API (Private Channel) | Penyimpanan file |
-| **Deployment** | Google Cloud Run | Serverless container hosting |
+| **Deployment** | Google Cloud Run / Vercel | Container hosting / Python serverless hosting |
+| **Vercel Demo** | `api/index.py` + `vercel.json` | Python Function untuk demo portfolio |
 | **Container** | Docker | Reproducible environment |
 | **Migration** | Flask-Migrate (Alembic) | Database version control |
 | **Auth** | Flask-Login + Werkzeug | Session auth + password hashing |
@@ -529,6 +530,14 @@ gcloud run deploy gonanku \
   --max-instances 2 \
   --memory 512Mi
 ```
+
+---
+
+## Deployment Vercel (Demo Portfolio)
+
+Deployment Vercel memakai Flask Python Function. Setup lengkap, environment variables, batas upload 4 MB, migrasi Supabase, dan langkah verifikasi tersedia di [DEPLOY_VERCEL.md](DEPLOY_VERCEL.md).
+
+Cloud Run tetap didukung melalui [DEPLOY.md](DEPLOY.md).
 
 ---
 

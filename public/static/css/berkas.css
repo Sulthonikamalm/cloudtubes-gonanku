@@ -1,0 +1,84 @@
+/* Gonanku - berkas.css : Glass-themed file table and detail pages. */
+
+.sel-judul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sel-judul .nama { font-weight: 600; color: var(--teks-utama); }
+
+/* Detail view: two columns */
+.grid-detail {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.daftar-properti {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 10px 16px;
+  font-size: 13px;
+}
+.daftar-properti dt {
+  color: var(--teks-sekunder);
+  font-weight: 500;
+}
+.daftar-properti dd {
+  margin: 0;
+  color: var(--teks-utama);
+  font-weight: 600;
+}
+
+.kotak-ringkasan {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  color: var(--teks-utama);
+  font-size: 13px;
+  line-height: 1.6;
+  backdrop-filter: var(--glass-blur);
+}
+
+.linimasa {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.linimasa li {
+  position: relative;
+  padding: 0 0 14px 18px;
+  border-left: 2px solid var(--glass-border);
+}
+.linimasa li:last-child { border-left-color: transparent; padding-bottom: 0; }
+.linimasa li::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--aksen), #8B5CF6);
+  box-shadow: 0 0 6px var(--aksen-glow);
+}
+
+.linimasa .aksi { font-weight: 600; font-size: 13px; text-transform: capitalize; color: var(--teks-utama); }
+.linimasa .waktu { font-size: 12px; color: var(--teks-lembut); }
+
+@media (max-width: 860px) {
+  .grid-detail { grid-template-columns: 1fr; gap: 12px; }
+  .daftar-properti { grid-template-columns: 120px 1fr; }
+}
+
+@media (max-width: 480px) {
+  /* Properti file: tumpuk label di atas nilai agar tidak terpotong */
+  .daftar-properti { grid-template-columns: 1fr; gap: 4px 0; }
+  .daftar-properti dt { font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--teks-lembut); }
+  .daftar-properti dd { margin-bottom: 8px; }
+
+  .kotak-ringkasan { font-size: 12.5px; padding: 12px 14px; }
+}

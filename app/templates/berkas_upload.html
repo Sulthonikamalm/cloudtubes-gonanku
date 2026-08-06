@@ -131,7 +131,7 @@
 {% block js_tambahan %}
   <script>
     window.URL_UNGGAH_SATU = "{{ url_for('berkas.unggah_satu') }}";
-    window.MAX_FILE_MB = 30;  // Cloud Run HTTP/1 batas 32 MiB, kasih buffer 2 MiB
+    window.MAX_FILE_MB = {{ config.MAX_UPLOAD_MB }};  // Backend config; Vercel request body limit tetap dihormati
   </script>
   <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 {% endblock %}

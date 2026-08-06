@@ -1,0 +1,224 @@
+/* Gonanku - chat.css : Glassmorphism chatbot interface. */
+
+.tata-chat {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 16px;
+  align-items: start;
+}
+
+.panel-chat {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 180px);
+  min-height: 460px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.area-pesan {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pesan {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.pesan.pengguna {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #3B82F6, #2563EB);
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
+}
+
+.pesan.bot {
+  align-self: flex-start;
+  background: var(--glass-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
+  border-bottom-left-radius: 4px;
+  backdrop-filter: var(--glass-blur);
+}
+
+.kartu-hasil {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.kartu-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  transition: all 0.15s ease;
+}
+.kartu-file:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+}
+
+.kartu-file .judul { font-weight: 600; font-size: 13px; color: var(--text-primary); }
+.kartu-file .meta { font-size: 12px; color: var(--text-muted); }
+
+.bar-input-chat {
+  border-top: 1px solid var(--glass-border);
+  padding: 14px;
+  display: flex;
+  gap: 10px;
+}
+
+.bar-input-chat .input-form { flex: 1; }
+
+.panel-saran .judul-saran {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.saran {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-bottom: 8px;
+  font-family: inherit;
+  transition: all 0.15s ease;
+  backdrop-filter: var(--glass-blur);
+}
+.saran:hover {
+  border-color: var(--aksen);
+  background: rgba(56, 189, 248, 0.08);
+  box-shadow: 0 0 12px var(--aksen-glow);
+}
+
+/* ── Sidebar riwayat (clickable items, ChatGPT-style) ── */
+.list-riwayat {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.riwayat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+  position: relative;
+}
+.riwayat-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+.riwayat-item.aktif {
+  background: rgba(28, 77, 141, 0.12);
+}
+.riwayat-item.aktif .riwayat-btn {
+  color: var(--royal-blue);
+  font-weight: 600;
+}
+
+.riwayat-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 9px 10px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.riwayat-btn i {
+  font-size: 14px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.riwayat-judul {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.riwayat-hapus {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  margin-right: 4px;
+}
+.riwayat-item:hover .riwayat-hapus,
+.riwayat-item.aktif .riwayat-hapus {
+  opacity: 1;
+}
+.riwayat-hapus:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger, #ef4444);
+}
+
+.riwayat-kosong {
+  padding: 12px;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .tata-chat { grid-template-columns: 1fr; gap: 12px; }
+  .panel-chat { height: auto; min-height: 360px; }
+  .area-pesan { padding: 16px; gap: 12px; }
+  .pesan { max-width: 92%; font-size: 13px; }
+  .bar-input-chat { padding: 10px; gap: 8px; }
+  .bar-input-chat .tombol { padding: 9px 14px; }
+}
+
+@media (max-width: 480px) {
+  .pesan { max-width: 95%; padding: 10px 12px; }
+  .kartu-file { flex-wrap: wrap; gap: 6px; }
+  .kartu-file .aksi-baris { flex: 1 1 100%; justify-content: flex-end; }
+  .saran { font-size: 12.5px; padding: 9px 11px; }
+}

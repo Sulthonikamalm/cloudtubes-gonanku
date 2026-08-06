@@ -1,0 +1,363 @@
+/* Gonanku - forms.css : Glass-themed form layouts, upload, and filter toolbar. */
+
+.form-kartu {
+  max-width: 100%;
+}
+
+.baris-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.aksi-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.bantuan-form {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Drag and drop upload area */
+.area-dropzone {
+  border: 2px dashed rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: var(--glass-blur);
+}
+.area-dropzone:hover,
+.area-dropzone.aktif {
+  border-color: var(--royal-blue);
+  background: rgba(56, 189, 248, 0.08);
+  box-shadow: 0 0 24px rgba(28, 77, 141, 0.15);
+}
+
+.area-dropzone .ikon-unggah {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--royal-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.area-dropzone .teks-utama {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.area-dropzone .teks-bantu {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.preview-file {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+}
+.preview-file.tampil { display: flex; }
+.preview-file .nama { font-weight: 600; font-size: 14px; color: var(--text-primary); }
+.preview-file .ukuran { font-size: 12px; color: var(--text-muted); }
+
+.catatan-privasi {
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--royal-blue);
+  margin-bottom: 18px;
+}
+
+/* Filter toolbar on archive list */
+.toolbar-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+
+.toolbar-filter .kolom-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toolbar-filter .input-form,
+.toolbar-filter select.input-form {
+  min-width: 150px;
+}
+
+.toolbar-filter .tumbuh { flex: 1; min-width: 200px; }
+
+@media (max-width: 860px) {
+  .toolbar-filter { gap: 8px; }
+  .toolbar-filter .kolom-filter { flex: 1 1 calc(50% - 4px); min-width: 0; }
+  .toolbar-filter .kolom-filter.tumbuh { flex: 1 1 100%; }
+  .toolbar-filter .input-form,
+  .toolbar-filter select.input-form { min-width: 0; width: 100%; }
+  .toolbar-filter > .tombol { flex: 1 1 100%; }
+
+  .area-dropzone { padding: 28px 16px; }
+  .area-dropzone .ikon-unggah { width: 44px; height: 44px; font-size: 20px; }
+  .area-dropzone .teks-utama { font-size: 14px; }
+
+  .aksi-form { flex-direction: column; }
+  .aksi-form .tombol { width: 100%; }
+}
+
+@media (max-width: 640px) {
+  .baris-form { grid-template-columns: 1fr; gap: 12px; }
+  .toolbar-filter .kolom-filter { flex: 1 1 100%; }
+}
+
+/* ── Daftar preview multi-file ── */
+.daftar-preview {
+  margin-top: 14px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.daftar-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.judul-preview {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.list-preview {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.item-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+}
+
+.item-preview i {
+  font-size: 18px;
+  color: var(--royal-blue);
+  flex-shrink: 0;
+}
+
+.item-preview .info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-preview .nama {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-preview .meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.item-preview .hapus-item {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+.item-preview .hapus-item:hover {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--danger);
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.ringkasan-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--glass-border);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.batas-warn {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.item-preview.terlalu-besar {
+  border-color: rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.06);
+}
+.item-preview.terlalu-besar .meta { color: var(--danger); }
+
+/* ── Modal overlay progress upload per-file ── */
+.overlay-progress {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 15, 30, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeInOverlay 0.18s ease;
+}
+.overlay-progress[hidden] { display: none; }
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-progress {
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal-progress .kartu-isi {
+  padding: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bar-progress-luar {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar-progress-dalam {
+  height: 100%;
+  background: linear-gradient(90deg, #3B82F6, #2563EB);
+  transition: width 0.35s ease;
+  border-radius: 999px;
+}
+
+.list-progress {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.item-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border-soft);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.item-progress .ikon-status { font-size: 18px; flex-shrink: 0; }
+.item-progress .info { flex: 1; min-width: 0; }
+.item-progress .nama {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.item-progress .meta { font-size: 11px; color: var(--text-muted); }
+
+.item-progress.menunggu .ikon-status { color: var(--text-muted); }
+.item-progress.proses {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+.item-progress.proses .ikon-status { color: var(--royal-blue); }
+.item-progress.sukses {
+  background: rgba(16, 185, 129, 0.06);
+  border-color: rgba(16, 185, 129, 0.22);
+}
+.item-progress.sukses .ikon-status { color: var(--success); }
+.item-progress.gagal {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.22);
+}
+.item-progress.gagal .ikon-status { color: var(--danger); }
+
+@keyframes spinIkon {
+  to { transform: rotate(360deg); }
+}
+.spin {
+  display: inline-block;
+  animation: spinIkon 1s linear infinite;
+}
+
+@media (max-width: 480px) {
+  .modal-progress .kartu-isi { padding: 18px; }
+  .item-progress { padding: 8px 10px; }
+}

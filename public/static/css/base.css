@@ -1,0 +1,139 @@
+/* ============================================================
+   Gonanku - base.css
+   ============================================================ */
+
+:root {
+  /* Design Token Light Mode */
+  --navy-deep: #0F2854;
+  --royal-blue: #1C4D8D;
+  --soft-blue: #3E7CB1;
+  --ice-blue: #DCEAF5;
+
+  /* Premium Aesthetic Background */
+  --bg-main: #f0f4f8;
+  --bg-page: #f0f4f8;     /* sama dengan bg-main agar body & input form punya warna */
+  --bg-mesh: url('../images/bg-aesthetic-light.png');
+
+  --bg-panel-solid: #FFFFFF;
+  --bg-sidebar: #FFFFFF;
+  --bg-soft: #F1F5F9;
+
+  /* Glassmorphism Tokens */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --glass-shadow: 0 8px 32px rgba(15, 40, 84, 0.05);
+  --glass-blur: blur(16px);
+
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+
+  --border-soft: #E2E8F0;
+  --border-medium: #CBD5E1;
+  
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --info: #0EA5E9;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.03);
+
+  /* Typography */
+  --font-utama: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+[data-theme="dark"] {
+  --navy-deep: #DCEAF5;
+  --royal-blue: #60A5FA;
+  --soft-blue: #3B82F6;
+  --ice-blue: #1E3A8A;
+
+  /* Premium Aesthetic Background Dark */
+  --bg-main: #0B0F19;
+  --bg-mesh: url('../images/bg-aesthetic-dark.png');
+
+  --bg-page: #0B0F19;
+  --bg-panel-solid: #111827;
+  --bg-sidebar: #111827;
+  --bg-soft: #1F2937;
+
+  /* Glassmorphism Tokens Dark */
+  --glass-bg: rgba(17, 24, 39, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --glass-blur: blur(16px);
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  
+  --border-soft: rgba(255, 255, 255, 0.1);
+  --border-medium: rgba(255, 255, 255, 0.2);
+
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-panel: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --info: #0EA5E9;
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-utama);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+p {
+  margin: 0 0 12px;
+}
+
+a {
+  color: var(--royal-blue);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--navy-deep);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
