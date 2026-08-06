@@ -1,40 +1,38 @@
-"""Vercel DEBUG entrypoint — SEMENTARA untuk diagnosa routing.
+"""Vercel entrypoint for the Gonanku Flask application."""
 
-Setelah debug selesai, kembalikan ke Flask app.
-"""
-import json
-import os
-import sys
-import traceback
+import urllib.parse
+
+from app import buat_aplikasi
+
+app = buat_aplikasi()
 
 
-def app(environ, start_response):
-    """Raw WSGI app: dump semua environ variable sebagai JSON."""
-    info = {"_NOTE": "DEBUG MODE — bukan Flask app"}
+class VercelPathFix:
+    """WSGI middleware: pulihkan PATH_INFO asli dari query param __vercel_path.
 
-    # Kumpulkan semua environ yang bisa di-serialize
-    for key in sorted(environ):
-        val = environ[key]
-        if isinstance(val, (str, int, float, bool)):
-            info[key] = val
+    Vercel Python runtime menimpa PATH_INFO dengan path tujuan fungsi
+    (/api/index.py) alih-alih memakai path request asli (misal /dashboard).
+    Workaround: vercel.json menyisipkan path asli ke query parameter
+    __vercel_path, lalu middleware ini mengekstraknya kembali ke PATH_INFO.
+    """
 
-    # Coba juga import Flask app untuk cek apakah boot berhasil
-    try:
-        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from app import buat_aplikasi
-        _app = buat_aplikasi()
-        info["_FLASK_BOOT"] = "OK"
-        # Daftarkan semua route Flask
-        info["_FLASK_ROUTES"] = [
-            str(rule) for rule in _app.url_map.iter_rules()
-        ]
-    except Exception:
-        info["_FLASK_BOOT"] = "FAILED"
-        info["_FLASK_ERROR"] = traceback.format_exc()
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
 
-    body = json.dumps(info, indent=2, default=str).encode("utf-8")
-    start_response("200 OK", [
-        ("Content-Type", "application/json; charset=utf-8"),
-        ("Content-Length", str(len(body))),
-    ])
-    return [body]
+    def __call__(self, environ, start_response):
+        environ["SCRIPT_NAME"] = ""
+
+        # Ekstrak path asli dari query param __vercel_path
+        qs = environ.get("QUERY_STRING", "")
+        params = urllib.parse.parse_qs(qs)
+
+        if "__vercel_path" in params:
+            original_path = params.pop("__vercel_path")[0]
+            environ["PATH_INFO"] = urllib.parse.unquote(original_path) or "/"
+            # Rebuild query string tanpa __vercel_path
+            environ["QUERY_STRING"] = urllib.parse.urlencode(params, doseq=True)
+
+        return self.wsgi_app(environ, start_response)
+
+
+app.wsgi_app = VercelPathFix(app.wsgi_app)
